@@ -1,0 +1,4628 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>COSS Dashboard - 스마트 약통 관리</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        :root {
+            /* 기본 테마 색상 */
+            --app-bg: #6B8E6B; /* 아침 */
+            --app-bg-lunch: #537053;  /* 점심: 조금 더 어둠 */
+            --app-bg-dinner: #3c523c; /* 저녁: 더 어둠 */
+            --app-bg-bed: #253325;    /* 취침: 가장 어둠 */
+            
+            --app-bg-dark: #556b57;
+            --sidebar-bg: #f5f6fa;
+            --text-light: #F1F5EF;
+            --text-dark: #333333;
+            --accent-color: #E8F5E9;
+            --curve-radius: 35px;
+
+            /* 카드 헤더 색상 (card.html) */
+            --header-morning: #88B088; 
+            --header-lunch: #6B8E6B;
+            --header-dinner: #557055;
+            --header-bed: #3E523E;
+            --text-gray: #888888;
+            --shadow-card: 0 4px 15px rgba(107, 142, 107, 0.1);
+            --shadow-modal: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #eef1f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .app-wrapper {
+            width: 100%;
+            height: 100vh;
+            background-color: var(--app-bg);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: background-color 0.3s;
+        }
+
+        @media (min-width: 481px) {
+            .app-wrapper {
+                width: 414px;
+                height: 880px;
+                border-radius: 40px;
+                box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+            }
+        }
+
+        /* 헤더 스타일 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 40px 30px 20px 30px;
+            z-index: 20;
+            color: var(--text-light);
+        }
+
+        .header-title {
+            font-family: 'Merriweather', serif;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        /* 센서 상태 표시 */
+        .sensor-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.active { background-color: #4CAF50; }
+        .status-dot.inactive { background-color: #F44336; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* 사용자 메뉴 */
+        .user-menu { position: relative; }
+        .user-profile-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            cursor: pointer;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            min-width: 200px;
+            overflow: hidden;
+            z-index: 100;
+        }
+        .dropdown-menu.show { display: block; }
+        .dropdown-item {
+            padding: 12px 20px;
+            color: var(--text-dark);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.3s;
+            cursor: pointer;
+        }
+        .dropdown-item:hover { background: var(--accent-color); }
+        .dropdown-divider { height: 1px; background: #e0e0e0; }
+
+        .content-body {
+            display: flex;
+            flex: 1;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* 사이드바 스타일 */
+        .sidebar-container {
+            width: 90px;
+            background-color: transparent;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding-bottom: 20px;
+            border-top-right-radius: var(--curve-radius); 
+            padding-top: 20px; 
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .active-indicator {
+            position: absolute;
+            left: 0;
+            top: 20px;
+            width: 100%;
+            height: 90px;
+            background: transparent;
+            z-index: 0;
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .active-indicator::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            width: 100%;
+            height: 120vh;
+            background-color: var(--sidebar-bg);
+            border-bottom-right-radius: var(--curve-radius);
+            transition: opacity 0.3s;
+        }
+
+        .active-indicator::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 100%;
+            height: 120vh;
+            background-color: var(--sidebar-bg);
+            border-top-right-radius: var(--curve-radius);
+        }
+
+        .active-indicator.is-first::before {
+            opacity: 0;
+        }
+
+        .sidebar-item {
+            height: 90px;
+            min-height: 90px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+            color: #999;
+            z-index: 1;
+            transition: color 0.3s;
+        }
+
+        .sidebar-item.active {
+            color: var(--text-light);
+            background-color: transparent;
+        }
+
+        .icon-box {
+            width: 45px;
+            height: 45px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+        }
+
+        .sidebar-item.active .icon-box {
+            background: var(--text-light);
+            color: var(--app-bg);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .sidebar-filler {
+            flex: 1;
+            background: transparent;
+        }
+
+        /* 메인 컨텐츠 영역 */
+        .main-content {
+            flex: 1;
+            padding: 0 25px 30px 10px;
+            overflow-y: auto;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .main-content::-webkit-scrollbar { display: none; }
+
+        .page-section {
+            display: none;
+            animation: fadeInUp 0.5s forwards;
+        }
+        .page-section.active { display: block; }
+
+        .welcome-text {
+            color: var(--text-light);
+            margin-bottom: 25px;
+            padding-left: 15px;
+        }
+        .welcome-text h2 { font-family: 'Merriweather', serif; font-size: 1.8rem; }
+        .welcome-text p { font-size: 0.9rem; opacity: 0.8; }
+
+        .sensor-card {
+            background: var(--app-bg-dark);
+            border-radius: 25px;
+            padding: 25px;
+            color: white;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .sensor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: nowrap;
+            gap: 10px;
+        }
+        
+        .sensor-title { font-size: 1.1rem; opacity: 0.9; white-space: nowrap; }
+        .sensor-value-display {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .sensor-big-value {
+            font-size: 3rem;
+            font-weight: 700;
+            font-family: 'Merriweather', serif;
+        }
+        .sensor-unit { font-size: 1rem; opacity: 0.8; }
+        
+        .sensor-state {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+        .sensor-state.detected { background: rgba(244, 67, 54, 0.2); color: #ffcdd2; }
+        .sensor-state.clear { background: rgba(76, 175, 80, 0.2); color: #c8e6c9; }
+
+        .no-data-message {
+            text-align: center;
+            padding: 15px;
+            color: #ffffff;
+            font-size: 0.9rem;
+        }
+
+        /* ========== 새로운 카드 스타일 (card.html) ========== */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .med-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 160px;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.1s;
+        }
+        .med-card:active { transform: scale(0.97); }
+
+        /* 카드 헤더 */
+        .card-header-area {
+            height: 45px;
+            padding: 0 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .med-card[data-id="1"] .card-header-area { background-color: var(--header-morning); }
+        .med-card[data-id="2"] .card-header-area { background-color: var(--header-lunch); }
+        .med-card[data-id="3"] .card-header-area { background-color: var(--header-dinner); }
+        .med-card[data-id="4"] .card-header-area { background-color: var(--header-bed); }
+
+        /* 카드 바디 */
+        .card-body-area {
+            flex: 1;
+            padding: 12px 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .med-list-preview {
+            font-size: 0.85rem;
+            color: var(--text-dark);
+            line-height: 1.3;
+            height: 2.6em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical; 
+            margin-top: 5px;
+        }
+
+        .card-footer-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .time-display-large {
+            font-family: 'Merriweather', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
+        }
+        .ampm-small { 
+            font-size: 0.75rem; 
+            font-family: 'Poppins', sans-serif; 
+            font-weight: 500; 
+            margin-right: 3px; 
+            color: var(--text-gray);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .med-card[data-id="1"] .status-badge { background-color: var(--header-morning); }
+        .med-card[data-id="2"] .status-badge { background-color: var(--header-lunch); }
+        .med-card[data-id="3"] .status-badge { background-color: var(--header-dinner); }
+        .med-card[data-id="4"] .status-badge { background-color: var(--header-bed); }
+        
+        .med-card.taken .status-badge { background: var(--app-bg) !important; }
+        .med-card.taken .card-body-area { background-color: rgba(107, 142, 107, 0.08); }
+
+        /* ========== 모달 스타일 (card.html) ========== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(3px);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .modal-overlay.show { display: flex; opacity: 1; }
+
+        .custom-modal {
+            background: white;
+            width: 90%;
+            max-width: 380px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-modal);
+            transform: translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
+        }
+        .modal-overlay.show .custom-modal { transform: translateY(0); }
+
+        .modal-header {
+            padding: 15px 20px;
+            background: #f9f9f9;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title { font-family: 'Merriweather', serif; font-size: 1.1rem; color: var(--app-bg-dark); font-weight: 700; }
+        
+        .modal-body { 
+            padding: 20px; 
+            overflow-y: auto;
+            -ms-overflow-style: none; 
+            scrollbar-width: none; 
+        }
+        .modal-body::-webkit-scrollbar { display: none; }
+
+        /* Wheel Time Picker */
+        .picker-label {
+            font-size: 0.9rem; font-weight: 600; color: #555; margin-bottom: 10px; display: block;
+        }
+        
+        .time-picker-container {
+            display: flex;
+            justify-content: center;
+            height: 150px;
+            background: #fff;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 25px;
+            mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+        }
+
+        .picker-highlight {
+            position: absolute;
+            top: 50px;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: rgba(107, 142, 107, 0.1);
+            border-top: 2px solid var(--app-bg);
+            border-bottom: 2px solid var(--app-bg);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .picker-column {
+            flex: 1;
+            height: 100%;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            text-align: center;
+            padding: 50px 0;
+            z-index: 1;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            cursor: grab;
+        }
+        .picker-column:active { cursor: grabbing; }
+        .picker-column::-webkit-scrollbar { display: none; }
+        
+        .picker-item {
+            height: 50px;
+            line-height: 50px;
+            font-size: 1rem;
+            color: #ccc;
+            scroll-snap-align: center;
+            transition: all 0.2s ease;
+            font-family: 'Merriweather', serif;
+            font-weight: 400;
+        }
+        
+        .picker-item.selected {
+            color: #2E4A2E;
+            font-weight: 900;
+            font-size: 1.4rem;
+            transform: scale(1.1);
+        }
+
+        /* 약 목록 관리 */
+        .med-list-container {
+            border: 1px solid #eee;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            max-height: 130px;
+            overflow-y: auto;
+            background: #fafafa;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .med-list-container::-webkit-scrollbar { display: none; }
+
+        .med-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+        }
+        .med-list-item:last-child { border-bottom: none; }
+
+        .med-info-text {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .med-name { font-size: 0.9rem; font-weight: 600; color: #444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+        .med-dose { font-size: 0.75rem; color: #999; white-space: nowrap; }
+
+        .med-actions {
+            display: flex;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+
+        .btn-icon { color: #ccc; cursor: pointer; padding: 5px; font-size: 0.9rem; }
+        .btn-icon:hover { color: var(--app-bg); }
+        .btn-delete:hover { color: #ff6b6b; }
+
+        .add-med-form { display: flex; gap: 8px; margin-top: 15px; }
+        .input-box {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            outline: none;
+            background: #fff;
+        }
+        .input-box:focus { border-color: var(--app-bg); }
+        
+        .input-name { flex: 3; }
+        .input-dose { flex: 1; min-width: 60px; }
+
+        .btn-action {
+            width: 42px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: 0.2s;
+            flex-shrink: 0;
+        }
+        .btn-add { background: var(--app-bg-dark); }
+        .btn-update { background: var(--app-bg); display: none; }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            background: #fff;
+        }
+        .btn-modal {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-cancel { background: #f0f0f0; color: #666; }
+        .btn-save { background: var(--app-bg); color: white; }
+
+        /* ========== 기존 스타일 유지 ========== */
+        /* 알림 배너 스타일 */
+        .alarm-banner {
+            position: fixed;
+            top: -100px;
+            left: 0;
+            right: 0;
+            background: #F44336;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            z-index: 3000;
+            transition: top 0.5s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .alarm-banner.show { top: 0; }
+        .alarm-banner i { font-size: 1.2rem; animation: pulse 1s infinite; }
+
+        /* 활동 차트 기간 탭 */
+        .activity-period-tabs {
+            display: flex;
+            gap: 5px;
+            background: #f0f0f0;
+            padding: 4px;
+            border-radius: 10px;
+        }
+        
+        .activity-tab {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: #888;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .activity-tab.active {
+            background: var(--app-bg);
+            color: white;
+        }
+        
+        .activity-tab:hover:not(.active) {
+            background: #e0e0e0;
+        }
+
+        /* 차트 및 기타 섹션 유지 */
+        .chart-section {
+            background: white;
+            border-radius: 25px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .chart-container {
+            position: relative;
+            height: 200px;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .section-title { font-size: 1.1rem; font-weight: 600; color: var(--text-dark); }
+
+        .medication-list, .reminder-list, .profile-card {
+            background: white;
+            border-radius: 25px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .med-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: var(--accent-color);
+            border-radius: 15px;
+            transition: transform 0.2s;
+        }
+        .med-info { display: flex; align-items: center; gap: 15px; }
+        .med-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--app-bg);
+        }
+        .med-details h4 { font-size: 1rem; color: var(--text-dark); margin-bottom: 3px; }
+        .med-details p { font-size: 0.85rem; color: #666; }
+        .med-action {
+            padding: 8px 16px;
+            background: var(--app-bg);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        .reminder-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--app-bg);
+            background: var(--accent-color);
+            border-radius: 8px;
+        }
+        .reminder-time { font-size: 1.2rem; font-weight: 600; color: var(--app-bg); }
+        .reminder-details { flex: 1; }
+        .reminder-title { font-size: 0.95rem; color: var(--text-dark); margin-bottom: 3px; }
+        .reminder-desc { font-size: 0.85rem; color: #666; }
+
+        .toggle-switch { position: relative; width: 50px; height: 25px; }
+        .toggle-switch input { display: none; }
+        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 25px; }
+        .toggle-slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 3.5px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .toggle-slider { background-color: var(--app-bg); }
+        input:checked + .toggle-slider:before { transform: translateX(25px); }
+
+        .profile-card { text-align: center; padding: 30px; }
+        .profile-avatar { width: 100px; height: 100px; background: var(--accent-color); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--app-bg); }
+        .profile-name { font-size: 1.5rem; margin-bottom: 5px; font-weight: 600; }
+        .profile-email { color: #666; margin-bottom: 20px; }
+        .profile-stats { display: flex; justify-content: space-around; padding: 20px 0; border-top: 1px solid #e0e0e0; }
+        .profile-stat { text-align: center; }
+        .profile-stat-value { font-size: 1.5rem; font-weight: 700; color: var(--app-bg); }
+        .profile-stat-label { font-size: 0.85rem; color: #666; margin-top: 5px; }
+        
+        .action-button { width: 100%; padding: 12px; margin-top: 10px; background: var(--app-bg); color: white; border: none; border-radius: 15px; font-size: 1rem; cursor: pointer; transition: background 0.3s; }
+        .action-button.secondary { background: white; color: var(--app-bg); border: 2px solid var(--app-bg); }
+
+        .loading-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(107, 142, 107, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+        }
+        .loading-overlay.show { display: flex; }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 약물 관리 탭 빈 상태 */
+        .empty-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: #ffffff;
+        }
+        .empty-state i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+        .empty-state p {
+            font-size: 0.9rem;
+            color: #ffffff;
+        }
+
+        /* ========== 통계 섹션 스타일 ========== */
+        .period-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 0 15px;
+        }
+        
+        .period-tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.2);
+            color: var(--text-light);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .period-tab.active {
+            background: white;
+            color: var(--app-bg);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .stats-key-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 0 15px;
+        }
+        
+        .stats-key-card {
+            background: linear-gradient(135deg, var(--app-bg-dark) 0%, #3c523c 100%);
+            border-radius: 18px;
+            padding: 18px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stats-key-card::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+        
+        .stats-key-card.warning {
+            background: linear-gradient(135deg, #FF9800 0%, #E65100 100%);
+        }
+        
+        .stats-key-card.danger {
+            background: linear-gradient(135deg, #F44336 0%, #C62828 100%);
+        }
+        
+        .stats-icon {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            opacity: 0.9;
+        }
+        
+        .stats-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            font-family: 'Merriweather', serif;
+        }
+        
+        .stats-label {
+            font-size: 0.75rem;
+            opacity: 0.85;
+            margin-top: 4px;
+        }
+        
+        .stats-chart-container {
+            height: 180px;
+            margin: 15px 0;
+        }
+              
+        .stats-period-label {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        
+        .stats-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stats-detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .detail-label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .detail-value {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .stats-history-area {
+            max-height: 300px;
+            overflow-y: auto;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .stats-history-area::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .stats-history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .stats-history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .history-time {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .history-name {
+            font-weight: 500;
+        }
+        
+        .history-status {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 8px;
+        }
+        
+        .history-status.taken {
+            background: rgba(76, 175, 80, 0.2);
+            color: #81C784;
+        }
+
+        /* [새로고침 버튼 스타일 - 사용자 요청 수정 반영] */
+        .refresh-btn {
+            width: 100%;
+            height: 60px;
+            min-height: 60px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #bbb;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: color 0.3s, transform 0.3s;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+            background: var(--sidebar-bg);
+        }
+        
+        .refresh-btn:hover {
+            color: #888;
+        }
+        .refresh-btn:active {
+            transform: rotate(180deg);
+            color: var(--app-bg);
+        }
+
+        @media (max-width: 425px) {
+            .sidebar-container {
+                overflow-y: auto;
+                overflow-x: hidden;
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .sidebar-container::-webkit-scrollbar {
+                display: none;
+            }
+            .sidebar-filler {
+                min-height: 150px;
+            }
+        }
+        
+        /* ===== 장치 섹션 스타일 ===== */
+        .device-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .device-status-badge.online {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+        .device-status-badge.offline {
+            background: rgba(244, 67, 54, 0.2);
+            color: #F44336;
+        }
+        .device-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .device-info-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+        }
+        .device-info-item .label {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        .device-info-item .value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+        }
+        .sensor-raw-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin: 15px 0;
+        }
+        .sensor-raw-item {
+            background: #f8f9fa;
+            padding: 15px 8px;
+            border-radius: 12px;
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .sensor-raw-item .sensor-label {
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 8px;
+        }
+        .sensor-raw-item .sensor-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .sensor-raw-item .sensor-value.on { color: #F44336; }
+        .sensor-raw-item .sensor-value.off { color: #4CAF50; }
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .setting-row:last-child { border-bottom: none; }
+        .setting-info .setting-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+        }
+        .setting-info .setting-desc {
+            font-size: 0.8rem;
+            color: #888;
+        }
+        .danger-zone {
+            background: #fff5f5;
+            border: 1px solid #ffcdd2;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .danger-zone h4 {
+            color: #c62828;
+            margin-bottom: 10px;
+        }
+        .btn-danger {
+            background: #c62828;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+        }
+        .btn-calibrate {
+            background: #6B8E6B;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        /* ===== 리필 확인 모달 ===== */
+        .refill-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(3px);
+        }
+        .refill-modal-overlay.show {
+            display: flex;
+        }
+        .refill-modal {
+            background: white;
+            width: 90%;
+            max-width: 340px;
+            border-radius: 20px;
+            overflow: hidden;
+            animation: modalIn 0.3s ease;
+        }
+        @keyframes modalIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .refill-modal-header {
+            background: linear-gradient(135deg, #E8C3C3 0%, #D4A5A5 100%);
+            padding: 25px;
+            text-align: center;
+            color: #333;
+        }
+        .refill-modal-header.end {
+            background: linear-gradient(135deg, #81C784 0%, #4CAF50 100%);
+            color: white;
+        }
+        .refill-modal-header i {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .refill-modal-header h3 {
+            font-size: 1.2rem;
+            margin: 0;
+        }
+        .refill-modal-body {
+            padding: 25px;
+            text-align: center;
+        }
+        .refill-modal-body p {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .refill-modal-footer {
+            display: flex;
+            gap: 10px;
+            padding: 0 25px 25px;
+        }
+        .refill-modal-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .refill-modal-btn.cancel {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .refill-modal-btn.confirm {
+            background: #E8C3C3;
+            color: #333;
+        }
+        .refill-modal-btn.confirm.end {
+            background: #4CAF50;
+            color: white;
+        }
+
+        /* 삭제 확인 모달 */
+        .delete-confirm-modal {
+            background: white;
+            width: 90%;
+            max-width: 320px;
+            border-radius: 20px;
+            overflow: hidden;
+            animation: modalIn 0.3s ease;
+        }
+        
+        .delete-confirm-header {
+            background: linear-gradient(135deg, #FF6B6B 0%, #EE5A5A 100%);
+            padding: 25px;
+            text-align: center;
+            color: white;
+        }
+        
+        .delete-confirm-header i {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .delete-confirm-header h3 {
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        
+        .delete-confirm-body {
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .delete-confirm-body p {
+            color: #666;
+            font-size: 0.95rem;
+            margin: 0;
+            line-height: 1.6;
+        }
+        
+        .delete-confirm-footer {
+            display: flex;
+            gap: 10px;
+            padding: 0 25px 25px;
+        }
+        
+        .delete-confirm-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .delete-confirm-btn.cancel {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .delete-confirm-btn.delete {
+            background: #FF6B6B;
+            color: white;
+        }
+        
+        .delete-confirm-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        /* ===== 약 보충 관리 UI ===== */
+        .refill-control-card {
+            background: linear-gradient(145deg, #4a6b4a 0%, #3c5a3c 100%);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            color: white;
+        }
+        
+        .refill-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .refill-title {
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .refill-status {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .refill-status.active {
+            background: rgba(255,193,7,0.2);
+            border: 2px solid rgba(255,193,7,0.5);
+        }
+        
+        .refill-status-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .refill-status-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .refill-status-sub {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .refill-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .refill-btn.start {
+            background: #93B596; /* 사진의 색상 적용 */
+            color: white;
+        }
+        
+        .refill-btn.end {
+            background: linear-gradient(135deg, #81C784 0%, #4CAF50 100%);
+            color: white;
+        }
+        
+        .refill-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .refill-options {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .refill-option-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        
+        .refill-option-toggle input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #FFB74D;
+        }
+        
+        .refill-option-text {
+            font-size: 0.85rem;
+        }
+        
+        .refill-history-section {
+            margin-top: 15px;
+        }
+        
+        .refill-history-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        
+        .refill-history-toggle i {
+            transition: transform 0.3s;
+        }
+        
+        .refill-history-toggle.open i {
+            transform: rotate(180deg);
+        }
+        
+        .refill-history-list {
+            display: none;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .refill-history-list::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .refill-history-list.show {
+            display: block;
+        }
+        
+        .refill-history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin-bottom: 5px;
+            font-size: 0.8rem;
+        }
+        
+        .refill-history-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .refill-delete-btn {
+            background: rgba(244,67,54,0.2);
+            border: none;
+            color: #ff8a80;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+        
+        .refill-delete-btn:hover {
+            background: rgba(244,67,54,0.4);
+        }
+        
+        /* ===== 약 보충 관리 UI ===== */
+        .refill-control-card {
+            background: linear-gradient(145deg, #4a6b4a 0%, #3c5a3c 100%);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            color: white;
+        }
+        
+        .refill-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .refill-title {
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .refill-status {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .refill-status.active {
+            background: rgba(255,193,7,0.2);
+            border: 2px solid rgba(255,193,7,0.5);
+        }
+        
+        .refill-status-icon { font-size: 2.5rem; margin-bottom: 10px; }
+        .refill-status-text { font-size: 1.1rem; font-weight: 600; margin-bottom: 5px; }
+        .refill-status-sub { font-size: 0.8rem; opacity: 0.8; }
+        
+        .refill-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .refill-btn.start { background: linear-gradient(135deg, #2F4F4F 0%, #2f4f46 100%); color: white; }
+        .refill-btn.end { background: linear-gradient(135deg, #81C784 0%, #4CAF50 100%); color: white; }
+        .refill-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        
+        .refill-options {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .refill-option-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        
+        .refill-option-toggle input[type="checkbox"] { width: 18px; height: 18px; accent-color: #FFB74D; }
+        .refill-option-text { font-size: 0.85rem; }
+        .refill-history-section { margin-top: 15px; }
+        
+        .refill-history-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        
+        .refill-history-toggle i { transition: transform 0.3s; }
+        .refill-history-toggle.open i { transform: rotate(180deg); }
+        .refill-history-list { display: none; margin-top: 10px; max-height: 200px; overflow-y: auto; }
+        .refill-history-list.show { display: block; }
+        
+        .refill-history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin-bottom: 5px;
+            font-size: 0.8rem;
+        }
+        
+        .refill-history-item:hover { background: rgba(255,255,255,0.1); }
+        
+        .refill-delete-btn {
+            background: rgba(244,67,54,0.2);
+            border: none;
+            color: #ff8a80;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+        
+        .refill-delete-btn:hover { background: rgba(244,67,54,0.4); }
+        /* 복약 통계 인사이트 스타일 */
+        .stats-insight {
+            background: transparent;
+            border-left: none;
+            padding: 15px 5px;
+            border-radius: 0;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: -30px;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-wrapper">
+        <div class="alarm-banner" id="alarmBanner">
+            <i class="fa-solid fa-bell"></i>
+            <span id="alarmMessage">복용 시간입니다!</span>
+            <button onclick="stopAlarm()" style="margin-left:10px; padding:5px 10px; border:none; border-radius:15px; background:white; color:#F44336; font-weight:bold; cursor:pointer;">확인</button>
+        </div>
+
+        <audio id="alarmSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" loop></audio>
+
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="spinner"></div>
+            <p>데이터 로딩 중...</p>
+        </div>
+
+        <div class="header">
+            <div class="header-title">
+                <i class="fa-solid fa-pills"></i> COSS
+            </div>
+            <div class="header-actions">
+                <div class="sensor-status">
+                    <div class="status-dot" id="sensorStatusDot"></div>
+                    <span id="sensorStatusText">연결 확인중</span>
+                </div>
+                <div class="user-menu">
+                    <div class="user-profile-icon" onclick="toggleUserMenu()">
+                        <i class="fa-regular fa-user"></i>
+                    </div>
+                    <div class="dropdown-menu" id="userDropdown">
+                        <div class="dropdown-item" onclick="window.location.href='/profile.html'">
+                            <i class="fa-solid fa-user"></i>
+                            <span>프로필</span>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item" onclick="logout()">
+                            <i class="fa-solid fa-sign-out-alt"></i>
+                            <span>로그아웃</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-body">
+            <div class="sidebar-container" id="sidebar">
+                <div class="active-indicator"></div>
+                
+                <div class="sidebar-item active" data-section="dashboard" onclick="switchSection('dashboard')">
+                    <div class="icon-box"><i class="fa-solid fa-chart-pie"></i></div>
+                </div>
+                <div class="sidebar-item" data-section="medication" onclick="switchSection('medication')">
+                    <div class="icon-box"><i class="fa-solid fa-capsules"></i></div>
+                </div>
+                <div class="sidebar-item" data-section="reminder" onclick="switchSection('reminder')">
+                    <div class="icon-box"><i class="fa-regular fa-bell"></i></div>
+                </div>
+                <div class="sidebar-item" data-section="stats" onclick="switchSection('stats')">
+                    <div class="icon-box"><i class="fa-solid fa-chart-line"></i></div>
+                </div>
+                <div class="sidebar-item" data-section="about" onclick="switchSection('about')">
+                    <div class="icon-box"><i class="fa-solid fa-info-circle"></i></div>
+                </div>
+                <div class="sidebar-item" data-section="device" onclick="switchSection('device')">
+                    <div class="icon-box"><i class="fa-solid fa-microchip"></i></div>
+                </div>
+                
+                <div class="sidebar-filler"></div>
+
+                <div class="refresh-btn" onclick="refreshPage()">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <section class="page-section active" id="dashboardSection">
+                    <div class="welcome-text">
+                        <h2>Hello, <span id="userName">User</span></h2>
+                        <p>오늘의 복약 상태를 확인하세요.</p>
+                    </div>
+
+                    <div class="refill-control-card" id="refillControlCard">
+                        <div class="refill-header">
+                            <div class="refill-title">
+                                <i class="fa-solid fa-prescription-bottle-medical"></i>
+                                약 보충 관리
+                            </div>
+                            <div class="sensor-status" style="background: rgba(0,0,0,0.2);">
+                                <div class="status-dot" id="refillSensorDot"></div>
+                                <span id="refillSensorText">센서 확인중</span>
+                            </div>
+                        </div>
+                        
+                        <div class="refill-status" id="refillStatusArea">
+                            <div class="refill-status-icon" id="refillStatusIcon">
+                                <i class="fa-solid fa-pills" style="color: white;"></i>
+                            </div>
+                            <div class="refill-status-text" id="refillStatusText">정상 모니터링 중</div>
+                            <div class="refill-status-sub" id="refillStatusSub">센서가 복용을 감지합니다</div>
+                        </div>
+                        
+                        <button class="refill-btn start" id="refillBtn" onclick="toggleRefillMode()">
+                            <i class="fa-solid fa-pills"></i>
+                            <span id="refillBtnText">약 보충 시작</span>
+                        </button>
+                        
+                        <div class="refill-options" id="refillOptions" style="display: none;">
+                            <label class="refill-option-toggle">
+                                <input type="checkbox" id="deleteRefillRecords" checked>
+                                <span class="refill-option-text">⚠️ 보충 중 잘못 기록된 복용 내역 삭제</span>
+                            </label>
+                        </div>
+                        
+                        <div class="refill-history-section">
+                            <div class="refill-history-toggle" onclick="toggleRefillHistory()">
+                                <span><i class="fa-solid fa-clock-rotate-left"></i> 최근 복용 기록 (수동 삭제)</span>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                            <div class="refill-history-list" id="refillHistoryList">
+                                <!-- 동적으로 채워짐 -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="summary-grid">
+                        <div class="med-card" id="medCard-1" data-id="1" onclick="openEditModal(1)">
+                            <div class="card-header-area">
+                                <i class="fa-regular fa-sun"></i> <span>아침 약</span>
+                            </div>
+                            <div class="card-body-area">
+                                <div>
+                                    <span class="status-badge" id="badge-1">대기중</span>
+                                    <div class="med-list-preview" id="medListText-1">등록된 약 없음</div>
+                                </div>
+                                <div class="card-footer-row">
+                                    <div class="time-display-large" id="timeDisplay-1">--:--</div>
+                                    <i class="fa-solid fa-pen" style="color:#ddd"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="med-card" id="medCard-2" data-id="2" onclick="openEditModal(2)">
+                            <div class="card-header-area">
+                                <i class="fa-solid fa-cloud-sun"></i> <span>점심 약</span>
+                            </div>
+                            <div class="card-body-area">
+                                <div>
+                                    <span class="status-badge" id="badge-2">대기중</span>
+                                    <div class="med-list-preview" id="medListText-2">등록된 약 없음</div>
+                                </div>
+                                <div class="card-footer-row">
+                                    <div class="time-display-large" id="timeDisplay-2">--:--</div>
+                                    <i class="fa-solid fa-pen" style="color:#ddd"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="med-card" id="medCard-3" data-id="3" onclick="openEditModal(3)">
+                            <div class="card-header-area">
+                                <i class="fa-regular fa-moon"></i> <span>저녁 약</span>
+                            </div>
+                            <div class="card-body-area">
+                                <div>
+                                    <span class="status-badge" id="badge-3">대기중</span>
+                                    <div class="med-list-preview" id="medListText-3">등록된 약 없음</div>
+                                </div>
+                                <div class="card-footer-row">
+                                    <div class="time-display-large" id="timeDisplay-3">--:--</div>
+                                    <i class="fa-solid fa-pen" style="color:#ddd"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="med-card" id="medCard-4" data-id="4" onclick="openEditModal(4)">
+                            <div class="card-header-area">
+                                <i class="fa-solid fa-bed"></i> <span>취침 약</span>
+                            </div>
+                            <div class="card-body-area">
+                                <div>
+                                    <span class="status-badge" id="badge-4">대기중</span>
+                                    <div class="med-list-preview" id="medListText-4">등록된 약 없음</div>
+                                </div>
+                                <div class="card-footer-row">
+                                    <div class="time-display-large" id="timeDisplay-4">--:--</div>
+                                    <i class="fa-solid fa-pen" style="color:#ddd"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-section">
+                        <div class="section-header">
+                            <div class="section-title" id="activityChartTitle">주간 활동</div>
+                            <div class="activity-period-tabs">
+                                <button class="activity-tab" data-period="daily" onclick="switchActivityPeriod('daily')">일별</button>
+                                <button class="activity-tab active" data-period="weekly" onclick="switchActivityPeriod('weekly')">주별</button>
+                                <button class="activity-tab" data-period="monthly" onclick="switchActivityPeriod('monthly')">월별</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="activityChart"></canvas>
+                        </div>
+                        <div id="activitySummary" style="text-align: center; font-size: 0.8rem; color: #888; margin-top: 10px;"></div>
+                        <div class="activity-insight" id="activityInsight" style="background: rgba(107, 142, 107, 0.1); border-left: 3px solid var(--app-bg); padding: 12px; border-radius: 8px; font-size: 0.85rem; color: #666; margin-top: 10px;">
+                            💡 데이터를 분석 중입니다...
+                        </div>
+                    </div>
+                </section>
+
+                <section class="page-section" id="medicationSection">
+                    <div class="welcome-text">
+                        <h2>약물 관리</h2>
+                        <p>복약 일정과 약물 정보를 관리하세요.</p>
+                    </div>
+                    <div class="medication-list">
+                        <div class="section-header">
+                            <div class="section-title">등록된 약물</div>
+                            <button class="med-action" onclick="openAddMedModal()">+ 추가</button>
+                        </div>
+                        <div id="medicationListArea"></div>
+                    </div>
+                    <div class="chart-section">
+                        <div class="section-header">
+                            <div class="section-title">복약 시간 분포</div>
+                        </div>
+                        <div id="timeDistributionContainer" style="position: relative; height: 200px; width: 100%;">
+                            <canvas id="timeDistributionChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="page-section" id="reminderSection">
+                    <div class="welcome-text">
+                        <h2>알림 설정</h2>
+                        <p>복약 알림을 관리하세요.</p>
+                    </div>
+                    <div class="reminder-list">
+                        <div class="section-header">
+                            <div class="section-title">알림 일정</div>
+                            <button class="med-action" onclick="openAddMedModal()">+ 추가</button>
+                        </div>
+                        <div id="reminderListArea"></div>
+                    </div>
+                </section>
+                <section class="page-section" id="deviceSection">
+                    <div class="welcome-text">
+                        <h2>장치 관리</h2>
+                        <p>스마트 약통 연결 상태를 확인하세요.</p>
+                    </div>
+
+                    <div class="sensor-card">
+                        <div class="sensor-header">
+                            <div class="sensor-title">연결 상태</div>
+                            <div class="device-status-badge offline" id="deviceStatusBadge">
+                                <i class="fa-solid fa-circle"></i>
+                                <span id="deviceStatusText">확인 중...</span>
+                            </div>
+                        </div>
+                        <div class="device-info-grid">
+                            <div class="device-info-item">
+                                <div class="label">IP 주소</div>
+                                <div class="value" id="deviceIP">-</div>
+                            </div>
+                            <div class="device-info-item">
+                                <div class="label">펌웨어</div>
+                                <div class="value" id="deviceFirmware">-</div>
+                            </div>
+                            <div class="device-info-item">
+                                <div class="label">마지막 통신</div>
+                                <div class="value" id="deviceLastComm">-</div>
+                            </div>
+                            <div class="device-info-item">
+                                <div class="label">배터리</div>
+                                <div class="value" id="deviceBattery">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sensor-card">
+                        <div class="sensor-header">
+                            <div class="sensor-title">센서 Raw Data</div>
+                            <button class="btn-calibrate" onclick="calibrateSensors()">
+                                <i class="fa-solid fa-sliders"></i> 영점 조절
+                            </button>
+                        </div>
+                        <div class="sensor-raw-grid">
+                            <div class="sensor-raw-item">
+                                <div class="sensor-label">아침</div>
+                                <div class="sensor-value off" id="rawSensor1">0</div>
+                            </div>
+                            <div class="sensor-raw-item">
+                                <div class="sensor-label">점심</div>
+                                <div class="sensor-value off" id="rawSensor2">0</div>
+                            </div>
+                            <div class="sensor-raw-item">
+                                <div class="sensor-label">저녁</div>
+                                <div class="sensor-value off" id="rawSensor3">0</div>
+                            </div>
+                            <div class="sensor-raw-item">
+                                <div class="sensor-label">취침</div>
+                                <div class="sensor-value off" id="rawSensor4">0</div>
+                            </div>
+                        </div>
+                        <p style="font-size:0.8rem; color:rgba(255,255,255,0.7); margin-top:15px; line-height: 1.6;">
+                            0 = 약통 있음 (OFF)<br>
+                            1 = 약통 분리됨 (ON)
+                        </p>
+                    </div>
+
+                    <div class="sensor-card">
+                        <div class="sensor-header">
+                            <div class="sensor-title">알림 설정</div>
+                        </div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <div class="setting-title" style="color: rgba(255,255,255,0.95);">모든 알림</div>
+                                <div class="setting-desc" style="color: rgba(255,255,255,0.6);">복약 알림 및 보호자 이메일</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="notifEnabled" checked onchange="updateNotificationSettings()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <div class="setting-title" style="color: rgba(255,255,255,0.95);">야간 모드</div>
+                                <div class="setting-desc" style="color: rgba(255,255,255,0.6);">22시~06시 알림 무음</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="nightModeEnabled" onchange="updateNotificationSettings()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <button class="action-button secondary" style="margin-top:15px;" id="testEmailBtn" onclick="testEmail()">
+                            <i class="fa-solid fa-envelope"></i> 테스트 이메일 발송
+                        </button>
+                    </div>
+
+                    <div class="danger-zone">
+                        <h4><i class="fa-solid fa-triangle-exclamation"></i> 위험 구역</h4>
+                        <p style="font-size:0.85rem; color:#666; margin-bottom:15px;">모든 복약 기록이 삭제됩니다. 이 작업은 되돌릴 수 없습니다.</p>
+                        <button class="btn-danger" onclick="openResetModal()">
+                            <i class="fa-solid fa-trash"></i> 데이터 초기화
+                        </button>
+                    </div>
+                </section>
+                <section class="page-section" id="statsSection">
+                    <div class="welcome-text">
+                        <h2>복약 통계</h2>
+                        <p>나의 건강 습관을 분석합니다.</p>
+                    </div>
+
+                    <!-- 기간 선택 탭 -->
+                    <div class="period-tabs">
+                        <button class="period-tab active" data-period="daily" onclick="switchStatsPeriod('daily')">일별</button>
+                        <button class="period-tab" data-period="weekly" onclick="switchStatsPeriod('weekly')">주별</button>
+                        <button class="period-tab" data-period="monthly" onclick="switchStatsPeriod('monthly')">월별</button>
+                    </div>
+
+                    <!-- 핵심 지표 4개 -->
+                    <div class="stats-key-grid">
+                        <div class="stats-key-card">
+                            <div class="stats-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                            <div class="stats-value" id="statsPDC">0%</div>
+                            <div class="stats-label">복약 순응도</div>
+                        </div>
+                        <div class="stats-key-card">
+                            <div class="stats-icon"><i class="fa-solid fa-fire"></i></div>
+                            <div class="stats-value" id="statsStreak">0일</div>
+                            <div class="stats-label">연속 복용</div>
+                        </div>
+                        <div class="stats-key-card">
+                            <div class="stats-icon"><i class="fa-regular fa-clock"></i></div>
+                            <div class="stats-value" id="statsAccuracy">-</div>
+                            <div class="stats-label">시간 정확도</div>
+                        </div>
+                        <div class="stats-key-card" id="statsGapCard">
+                            <div class="stats-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                            <div class="stats-value" id="statsGap">0일</div>
+                            <div class="stats-label">최장 미복용</div>
+                        </div>
+                    </div>
+
+                    <!-- 활동 차트 (대시보드와 동기화) -->
+                    <div class="chart-section">
+                        <div class="section-header">
+                            <div class="section-title" id="statsActivityChartTitle">주간 활동</div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="statsActivityChart"></canvas>
+                        </div>
+                        <div id="statsActivitySummary" style="text-align: center; font-size: 0.8rem; color: #888; margin-top: 10px;"></div>
+                    </div>
+                    
+                    <div class="stats-insight" id="statsActivityInsight">
+                        💡 데이터를 분석 중입니다...
+                    </div>
+
+                    <!-- 상세 기록 -->
+                    <div class="sensor-card">
+                        <div class="sensor-header">
+                            <div class="sensor-title">상세 기록</div>
+                            <span class="stats-period-label" id="statsPeriodLabel">오늘</span>
+                        </div>
+                        <div class="stats-detail-grid">
+                            <div class="stats-detail-item">
+                                <span class="detail-label">총 복용</span>
+                                <span class="detail-value" id="statsTotalCount">0회</span>
+                            </div>
+                            <div class="stats-detail-item">
+                                <span class="detail-label">기록 일수</span>
+                                <span class="detail-value" id="statsTotalDays">0일</span>
+                            </div>
+                            <div class="stats-detail-item">
+                                <span class="detail-label">일 평균</span>
+                                <span class="detail-value" id="statsAvgPerDay">0회</span>
+                            </div>
+                            <div class="stats-detail-item">
+                                <span class="detail-label">완료율</span>
+                                <span class="detail-value" id="statsCompletionRate">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 최근 이력 테이블 -->
+                    <div class="sensor-card">
+                        <div class="sensor-header">
+                            <div class="sensor-title">최근 복약 이력</div>
+                        </div>
+                        <div id="statsHistoryTable" class="stats-history-area">
+                            <div class="no-data-message">기록이 없어요.</div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="page-section" id="aboutSection">
+                    <div class="welcome-text">
+                        <h2>약통 소개</h2>
+                        <p>COSS 프로젝트를 소개합니다.</p>
+                    </div>
+
+                    <!-- 프로젝트 소개 카드 - 미디어아트 -->
+                    <div class="sensor-card" style="background: #1a1a1a; padding: 0; overflow: hidden; position: relative;">
+                        <div id="heartArtContainer" style="width: 100%; height: 280px; position: relative;">
+                            <canvas id="heartCanvas" style="width: 100%; height: 100%;"></canvas>
+                        </div>
+                        <div style="text-align: center; padding: 20px; background: linear-gradient(to top, rgba(26,26,26,1) 0%, rgba(26,26,26,0.8) 100%); position: relative; margin-top: -60px;">
+                            <h2 style="font-family: 'Merriweather', serif; font-size: 1.8rem; margin-bottom: 8px; color: #fff;">COSS</h2>
+                            <p style="font-size: 1rem; color: rgba(255,255,255,0.9);">Care Of Smart Seniors</p>
+                            <p style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-top: 5px;">스마트 복약 관리 시스템</p>
+                        </div>
+                    </div>
+
+                    <!-- 미디어아트 설명 -->
+                    <div class="sensor-card" style="background: white; color: #333;">
+                        <div class="sensor-header" style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
+                            <div class="sensor-title" style="color: #6B8E6B; font-weight: 600;">
+                                <i class="fa-solid fa-heart-pulse"></i> 심장 미디어아트의 의미
+                            </div>
+                        </div>
+                        <div style="line-height: 1.8; font-size: 0.95rem;">
+                            <p style="margin-bottom: 15px;">
+                                위의 인터랙티브 아트는 <strong>심장의 박동</strong>을 형상화한 것입니다. 
+                                클릭할 때마다 심장이 뛰듯이 수축하고 이완하며, 생명의 리듬을 표현합니다.
+                            </p>
+                            <p style="margin-bottom: 15px;">
+                                이 심장은 <strong>COSS가 지키고자 하는 가치</strong>를 상징합니다. 
+                                매일 제시간에 약을 복용하는 것은 심장이 규칙적으로 뛰는 것처럼 
+                                <strong>건강한 삶의 리듬</strong>을 유지하는 일입니다.
+                            </p>
+                            <p style="margin-bottom: 15px;">
+                                다양한 색상으로 변화하는 모습은 <strong>복약 습관의 다양성</strong>과 
+                                <strong>개인화된 건강 관리</strong>를 의미합니다. 
+                                아침, 점심, 저녁, 취침 — 각기 다른 시간대에 맞춘 복약 관리처럼, 
+                                모든 사용자의 고유한 건강 패턴을 존중합니다.
+                            </p>
+                            <p style="background: #e8f5e9; padding: 12px; border-radius: 8px; font-size: 0.9rem;">
+                                💚 <strong>COSS</strong>는 사랑하는 가족의 심장이 오래도록 건강하게 뛰기를 바라는 마음으로 만들어졌습니다.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 프로젝트 개요 -->
+                    <div class="sensor-card" style="background: white; color: #333;">
+                        <div class="sensor-header" style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
+                            <div class="sensor-title" style="color: #6B8E6B; font-weight: 600;">
+                                <i class="fa-solid fa-lightbulb"></i> 프로젝트 개요
+                            </div>
+                        </div>
+                        <div style="line-height: 1.8; font-size: 0.95rem;">
+                            <p style="margin-bottom: 15px;">
+                                <strong>COSS</strong>는 고령자 및 만성질환자의 복약 관리를 돕기 위해 개발된 
+                                <strong>IoT 기반 스마트 약통 시스템</strong>입니다.
+                            </p>
+                            <p style="margin-bottom: 15px;">
+                                적외선(IR) 센서를 활용하여 약통의 개폐를 실시간으로 감지하고, 
+                                복약 여부를 자동으로 기록합니다. 설정된 복약 시간을 놓치면 
+                                보호자에게 이메일 알림을 발송하여 <strong>복약 순응도를 향상</strong>시킵니다.
+                            </p>
+                            <p>
+                                직관적인 웹 대시보드를 통해 복약 이력, 통계, 패턴 분석을 확인할 수 있으며,
+                                <strong>Arduino R4 WiFi</strong>와 <strong>Node.js 서버</strong>를 기반으로 구축되었습니다.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 주요 기능 -->
+                    <div class="sensor-card" style="background: white; color: #333;">
+                        <div class="sensor-header" style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
+                            <div class="sensor-title" style="color: #6B8E6B; font-weight: 600;">
+                                <i class="fa-solid fa-star"></i> 주요 기능
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 12px; text-align: center;">
+                                <div style="font-size: 2rem; margin-bottom: 8px;">📡</div>
+                                <div style="font-weight: 600; margin-bottom: 5px;">실시간 감지</div>
+                                <div style="font-size: 0.8rem; color: #666;">IR 센서로 약통 개폐 즉시 인식</div>
+                            </div>
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 12px; text-align: center;">
+                                <div style="font-size: 2rem; margin-bottom: 8px;">📊</div>
+                                <div style="font-weight: 600; margin-bottom: 5px;">복약 통계</div>
+                                <div style="font-size: 0.8rem; color: #666;">시간대별, 요일별 패턴 분석</div>
+                            </div>
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 12px; text-align: center;">
+                                <div style="font-size: 2rem; margin-bottom: 8px;">📧</div>
+                                <div style="font-weight: 600; margin-bottom: 5px;">보호자 알림</div>
+                                <div style="font-size: 0.8rem; color: #666;">미복용 시 이메일 자동 발송</div>
+                            </div>
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 12px; text-align: center;">
+                                <div style="font-size: 2rem; margin-bottom: 8px;">💊</div>
+                                <div style="font-weight: 600; margin-bottom: 5px;">4칸 약통</div>
+                                <div style="font-size: 0.8rem; color: #666;">아침/점심/저녁/취침 관리</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 시스템 구성 -->
+                    <div class="sensor-card" style="background: white; color: #333;">
+                        <div class="sensor-header" style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
+                            <div class="sensor-title" style="color: #6B8E6B; font-weight: 600;">
+                                <i class="fa-solid fa-microchip"></i> 시스템 구성
+                            </div>
+                        </div>
+                        <div style="line-height: 1.8; font-size: 0.9rem;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding: 10px; background: #e8f5e9; border-radius: 8px;">
+                                <span style="font-size: 1.5rem;">🔧</span>
+                                <div>
+                                    <strong>하드웨어</strong><br>
+                                    <span style="color: #666;">Arduino R4 WiFi + IR 센서 4개</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding: 10px; background: #fff3e0; border-radius: 8px;">
+                                <span style="font-size: 1.5rem;">⚙️</span>
+                                <div>
+                                    <strong>백엔드</strong><br>
+                                    <span style="color: #666;">Node.js + Express + MariaDB</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: #e3f2fd; border-radius: 8px;">
+                                <span style="font-size: 1.5rem;">🌐</span>
+                                <div>
+                                    <strong>프론트엔드</strong><br>
+                                    <span style="color: #666;">반응형 웹 대시보드 (HTML/CSS/JS)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 팀 소개 -->
+                    <div class="sensor-card" style="background: white; color: #333;">
+                        <div class="sensor-header" style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
+                            <div class="sensor-title" style="color: #6B8E6B; font-weight: 600;">
+                                <i class="fa-solid fa-users"></i> 16팀 소개
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="display: flex; align-items: center; gap: 15px; padding: 12px; background: linear-gradient(135deg, #88B08822 0%, #88B08811 100%); border-radius: 12px; border-left: 4px solid #88B088;">
+                                <div style="width: 50px; height: 50px; background: #88B088; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">임</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; margin-bottom: 3px;">임병현</div>
+                                    <div style="font-size: 0.8rem; color: #666;">중앙대학교 공간연출학과</div>
+                                    <div style="font-size: 0.75rem; color: #5a7a5a; margin-top: 3px;">
+                                        <i class="fa-solid fa-code"></i> PM / 풀스택 개발 / UI·UX 디자인
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <div style="display: flex; align-items: center; gap: 15px; padding: 12px; background: linear-gradient(135deg, #6B8E6B22 0%, #6B8E6B11 100%); border-radius: 12px; border-left: 4px solid #6B8E6B;">
+                                <div style="width: 50px; height: 50px; background: #6B8E6B; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">김</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; margin-bottom: 3px;">김지우</div>
+                                    <div style="font-size: 0.8rem; color: #666;">중앙대학교 응용통계학과</div>
+                                    <div style="font-size: 0.75rem; color: #4a6b4a; margin-top: 3px;">
+                                        <i class="fa-solid fa-chart-bar"></i> 데이터 분석 / 통계 모델링
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <div style="display: flex; align-items: center; gap: 15px; padding: 12px; background: linear-gradient(135deg, #55705522 0%, #55705511 100%); border-radius: 12px; border-left: 4px solid #557055;">
+                                <div style="width: 50px; height: 50px; background: #557055; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">김</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; margin-bottom: 3px;">김수민</div>
+                                    <div style="font-size: 0.8rem; color: #666;">중앙대학교 전자전기공학부</div>
+                                    <div style="font-size: 0.75rem; color: #3c523c; margin-top: 3px;">
+                                        <i class="fa-solid fa-microchip"></i> 하드웨어 설계 / 펌웨어 개발
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <div style="display: flex; align-items: center; gap: 15px; padding: 12px; background: linear-gradient(135deg, #3E523E22 0%, #3E523E11 100%); border-radius: 12px; border-left: 4px solid #3E523E;">
+                                <div style="width: 50px; height: 50px; background: #3E523E; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">박</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; margin-bottom: 3px;">박서연</div>
+                                    <div style="font-size: 0.8rem; color: #666;">중앙대학교 전자전기공학부</div>
+                                    <div style="font-size: 0.75rem; color: #253325; margin-top: 3px;">
+                                        <i class="fa-solid fa-network-wired"></i> 회로 설계 / 센서 통합
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                        
+                    </div>
+
+                    <!-- 개발 배경 -->
+                    <div class="sensor-card" style="background: white; color: #333;">
+                        <div class="sensor-header" style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
+                            <div class="sensor-title" style="color: #6B8E6B; font-weight: 600;">
+                                <i class="fa-solid fa-heart"></i> 개발 배경
+                            </div>
+                        </div>
+                        <div style="line-height: 1.8; font-size: 0.95rem;">
+                            <p style="margin-bottom: 15px;">
+                                고령화 사회로 접어들면서 만성질환자의 복약 순응도 문제가 심각해지고 있습니다.
+                                WHO에 따르면 만성질환자의 <strong>약 50%가 처방대로 약을 복용하지 않으며</strong>,
+                                이로 인한 건강 악화와 의료비 증가가 사회적 문제로 대두되고 있습니다.
+                            </p>
+                            <p style="margin-bottom: 15px;">
+                                특히 독거노인이나 치매 초기 환자의 경우, 복약 시간을 잊거나 
+                                이미 복용했는지 기억하지 못하는 경우가 빈번합니다.
+                            </p>
+                            <p>
+                                <strong>COSS</strong>는 이러한 문제를 해결하기 위해 개발되었습니다.
+                                자동화된 복약 감지와 보호자 알림 시스템을 통해
+                                <strong>안전하고 건강한 복약 습관</strong>을 만들어 갑니다.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 푸터 -->
+                    <div style="text-align: center; padding: 30px 0; color: rgba(255,255,255,0.7); font-size: 0.85rem;">
+                        <p>© 2025 COSS - 16팀</p>
+                        <p style="margin-top: 5px;">중앙대학교 AI·SW융합학부 프로젝트</p>
+                    </div>
+                </section>
+
+            </div>
+
+    <div class="modal-overlay" id="editModal">
+        <div class="custom-modal">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">설정</div>
+                <div onclick="closeEditModal()" style="cursor:pointer; padding:5px; color:#999;">
+                    <i class="fa-solid fa-xmark"></i>
+                </div>
+            </div>
+            
+            <div class="modal-body">
+                <span class="picker-label">복용 시간</span>
+                <div class="time-picker-container">
+                    <div class="picker-highlight"></div>
+                    <div class="picker-column" id="colAmPm"></div>
+                    <div class="picker-column" id="colHour"></div>
+                    <div class="picker-column" id="colMin"></div>
+                </div>
+
+                <span class="picker-label" style="margin-top:15px;">약 목록</span>
+                <div class="med-list-container" id="modalMedList"></div>
+                
+                <div class="add-med-form">
+                    <input type="text" class="input-box input-name" id="inputMedName" placeholder="약 이름 (예: 비타민)">
+                    <input type="text" class="input-box input-dose" id="inputMedDose" placeholder="용량">
+                    
+                    <button class="btn-action btn-add" id="btnAddMed" onclick="addMedItem()">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                    <button class="btn-action btn-update" id="btnUpdateMed" onclick="updateMedItem()">
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-modal btn-cancel" onclick="closeEditModal()">취소</button>
+                <button class="btn-modal btn-save" onclick="saveEditData()">저장</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal-overlay" id="resetModal">
+        <div class="custom-modal" style="max-width: 350px;">
+            <div class="modal-header" style="background: #c62828;">
+                <div class="modal-title" style="color: white;">데이터 초기화</div>
+                <div onclick="closeResetModal()" style="cursor:pointer; padding:5px; color: rgba(255,255,255,0.8);">
+                    <i class="fa-solid fa-xmark"></i>
+                </div>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 15px;">
+                    모든 복약 기록이 삭제됩니다. 계속하려면 <strong>"초기화"</strong>를 입력하세요.
+                </p>
+                <input type="text" class="input-box" id="resetConfirmInput" placeholder="초기화" style="width:100%;">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal btn-cancel" onclick="closeResetModal()">취소</button>
+                <button class="btn-modal btn-save" style="background:#c62828;" onclick="confirmReset()">삭제</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal-overlay" id="slotSelectModal">
+        <div class="custom-modal" style="max-width: 320px;">
+            <div class="modal-header">
+                <div class="modal-title">시간대 선택</div>
+                <div onclick="closeSlotSelectModal()" style="cursor:pointer; padding:5px; color:#999;">
+                    <i class="fa-solid fa-xmark"></i>
+                </div>
+            </div>
+            <div class="modal-body" style="padding: 15px;">
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 15px;">어떤 시간대에 약을 추가하시겠습니까?</p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button class="btn-modal btn-save" onclick="selectSlotAndOpen(1)" style="flex:none;">
+                        <i class="fa-regular fa-sun"></i> 아침 약
+                    </button>
+                    <button class="btn-modal btn-save" onclick="selectSlotAndOpen(2)" style="flex:none;">
+                        <i class="fa-solid fa-cloud-sun"></i> 점심 약
+                    </button>
+                    <button class="btn-modal btn-save" onclick="selectSlotAndOpen(3)" style="flex:none;">
+                        <i class="fa-regular fa-moon"></i> 저녁 약
+                    </button>
+                    <button class="btn-modal btn-save" onclick="selectSlotAndOpen(4)" style="flex:none;">
+                        <i class="fa-solid fa-bed"></i> 취침 약
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API 설정
+        const API_URL = window.location.origin;
+        let authToken = null;
+        let userInfo = null;
+        let currentSection = 'dashboard';
+        let activityChart = null;
+        let statsActivityChart = null;  // 통계 탭용 차트
+        let currentActivityPeriod = 'weekly';
+        let timeChart = null;
+        let sensorCheckInterval = null;
+        let alarmCheckInterval = null;
+        let isAlarmPlaying = false;
+        let currentAlarmSensorId = null; // 현재 울리고 있는 알람의 센서 ID
+
+        // ========== 카드 데이터 (초기값: 빈 배열) ==========
+        let cardData = {
+            1: { time: '09:00', meds: [], taken: false },
+            2: { time: '13:00', meds: [], taken: false },
+            3: { time: '18:00', meds: [], taken: false },
+            4: { time: '22:00', meds: [], taken: false }
+        };
+
+        let currentEditId = null;
+        let tempMeds = [];
+        let editingIndex = -1;
+
+        // 페이지 로드
+        window.addEventListener('load', () => {
+            authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+            const userInfoStr = localStorage.getItem('userInfo') || sessionStorage.getItem('userInfo');
+            
+            if (!authToken || !userInfoStr) {
+                window.location.href = '/index.html';
+                return;
+            }
+            
+            userInfo = JSON.parse(userInfoStr);
+            document.getElementById('userName').textContent = userInfo.name;
+            
+            // 타임 피커 초기화
+            initTimePicker();
+            
+            // 초기 카드 UI 렌더링
+            refreshAllCards();
+            
+            // 초기 목록 렌더링
+            renderMedicationList();
+            renderReminderList();
+            
+            // [신규] 서버에서 사용자 약물 데이터 불러오기
+            loadUserMedications();
+            
+            loadDashboardData();
+            loadRefillStatus();
+            
+            // 센서 데이터 확인 (실시간 상태)
+            sensorCheckInterval = setInterval(checkSensorStatus, 1000);
+            checkSensorStatus();
+
+            // 알람 로직 체크 (10초마다)
+            alarmCheckInterval = setInterval(checkAlarmLogic, 10000);
+            checkAlarmLogic();
+            
+            // 대시보드 데이터 자동 갱신 (1초마다)
+            setInterval(() => {
+                loadDashboardData(false);
+            }, 1000);
+            
+            // 사이드바 초기화
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            let activeIndex = 0;
+            sidebarItems.forEach((item, index) => {
+                if (item.classList.contains('active')) activeIndex = index;
+            });
+            moveIndicator(activeIndex);
+        });
+
+        // ========== Picker 드래그 기능 ==========
+        function enableMouseDrag(column) {
+            let isDragging = false;
+            let startY = 0;
+            let startScrollTop = 0;
+
+            column.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startY = e.clientY;
+                startScrollTop = column.scrollTop;
+                column.style.cursor = 'grabbing';
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const deltaY = startY - e.clientY;
+                column.scrollTop = startScrollTop + deltaY;
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    column.style.cursor = 'grab';
+                    snapToNearestItem(column);
+                }
+            });
+        }
+
+        function snapToNearestItem(column) {
+            const itemHeight = 50;
+            const scrollTop = column.scrollTop;
+            const nearestIndex = Math.round(scrollTop / itemHeight);
+            column.scrollTo({
+                top: nearestIndex * itemHeight,
+                behavior: 'smooth'
+            });
+        }
+
+        // ========== Picker 초기화 ==========
+        function initTimePicker() {
+            const amPm = ['AM', 'PM'];
+            const hours = Array.from({length:12}, (_,i)=>i+1); 
+            const mins = Array.from({length:60}, (_,i)=>i);
+
+            const colAmPm = document.getElementById('colAmPm');
+            const colHour = document.getElementById('colHour');
+            const colMin = document.getElementById('colMin');
+
+            colAmPm.innerHTML = amPm.map(v => `<div class="picker-item">${v}</div>`).join('');
+            colHour.innerHTML = hours.map(v => `<div class="picker-item">${v}</div>`).join('');
+            colMin.innerHTML = mins.map(v => `<div class="picker-item">${v.toString().padStart(2,'0')}</div>`).join('');
+
+            enableMouseDrag(colAmPm);
+            enableMouseDrag(colHour);
+            enableMouseDrag(colMin);
+
+            [colAmPm, colHour, colMin].forEach(col => {
+                col.addEventListener('scroll', () => {
+                    updatePickerSelection(col);
+                });
+            });
+        }
+
+        function updatePickerSelection(col) {
+            const itemHeight = 50;
+            const index = Math.round(col.scrollTop / itemHeight);
+            
+            const items = col.querySelectorAll('.picker-item');
+            items.forEach(item => item.classList.remove('selected'));
+            
+            if (items[index]) {
+                items[index].classList.add('selected');
+            }
+        }
+
+        // ========== 시간 포맷 함수 ==========
+        function formatTimeDisplay(time24) {
+            const [h, m] = time24.split(':').map(Number);
+            const ampm = h < 12 ? 'AM' : 'PM';
+            const h12 = h % 12 || 12;
+            return `<span class="ampm-small">${ampm}</span>${h12}:${m.toString().padStart(2,'0')}`;
+        }
+
+        // ========== 카드 UI 업데이트 ==========
+        function updateCardUI(id) {
+            const data = cardData[id];
+            const card = document.getElementById(`medCard-${id}`);
+            const listText = document.getElementById(`medListText-${id}`);
+            const timeText = document.getElementById(`timeDisplay-${id}`);
+            const badge = document.getElementById(`badge-${id}`);
+
+            timeText.innerHTML = formatTimeDisplay(data.time);
+
+            // 약 개수 표시로 변경
+            if(data.meds.length > 0) {
+                listText.textContent = `${data.meds.length}개의 약`;
+                listText.style.color = 'var(--text-dark)';
+            } else {
+                listText.textContent = '등록된 약 없음';
+                listText.style.color = '#ccc';
+            }
+
+            if(data.taken) {
+                card.classList.add('taken');
+                badge.textContent = '복용완료';
+            } else {
+                card.classList.remove('taken');
+                badge.textContent = '대기중';
+            }
+        }
+
+        function refreshAllCards() {
+            for(let i=1; i<=4; i++) updateCardUI(i);
+        }
+
+        // ========== 모달 로직 ==========
+        function openEditModal(id) {
+            currentEditId = id;
+            const data = cardData[id];
+            const titles = ['아침 약', '점심 약', '저녁 약', '취침 약'];
+            document.getElementById('modalTitle').textContent = titles[id-1];
+
+            tempMeds = JSON.parse(JSON.stringify(data.meds)); 
+            renderModalMedList();
+            resetInputForm();
+
+            document.getElementById('editModal').classList.add('show');
+
+            setTimeout(() => {
+                setTimePickerValue(data.time);
+            }, 100);
+        }
+
+        function setTimePickerValue(time24) {
+            const [h, m] = time24.split(':').map(Number);
+            const isPm = h >= 12;
+            const h12 = h % 12 || 12;
+            const itemHeight = 50;
+
+            const colAmPm = document.getElementById('colAmPm');
+            const colHour = document.getElementById('colHour');
+            const colMin = document.getElementById('colMin');
+
+            colAmPm.scrollTop = (isPm ? 1 : 0) * itemHeight;
+            colHour.scrollTop = (h12 - 1) * itemHeight;
+            colMin.scrollTop = m * itemHeight;
+            
+            requestAnimationFrame(() => {
+                updatePickerSelection(colAmPm);
+                updatePickerSelection(colHour);
+                updatePickerSelection(colMin);
+            });
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('show');
+        }
+
+        function getSelectedTime() {
+            const itemHeight = 50;
+            const colAmPm = document.getElementById('colAmPm');
+            const colHour = document.getElementById('colHour');
+            const colMin = document.getElementById('colMin');
+
+            const amPmIndex = Math.round(colAmPm.scrollTop / itemHeight); 
+            const isPm = amPmIndex === 1;
+
+            let h = Math.round(colHour.scrollTop / itemHeight) + 1;
+            const m = Math.round(colMin.scrollTop / itemHeight);
+
+            let h24 = h;
+            if(isPm && h < 12) h24 += 12;
+            if(!isPm && h === 12) h24 = 0;
+
+            return `${h24.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+        }
+
+        // ========== 약 목록 CRUD (모달 내) ==========
+        function renderModalMedList() {
+            const container = document.getElementById('modalMedList');
+            container.innerHTML = '';
+            
+            if(tempMeds.length === 0) {
+                container.innerHTML = '<div style="padding:20px; text-align:center; color:#ddd; font-size:0.9rem;">등록된 약이 없습니다</div>';
+                return;
+            }
+
+            tempMeds.forEach((med, idx) => {
+                const div = document.createElement('div');
+                div.className = 'med-list-item';
+                div.innerHTML = `
+                    <div class="med-info-text">
+                        <span class="med-name">${med.name}</span>
+                        <span class="med-dose">${med.dose}</span>
+                    </div>
+                    <div class="med-actions">
+                        <i class="fa-solid fa-pen btn-icon btn-edit" onclick="editMedItem(${idx})"></i>
+                        <i class="fa-solid fa-trash btn-icon btn-delete" onclick="deleteMedItem(${idx})"></i>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function addMedItem() {
+            const name = document.getElementById('inputMedName').value.trim();
+            const dose = document.getElementById('inputMedDose').value.trim();
+            if(!name) {
+                alert('약 이름을 입력하세요');
+                return;
+            }
+
+            tempMeds.push({ name, dose: dose || '-' });
+            renderModalMedList();
+            resetInputForm();
+        }
+
+        function deleteMedItem(idx) {
+            tempMeds.splice(idx, 1);
+            if(editingIndex === idx) resetInputForm();
+            renderModalMedList();
+        }
+
+        function editMedItem(idx) {
+            editingIndex = idx;
+            const med = tempMeds[idx];
+            document.getElementById('inputMedName').value = med.name;
+            document.getElementById('inputMedDose').value = med.dose === '-' ? '' : med.dose;
+            
+            document.getElementById('btnAddMed').style.display = 'none';
+            document.getElementById('btnUpdateMed').style.display = 'flex';
+        }
+
+        function updateMedItem() {
+            if(editingIndex === -1) return;
+            const name = document.getElementById('inputMedName').value.trim();
+            const dose = document.getElementById('inputMedDose').value.trim();
+            if(!name) {
+                alert('약 이름을 입력하세요');
+                return;
+            }
+
+            tempMeds[editingIndex] = { name, dose: dose || '-' };
+            renderModalMedList();
+            resetInputForm();
+        }
+
+        function resetInputForm() {
+            document.getElementById('inputMedName').value = '';
+            document.getElementById('inputMedDose').value = '';
+            editingIndex = -1;
+            document.getElementById('btnAddMed').style.display = 'flex';
+            document.getElementById('btnUpdateMed').style.display = 'none';
+        }
+
+        function saveEditData() {
+            if(!currentEditId) return;
+            cardData[currentEditId].time = getSelectedTime();
+            cardData[currentEditId].meds = [...tempMeds];
+            updateCardUI(currentEditId);
+            
+            // 동기화: 약물관리 탭과 알림 탭 업데이트
+            renderMedicationList();
+            renderReminderList();
+            
+            // [신규] 서버에 약물 데이터 저장
+            saveUserMedications();
+            
+            closeEditModal();
+            showNotification('설정이 저장되었습니다.', 'success');
+        }
+
+        // ========== 약물관리 탭 렌더링 (cardData 기반) ==========
+        function renderMedicationList() {
+            const medList = document.getElementById('medicationListArea');
+            const slotNames = ['아침 약', '점심 약', '저녁 약', '취침 약'];
+            let medHtml = '';
+            let totalMeds = 0;
+        
+            for (let i = 1; i <= 4; i++) {
+                const data = cardData[i];
+                data.meds.forEach((med, idx) => {
+                    totalMeds++;
+                    medHtml += `
+                        <div class="med-item">
+                            <div class="med-info">
+                                <div class="med-icon"><i class="fa-solid fa-capsules"></i></div>
+                                <div class="med-details">
+                                    <h4>${med.name}</h4>
+                                    <p>${med.dose} · ${slotNames[i-1]} (${data.time})</p>
+                                </div>
+                            </div>
+                            <div style="display:flex; gap:5px;">
+                                <button class="med-action" onclick="editMedFromList(${i}, ${idx})">수정</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            if (totalMeds === 0) {
+                medHtml = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-pills"></i>
+                        <p>등록된 약물이 없습니다.</p>
+                        <p style="font-size:0.8rem; margin-top:5px;">위의 "+ 추가" 버튼을 눌러 약물을 등록하세요.</p>
+                    </div>
+                `;
+            }
+
+            medList.innerHTML = medHtml;
+            
+            // 시간 분포 차트 렌더링
+            renderTimeDistributionChart();
+        }
+
+        // ========== 알림 탭 렌더링 (cardData 기반) ==========
+        function renderReminderList() {
+            const remList = document.getElementById('reminderListArea');
+            const slotNames = ['아침 약', '점심 약', '저녁 약', '취침 약'];
+            let remHtml = '';
+            let hasReminders = false;
+
+            for (let i = 1; i <= 4; i++) {
+                const data = cardData[i];
+                if (data.meds.length > 0) {
+                    hasReminders = true;
+                    remHtml += `
+                        <div class="reminder-item">
+                            <div class="reminder-time">${data.time}</div>
+                            <div class="reminder-details">
+                                <div class="reminder-title">${slotNames[i-1]}</div>
+                                <div class="reminder-desc">${data.meds.length}개의 약</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    `;
+                }
+            }
+
+            if (!hasReminders) {
+                remHtml = `
+                    <div class="empty-state">
+                        <i class="fa-regular fa-bell"></i>
+                        <p>등록된 알림이 없습니다.</p>
+                        <p style="font-size:0.8rem; margin-top:5px;">약을 등록하면 자동으로 알림이 설정됩니다.</p>
+                    </div>
+                `;
+            }
+
+            remList.innerHTML = remHtml;
+        }
+
+        // ========== 약물관리 탭 - 복약 시간 분포 차트 ==========
+        let timeDistributionChart = null;
+        
+        function renderTimeDistributionChart() {
+            const ctx = document.getElementById('timeDistributionChart');
+            if (!ctx) return;
+            
+            // 등록된 약의 시간대별 분포 계산
+            const timeSlots = {
+                '아침': 0,
+                '점심': 0,
+                '저녁': 0,
+                '취침': 0
+            };
+            
+            for (let i = 1; i <= 4; i++) {
+                const data = cardData[i];
+                if (data.meds.length > 0) {
+                    const [hour] = data.time.split(':').map(Number);
+                    
+                    // 수정 후
+                    if (hour >= 6 && hour < 11) {
+                        timeSlots['아침'] += data.meds.length;
+                    } else if (hour >= 11 && hour < 15) {
+                        timeSlots['점심'] += data.meds.length;
+                    } else if (hour >= 17 && hour < 21) {
+                        timeSlots['저녁'] += data.meds.length;
+                    } else {
+                        timeSlots['취침'] += data.meds.length;
+                    }
+                }
+            }
+            
+            const labels = Object.keys(timeSlots);
+            const values = Object.values(timeSlots);
+            const totalMeds = values.reduce((a, b) => a + b, 0);
+            
+            const container = document.getElementById('timeDistributionContainer');
+            if (!container) return;
+            
+            if (totalMeds === 0) {
+                // 데이터가 없을 때 안내 메시지
+                if (!document.getElementById('noTimeDataMsg')) {
+                    const msgDiv = document.createElement('div');
+                    msgDiv.id = 'noTimeDataMsg';
+                    msgDiv.className = 'empty-state';
+                    msgDiv.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%;';
+                    msgDiv.innerHTML = `
+                        <i class="fa-regular fa-clock"></i>
+                        <p>등록된 약이 없습니다.</p>
+                        <p style="font-size:0.8rem; margin-top:5px;">약을 등록하면 시간 분포가 표시됩니다.</p>
+                    `;
+                    container.appendChild(msgDiv);
+                }
+                ctx.style.display = 'none';
+                return;
+            }
+            
+            // 기존 메시지 제거
+            const oldMsg = document.getElementById('noTimeDataMsg');
+            if (oldMsg) oldMsg.remove();
+            ctx.style.display = 'block';
+            
+            // 기존 차트가 있으면 데이터만 업데이트, 없으면 새로 생성
+            if (timeDistributionChart) {
+                timeDistributionChart.data.labels = labels;
+                timeDistributionChart.data.datasets[0].data = values;
+                timeDistributionChart.update('none'); // 애니메이션 없이 업데이트
+                return;
+            }
+            
+            timeDistributionChart = new Chart(ctx.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: [
+                            'rgba(136, 176, 136, 0.9)',  // 아침 - 연한 초록
+                            'rgba(107, 142, 107, 0.9)',  // 점심 - 초록
+                            'rgba(85, 112, 85, 0.9)',    // 저녁 - 진한 초록
+                            'rgba(62, 82, 62, 0.9)'      // 취침 - 더 진한 초록
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    // 수정 후
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15, 
+                                usePointStyle: true,
+                                font: { size: 10 },
+                                generateLabels: function(chart) {
+                                    const data = chart.data;
+                                    const timeRanges = ['(6-10시)', '(11-14시)', '(17-20시)', '(21-24시)'];
+                                    return data.labels.map((label, i) => ({
+                                        text: label + '\n' + timeRanges[i],
+                                        fillStyle: data.datasets[0].backgroundColor[i],
+                                        strokeStyle: data.datasets[0].borderColor,
+                                        lineWidth: data.datasets[0].borderWidth,
+                                        pointStyle: 'circle',
+                                        hidden: false,
+                                        index: i
+                                    }));
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.raw;
+                                    const percentage = totalMeds > 0 ? Math.round((value / totalMeds) * 100) : 0;
+                                    return ` ${value}개 (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '45%'
+                }
+            });
+        }
+
+        // ========== 약물관리 탭에서 수정/삭제 ==========
+        function editMedFromList(slotId, medIdx) {
+            // 해당 시간대의 모달을 열고, 해당 약을 편집 상태로
+            openEditModal(slotId);
+            // 약간의 딜레이 후 해당 약을 편집 상태로 설정
+            setTimeout(() => {
+                editMedItem(medIdx);
+            }, 200);
+        }
+
+        function deleteMedFromList(slotId, medIdx) {
+            if (confirm('이 약물을 삭제하시겠습니까?')) {
+                cardData[slotId].meds.splice(medIdx, 1);
+                updateCardUI(slotId);
+                renderMedicationList();
+                renderReminderList();
+                showNotification('약물이 삭제되었습니다.', 'success');
+            }
+        }
+
+        // ========== 약물관리 탭 "+ 추가" 버튼 ==========
+        function openAddMedModal() {
+            // 시간대 선택 모달 표시
+            document.getElementById('slotSelectModal').classList.add('show');
+        }
+
+        function closeSlotSelectModal() {
+            document.getElementById('slotSelectModal').classList.remove('show');
+        }
+
+        function selectSlotAndOpen(slotId) {
+            closeSlotSelectModal();
+            openEditModal(slotId);
+        }
+        
+        // ========== 알람 로직 (서버 API 사용) ==========
+        async function checkAlarmLogic() {
+            try {
+                const response = await fetch(`${API_URL}/api/notifications/check`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (!response.ok) return;
+                
+                const data = await response.json();
+                
+                if (data.alerts && data.alerts.length > 0) {
+                    for (const alert of data.alerts) {
+                        if (alert.playSound && !isAlarmPlaying) {
+                            playAlarm(alert.message, alert.sensorId);
+                            break;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('알림 체크 실패:', error);
+            }
+        }
+
+        // ========== [신규] 서버에서 사용자 약물 데이터 불러오기 ==========
+        async function loadUserMedications() {
+            try {
+                const response = await fetch(`${API_URL}/api/medications/user`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (!response.ok) return;
+                
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    for (let id in result.data) {
+                        if (cardData[id]) {
+                            cardData[id].time = result.data[id].time || cardData[id].time;
+                            cardData[id].meds = result.data[id].meds || [];
+                            cardData[id].taken = result.data[id].taken || false;
+                        }
+                    }
+                    
+                    refreshAllCards();
+                    renderMedicationList();
+                    renderReminderList();
+                    
+                    console.log('✅ 사용자 약물 데이터 로드 완료');
+                }
+            } catch (error) {
+                console.error('약물 데이터 로드 실패:', error);
+            }
+        }
+
+        // ========== [신규] 서버에 사용자 약물 데이터 저장 ==========
+        async function saveUserMedications() {
+            try {
+                const response = await fetch(`${API_URL}/api/medications/user`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ cardData })
+                });
+                
+                if (response.ok) {
+                    console.log('✅ 약물 데이터 서버 저장 완료');
+                }
+            } catch (error) {
+                console.error('약물 데이터 저장 실패:', error);
+            }
+        }
+
+        function playAlarm(msg, sensorId) {
+            const audio = document.getElementById('alarmSound');
+            const banner = document.getElementById('alarmBanner');
+            const message = document.getElementById('alarmMessage');
+            
+            audio.play().catch(e => console.log("Audio play blocked until interaction"));
+            
+            message.textContent = msg;
+            banner.classList.add('show');
+            isAlarmPlaying = true;
+            currentAlarmSensorId = sensorId; // 현재 알람의 센서 ID 저장
+        }
+
+        async function stopAlarm() {
+            const audio = document.getElementById('alarmSound');
+            const banner = document.getElementById('alarmBanner');
+            
+            audio.pause();
+            audio.currentTime = 0;
+            banner.classList.remove('show');
+            
+            // 서버에 알람 확인(dismiss) 요청 - 오늘 하루 동안 해당 알람 끄기
+            if (currentAlarmSensorId) {
+                try {
+                    await fetch(`${API_URL}/api/notifications/dismiss`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${authToken}`
+                        },
+                        body: JSON.stringify({ sensorId: currentAlarmSensorId })
+                    });
+                    console.log(`센서 ${currentAlarmSensorId} 알람이 오늘 하루 동안 꺼졌습니다.`);
+                } catch (e) {
+                    console.error('알람 dismiss 실패:', e);
+                }
+            }
+            
+            isAlarmPlaying = false;
+            currentAlarmSensorId = null;
+        }
+
+        // ========== 센서 상태 확인 ==========
+        async function checkSensorStatus() {
+            try {
+                const response = await fetch(`${API_URL}/value`);
+                const sensors = await response.json();
+                
+                // 알람 울리는 중에 해당 약통이 복용 완료되면 자동 정지
+                if (isAlarmPlaying && currentAlarmSensorId) {
+                    const alarmSensor = sensors[currentAlarmSensorId];
+                    if (alarmSensor && alarmSensor.todayOpened) {
+                        console.log(`센서 ${currentAlarmSensorId} 복용 완료 - 알람 자동 정지`);
+                        stopAlarm();
+                    }
+                }
+                
+                let targetData = sensors[1]; 
+                for (let id in sensors) {
+                    if (sensors[id].value === 1) {
+                        targetData = sensors[id];
+                        break;
+                    }
+                }
+
+                const statusDot = document.getElementById('sensorStatusDot');
+                const statusText = document.getElementById('sensorStatusText');
+
+                const displayData = {
+                    value: targetData.value,
+                    timestamp: targetData.lastOpened, 
+                    id: targetData.id,
+                    name: targetData.name
+                };
+
+                if (displayData.timestamp) {
+                    const lastUpdate = new Date(displayData.timestamp);
+                    const now = new Date();
+                    const diffMinutes = Math.floor((now - lastUpdate) / 60000);
+
+                    if (diffMinutes < 1) {
+                        statusDot.className = 'status-dot active';
+                        statusText.textContent = '실시간';
+                    } else {
+                        statusDot.className = 'status-dot inactive';
+                        statusText.textContent = '대기중';
+                    }
+                    updateSensorDisplay(displayData);
+                } else {
+                    statusDot.className = 'status-dot inactive';
+                    statusText.textContent = '대기중';
+                    updateSensorDisplay(displayData);
+                }
+            } catch (error) {
+                console.error('Sensor check failed:', error);
+                document.getElementById('sensorStatusDot').className = 'status-dot inactive';
+                document.getElementById('sensorStatusText').textContent = '오류';
+            }
+        }
+
+        function updateSensorDisplay(data) {
+            const sensorArea = document.getElementById('sensorDataArea');
+            if (!sensorArea) return;  // 요소가 없으면 무시
+            const stateClass = data.value === 1 ? 'detected' : 'clear';
+            const stateText = data.value === 1 ? `${data.name} 복용 중` : '모든 약통 보관됨';
+            const iconClass = data.value === 1 ? 'fa-box-open' : 'fa-box';
+            const timeText = data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : "기록 없음";
+
+            sensorArea.innerHTML = `
+                <div class="sensor-value-display">
+                    <div class="sensor-big-value">${data.value === 1 ? "ON" : "OFF"}</div>
+                </div>
+                <div class="sensor-state ${stateClass}">
+                    <i class="fa-solid ${iconClass}"></i> ${stateText}
+                </div>
+                <div style="margin-top: 15px; font-size: 0.85rem; opacity: 0.7;">
+                    마지막 감지: ${timeText}
+                </div>
+            `;
+        }
+
+        // ========== 대시보드 데이터 로드 ==========
+        let lastDashboardDataHash = ''; // 데이터 변경 감지용
+        
+        async function loadDashboardData(showLoading = true) {
+            const overlay = document.getElementById('loadingOverlay');
+            if (showLoading) overlay.classList.add('show');
+            
+            try {
+                const response = await fetch(`${API_URL}/api/dashboard/stats`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (!response.ok) throw new Error('Failed to load data');
+                
+                const data = await response.json();
+                
+                // 데이터 해시 계산 (변경 감지용)
+                const currentHash = JSON.stringify(data.weekly) + JSON.stringify(data.sensors);
+                const dataChanged = currentHash !== lastDashboardDataHash;
+                lastDashboardDataHash = currentHash;
+                
+                // 1. 카드 상태 업데이트 (서버 데이터로 시간 및 복용 상태만 반영)
+                if (data.sensors) updateMedicationCards(data.sensors);
+
+                // 2. 차트 (데이터가 변경된 경우에만 업데이트)
+                if (dataChanged || showLoading) {
+                    updateWeeklyChart(data.weekly, !showLoading);
+                }
+                
+            } catch (error) {
+                console.error('Failed to load dashboard data:', error);
+                if (showLoading) showNotification('데이터를 불러오는데 실패했습니다.', 'error');
+            } finally {
+                if (showLoading) overlay.classList.remove('show');
+            }
+        }
+
+        // ========== 서버 데이터로 카드 업데이트 ==========
+        function updateMedicationCards(sensors) {
+            for (let i = 1; i <= 4; i++) {
+                const sensor = sensors[i];
+                if (!sensor) continue;
+
+                // 서버에서 시간 정보만 반영 (약 목록은 사용자가 직접 추가)
+                cardData[i].time = sensor.targetTime || cardData[i].time;
+
+                // 복용 상태 반영
+                if (sensor.todayOpened) {
+                    cardData[i].taken = true;
+                } else {
+                    cardData[i].taken = false;
+                }
+
+                // UI 업데이트
+                updateCardUI(i);
+            }
+            
+            // 목록도 업데이트
+            renderMedicationList();
+            renderReminderList();
+        }
+
+        // ========== 활동 차트 기간 전환 ==========
+        function switchActivityPeriod(period) {
+            currentActivityPeriod = period;
+            
+            // 대시보드 탭 UI 업데이트
+            document.querySelectorAll('.activity-tab:not(.stats-activity-tab)').forEach(t => t.classList.remove('active'));
+            const dashboardTab = document.querySelector(`.activity-tab:not(.stats-activity-tab)[data-period="${period}"]`);
+            if (dashboardTab) dashboardTab.classList.add('active');
+            
+            // 통계 탭 UI 업데이트
+            document.querySelectorAll('.stats-activity-tab').forEach(t => t.classList.remove('active'));
+            const statsTab = document.querySelector(`.stats-activity-tab[data-period="${period}"]`);
+            if (statsTab) statsTab.classList.add('active');
+            
+            // 타이틀 업데이트 (대시보드 & 통계)
+            const titles = { daily: '오늘 활동', weekly: '주간 활동', monthly: '월간 활동' };
+            const dashboardTitle = document.getElementById('activityChartTitle');
+            const statsTitle = document.getElementById('statsActivityChartTitle');
+            if (dashboardTitle) dashboardTitle.textContent = titles[period];
+            if (statsTitle) statsTitle.textContent = titles[period];
+            
+            // 차트 다시 로드
+            loadActivityChart(period, false);
+        }
+        
+        async function loadActivityChart(period, skipAnimation = false) {
+            try {
+                const response = await fetch(`${API_URL}/api/reports/detailed`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const data = await response.json();
+                
+                switch (period) {
+                    case 'daily':
+                        renderDailyActivityChart(data, skipAnimation);
+                        break;
+                    case 'weekly':
+                        renderWeeklyActivityChart(data, skipAnimation);
+                        break;
+                    case 'monthly':
+                        renderMonthlyActivityChart(data, skipAnimation);
+                        break;
+                }
+            } catch (e) {
+                console.error('활동 차트 로드 실패:', e);
+            }
+        }
+        
+        // 일별 차트: 오늘 24시간 시간대별 복용 현황 (바 차트)
+        function renderDailyActivityChart(data, skipAnimation = false) {
+            // 대시보드 차트
+            const ctx = document.getElementById('activityChart');
+            const ctxStats = document.getElementById('statsActivityChart');
+            
+            // 오늘 날짜 필터링
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            
+            // 시간대별 카운트 (0~23시)
+            const hourlyCount = new Array(24).fill(0);
+            
+            if (data.history) {
+                data.history.forEach(h => {
+                    if (h.action === 'removed' && h.timestamp) {
+                        const recordDate = new Date(h.timestamp);
+                        const recordDateStr = recordDate.toISOString().split('T')[0];
+                        if (recordDateStr === todayStr) {
+                            hourlyCount[recordDate.getHours()]++;
+                        }
+                    }
+                });
+            }
+            
+            const totalToday = hourlyCount.reduce((a, b) => a + b, 0);
+            
+            // 현재 시간 강조를 위한 배경색 배열
+            const currentHour = today.getHours();
+            const backgroundColors = hourlyCount.map((_, i) => {
+                if (i === currentHour) return 'rgba(107, 142, 107, 1)';
+                if (i < currentHour) return 'rgba(107, 142, 107, 0.7)';
+                return 'rgba(107, 142, 107, 0.3)';
+            });
+            
+            // skipAnimation이 true이고 차트가 이미 있으면 데이터만 업데이트
+            if (skipAnimation && activityChart && activityChart.config.type === 'bar') {
+                activityChart.data.datasets[0].data = hourlyCount;
+                activityChart.data.datasets[0].backgroundColor = backgroundColors;
+                activityChart.update('none'); // 애니메이션 없이 업데이트
+                
+                if (statsActivityChart && statsActivityChart.config.type === 'bar') {
+                    statsActivityChart.data.datasets[0].data = hourlyCount;
+                    statsActivityChart.data.datasets[0].backgroundColor = backgroundColors;
+                    statsActivityChart.update('none');
+                }
+            } else {
+                // 차트가 없거나 타입이 다르면 새로 생성
+                if (activityChart) activityChart.destroy();
+                if (statsActivityChart) statsActivityChart.destroy();
+                
+                const chartConfig = {
+                    type: 'bar',
+                    data: {
+                        labels: Array.from({length: 24}, (_, i) => `${i}시`),
+                        datasets: [{
+                            label: '복용 횟수',
+                            data: hourlyCount,
+                            backgroundColor: backgroundColors,
+                            borderRadius: 4,
+                            barThickness: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: skipAnimation ? false : { duration: 750 },
+                        plugins: { 
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    title: (items) => `${items[0].label}`,
+                                    label: (item) => `복용: ${item.raw}회`
+                                }
+                            }
+                        },
+                        scales: {
+                            y: { 
+                                beginAtZero: true, 
+                                ticks: { stepSize: 1, color: '#999', font: { size: 10 } },
+                                grid: { color: '#f0f0f0' }
+                            },
+                            x: { 
+                                grid: { display: false },
+                                ticks: { 
+                                    color: '#999', 
+                                    font: { size: 9 },
+                                    maxRotation: 0,
+                                    callback: (val, idx) => idx % 4 === 0 ? `${idx}시` : ''
+                                }
+                            }
+                        }
+                    }
+                };
+                
+                // 대시보드 차트 생성
+                if (ctx) {
+                    activityChart = new Chart(ctx.getContext('2d'), chartConfig);
+                }
+                
+                // 통계 차트 생성 (동일한 설정 사용)
+                if (ctxStats) {
+                    const statsConfig = JSON.parse(JSON.stringify(chartConfig));
+                    statsConfig.options.animation = skipAnimation ? false : { duration: 750 };
+                    statsActivityChart = new Chart(ctxStats.getContext('2d'), statsConfig);
+                }
+            }
+            
+            // 요약 표시
+            const summaryHTML = `오늘 총 <strong>${totalToday}회</strong> 복용 완료`;
+            const dashboardSummary = document.getElementById('activitySummary');
+            const statsSummary = document.getElementById('statsActivitySummary');
+            if (dashboardSummary) dashboardSummary.innerHTML = summaryHTML;
+            if (statsSummary) statsSummary.innerHTML = summaryHTML;
+            
+            // 💡 인사이트 생성
+            let insightHTML = '';
+            if (totalToday > 0) {
+                let peakHour = 0, peakCount = 0;
+                hourlyCount.forEach((count, hour) => {
+                    if (count > peakCount) { peakCount = count; peakHour = hour; }
+                });
+                insightHTML = `💡 오늘은 주로 <strong>${peakHour}시</strong>에 복약했습니다. (${peakCount}회)`;
+            } else {
+                insightHTML = `💡 오늘 아직 복약 기록이 없습니다.`;
+            }
+            const dashboardInsight = document.getElementById('activityInsight');
+            const statsInsight = document.getElementById('statsActivityInsight');
+            if (dashboardInsight) dashboardInsight.innerHTML = insightHTML;
+            if (statsInsight) statsInsight.innerHTML = insightHTML;
+        }
+        
+        // 주별 차트: 최근 7일 일별 복용 횟수 (라인 차트)
+        function renderWeeklyActivityChart(data, skipAnimation = false) {
+            const ctx = document.getElementById('activityChart');
+            const ctxStats = document.getElementById('statsActivityChart');
+            
+            // 최근 7일 날짜 생성
+            const days = [];
+            const dayCounts = [];
+            const dayLabels = ['일', '월', '화', '수', '목', '금', '토'];
+            
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                days.push(d.toISOString().split('T')[0]);
+            }
+            
+            // 각 날짜별 카운트
+            days.forEach(dateStr => {
+                let count = 0;
+                if (data.history) {
+                    data.history.forEach(h => {
+                        if (h.action === 'removed' && h.timestamp) {
+                            const recordDate = new Date(h.timestamp).toISOString().split('T')[0];
+                            if (recordDate === dateStr) count++;
+                        }
+                    });
+                }
+                dayCounts.push(count);
+            });
+            
+            // 라벨 생성 (요일)
+            const labels = days.map(dateStr => {
+                const d = new Date(dateStr);
+                return dayLabels[d.getDay()];
+            });
+            
+            // skipAnimation이 true이고 차트가 이미 있으면 데이터만 업데이트
+            if (skipAnimation && activityChart && activityChart.config.type === 'line') {
+                activityChart.data.datasets[0].data = dayCounts;
+                activityChart.data.labels = labels;
+                activityChart.update('none'); // 애니메이션 없이 업데이트
+                
+                if (statsActivityChart && statsActivityChart.config.type === 'line') {
+                    statsActivityChart.data.datasets[0].data = dayCounts;
+                    statsActivityChart.data.labels = labels;
+                    statsActivityChart.update('none');
+                }
+            } else {
+                // 차트가 없거나 타입이 다르면 새로 생성
+                if (activityChart) activityChart.destroy();
+                if (statsActivityChart) statsActivityChart.destroy();
+                
+                const chartConfig = {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: '복용 횟수',
+                            data: dayCounts,
+                            borderColor: '#6B8E6B',
+                            backgroundColor: null,
+                            borderWidth: 3,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#6B8E6B',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: skipAnimation ? false : { duration: 750 },
+                        plugins: { 
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    title: (items) => {
+                                        const idx = items[0].dataIndex;
+                                        const d = new Date(days[idx]);
+                                        return `${d.getMonth()+1}월 ${d.getDate()}일 (${labels[idx]})`;
+                                    },
+                                    label: (item) => `복용: ${item.raw}회`
+                                }
+                            }
+                        },
+                        scales: {
+                            y: { 
+                                beginAtZero: true, 
+                                ticks: { stepSize: 1, color: '#999' },
+                                grid: { color: '#f0f0f0', borderDash: [5, 5] }
+                            },
+                            x: { 
+                                grid: { display: false },
+                                ticks: { color: '#999' }
+                            }
+                        }
+                    }
+                };
+                
+                // 대시보드 차트 생성
+                if (ctx) {
+                    const ctxDashboard = ctx.getContext('2d');
+                    let gradient = ctxDashboard.createLinearGradient(0, 0, 0, 200);
+                    gradient.addColorStop(0, 'rgba(107, 142, 107, 0.3)');
+                    gradient.addColorStop(1, 'rgba(107, 142, 107, 0)');
+                    chartConfig.data.datasets[0].backgroundColor = gradient;
+                    activityChart = new Chart(ctxDashboard, chartConfig);
+                }
+                
+                // 통계 차트 생성
+                if (ctxStats) {
+                    const ctxStatsCanvas = ctxStats.getContext('2d');
+                    let gradientStats = ctxStatsCanvas.createLinearGradient(0, 0, 0, 200);
+                    gradientStats.addColorStop(0, 'rgba(107, 142, 107, 0.3)');
+                    gradientStats.addColorStop(1, 'rgba(107, 142, 107, 0)');
+                    const statsConfig = JSON.parse(JSON.stringify(chartConfig));
+                    statsConfig.data.datasets[0].backgroundColor = gradientStats;
+                    statsConfig.options.animation = skipAnimation ? false : { duration: 750 };
+                    statsActivityChart = new Chart(ctxStatsCanvas, statsConfig);
+                }
+            }
+            
+            const totalWeek = dayCounts.reduce((a, b) => a + b, 0);
+            const avgPerDay = (totalWeek / 7).toFixed(1);
+            const summaryHTML = `이번 주 총 <strong>${totalWeek}회</strong> · 일 평균 <strong>${avgPerDay}회</strong>`;
+            const dashboardSummary = document.getElementById('activitySummary');
+            const statsSummary = document.getElementById('statsActivitySummary');
+            if (dashboardSummary) dashboardSummary.innerHTML = summaryHTML;
+            if (statsSummary) statsSummary.innerHTML = summaryHTML;
+            
+            // 💡 인사이트 생성
+            let insightHTML = '';
+            const totalWeekCount = dayCounts.reduce((a, b) => a + b, 0);
+            if (totalWeekCount > 0) {
+                const weekendCount = (dayCounts[0] || 0) + (dayCounts[6] || 0);
+                const weekdayCount = dayCounts.slice(1, 6).reduce((a, b) => a + b, 0);
+                
+                if (weekdayCount > 0 && weekendCount / 2 < weekdayCount / 5 * 0.7) {
+                    insightHTML = `💡 <strong>주말</strong>에 복약률이 낮습니다.`;
+                } else {
+                    const maxDay = Math.max(...dayCounts);
+                    const maxDayIndex = dayCounts.indexOf(maxDay);
+                    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+                    const dayOfWeek = new Date(days[maxDayIndex]).getDay();
+                    insightHTML = `💡 이번 주 <strong>${dayNames[dayOfWeek]}요일</strong>에 주로 복약했습니다. (${maxDay}회)`;
+                }
+            } else {
+                insightHTML = `💡 이번 주 복약 기록이 없습니다.`;
+            }
+            const dashboardInsight = document.getElementById('activityInsight');
+            const statsInsight = document.getElementById('statsActivityInsight');
+            if (dashboardInsight) dashboardInsight.innerHTML = insightHTML;
+            if (statsInsight) statsInsight.innerHTML = insightHTML;
+        }
+        
+        // 월별 차트: 최근 30일 주차별 복용 현황 (가로 바 차트)
+        function renderMonthlyActivityChart(data, skipAnimation = false) {
+            const ctx = document.getElementById('activityChart');
+            const ctxStats = document.getElementById('statsActivityChart');
+            
+            // 최근 4주 데이터 계산
+            const weeks = [
+                { label: '4주 전', start: 28, end: 22 },
+                { label: '3주 전', start: 21, end: 15 },
+                { label: '2주 전', start: 14, end: 8 },
+                { label: '지난 주', start: 7, end: 1 },
+                { label: '이번 주', start: 0, end: 0 }
+            ];
+            
+            const weekCounts = [];
+            const weekLabels = [];
+            
+            weeks.forEach(week => {
+                let count = 0;
+                const today = new Date();
+                
+                for (let i = week.start; i >= week.end; i--) {
+                    const d = new Date(today);
+                    d.setDate(d.getDate() - i);
+                    const dateStr = d.toISOString().split('T')[0];
+                    
+                    if (data.history) {
+                        data.history.forEach(h => {
+                            if (h.action === 'removed' && h.timestamp) {
+                                const recordDate = new Date(h.timestamp).toISOString().split('T')[0];
+                                if (recordDate === dateStr) count++;
+                            }
+                        });
+                    }
+                }
+                
+                weekCounts.push(count);
+                weekLabels.push(week.label);
+            });
+            
+            // 최대값 기준 색상 (가장 많은 주 강조)
+            const maxCount = Math.max(...weekCounts);
+            const backgroundColors = weekCounts.map(c => 
+                c === maxCount && c > 0 ? 'rgba(107, 142, 107, 1)' : 'rgba(107, 142, 107, 0.6)'
+            );
+            
+            // skipAnimation이 true이고 차트가 이미 있으면 데이터만 업데이트
+            // 월별 차트는 indexAxis: 'y'인 bar 타입
+            if (skipAnimation && activityChart && activityChart.config.type === 'bar' && activityChart.config.options.indexAxis === 'y') {
+                activityChart.data.datasets[0].data = weekCounts;
+                activityChart.data.datasets[0].backgroundColor = backgroundColors;
+                activityChart.data.labels = weekLabels;
+                activityChart.update('none');
+                
+                if (statsActivityChart && statsActivityChart.config.type === 'bar' && statsActivityChart.config.options.indexAxis === 'y') {
+                    statsActivityChart.data.datasets[0].data = weekCounts;
+                    statsActivityChart.data.datasets[0].backgroundColor = backgroundColors;
+                    statsActivityChart.data.labels = weekLabels;
+                    statsActivityChart.update('none');
+                }
+            } else {
+                // 차트가 없거나 타입이 다르면 새로 생성
+                if (activityChart) activityChart.destroy();
+                if (statsActivityChart) statsActivityChart.destroy();
+                
+                const chartConfig = {
+                    type: 'bar',
+                    data: {
+                        labels: weekLabels,
+                        datasets: [{
+                            label: '복용 횟수',
+                            data: weekCounts,
+                            backgroundColor: backgroundColors,
+                            borderRadius: 8,
+                            barThickness: 25
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: skipAnimation ? false : { duration: 750 },
+                        plugins: { 
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: (item) => `복용: ${item.raw}회`
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { 
+                                beginAtZero: true,
+                                ticks: { stepSize: 5, color: '#999' },
+                                grid: { color: '#f0f0f0' }
+                            },
+                            y: { 
+                                grid: { display: false },
+                                ticks: { color: '#666', font: { size: 11 } }
+                            }
+                        }
+                    }
+                };
+
+                // 대시보드 차트 생성
+                if (ctx) {
+                    activityChart = new Chart(ctx.getContext('2d'), chartConfig);
+                }
+                
+                // 통계 차트 생성
+                if (ctxStats) {
+                    const statsConfig = JSON.parse(JSON.stringify(chartConfig));
+                    statsConfig.options.animation = skipAnimation ? false : { duration: 750 };
+                    statsActivityChart = new Chart(ctxStats.getContext('2d'), statsConfig);
+                }
+            }
+            
+            const totalMonth = weekCounts.reduce((a, b) => a + b, 0);
+            const avgPerWeek = (totalMonth / 5).toFixed(1);
+            const summaryHTML = `최근 5주 총 <strong>${totalMonth}회</strong> · 주 평균 <strong>${avgPerWeek}회</strong>`;
+            const dashboardSummary = document.getElementById('activitySummary');
+            const statsSummary = document.getElementById('statsActivitySummary');
+            if (dashboardSummary) dashboardSummary.innerHTML = summaryHTML;
+            if (statsSummary) statsSummary.innerHTML = summaryHTML;
+            
+            // 💡 인사이트 생성
+            let insightHTML = '';
+            const totalMonthCount = weekCounts.reduce((a, b) => a + b, 0);
+            if (totalMonthCount > 0) {
+                const thisWeek = weekCounts[4] || 0;
+                const lastWeek = weekCounts[3] || 0;
+                
+                if (thisWeek > lastWeek && lastWeek > 0) {
+                    const increase = Math.round((thisWeek - lastWeek) / lastWeek * 100);
+                    insightHTML = `💡 이번 주는 지난주보다 <strong>${increase}%</strong> 더 많이 복약했습니다!`;
+                } else if (thisWeek < lastWeek && thisWeek > 0) {
+                    insightHTML = `💡 이번 주 복약 횟수가 지난주보다 줄었습니다.`;
+                } else {
+                    insightHTML = `💡 최근 5주간 총 <strong>${totalMonthCount}회</strong> 복약하셨습니다.`;
+                }
+            } else {
+                insightHTML = `💡 최근 5주간 복약 기록이 없습니다.`;
+            }
+            const dashboardInsight = document.getElementById('activityInsight');
+            const statsInsight = document.getElementById('statsActivityInsight');
+            if (dashboardInsight) dashboardInsight.innerHTML = insightHTML;
+            if (statsInsight) statsInsight.innerHTML = insightHTML;
+        }
+        
+        // 기존 updateWeeklyChart 대체 (호환성 유지)
+        function updateWeeklyChart(weeklyData, skipAnimation = false) {
+            // loadDashboardData에서 호출될 때 현재 선택된 기간으로 렌더링
+            // skipAnimation이 true면 차트가 있을 경우 데이터만 부드럽게 업데이트
+            loadActivityChart(currentActivityPeriod, skipAnimation);
+        }
+
+        // ========== 사이드바 및 네비게이션 ==========
+        function moveIndicator(index) {
+            const indicator = document.querySelector('.active-indicator');
+            indicator.style.transform = `translateY(${index * 90}px)`;
+            if (index === 0) indicator.classList.add('is-first');
+            else indicator.classList.remove('is-first');
+        }
+        let deviceCheckInterval = null;
+
+        function switchSection(section) {
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(`${section}Section`).classList.add('active');
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            let activeIndex = 0;
+            sidebarItems.forEach((item, index) => {
+                item.classList.remove('active');
+                if (item.dataset.section === section) {
+                    item.classList.add('active');
+                    activeIndex = index;
+                }
+            });
+            moveIndicator(activeIndex);
+            currentSection = section;
+            document.getElementById('userDropdown').classList.remove('show');
+
+            // 장치 섹션 자동 갱신
+            if (section === 'device') {
+                loadDeviceStatus();
+                if (deviceCheckInterval) clearInterval(deviceCheckInterval);
+                deviceCheckInterval = setInterval(loadDeviceStatus, 3000);
+            } else {
+                if (deviceCheckInterval) clearInterval(deviceCheckInterval);
+            }
+            
+            // 약물관리 섹션 진입 시 차트 렌더링
+            if (section === 'medication') {
+                setTimeout(() => {
+                    renderTimeDistributionChart();
+                }, 100);
+            }
+        }
+        function toggleUserMenu() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-menu')) {
+                document.getElementById('userDropdown').classList.remove('show');
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userInfo');
+            sessionStorage.removeItem('authToken');
+            sessionStorage.removeItem('userInfo');
+            window.location.href = '/index.html';
+        }
+
+        async function exportData() {
+            try {
+                const response = await fetch(`${API_URL}/api/reports/detailed`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const data = await response.json();
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `coss-data-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                showNotification('데이터가 다운로드되었습니다.', 'success');
+            } catch (error) {
+                console.error('Export failed:', error);
+                showNotification('데이터 내보내기 실패', 'error');
+            }
+        }
+        // ========== 장치 관리 함수들 ==========
+        async function loadDeviceStatus() {
+            try {
+                const response = await fetch(`${API_URL}/api/device/status`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (!response.ok) return;
+                const data = await response.json();
+
+                const badge = document.getElementById('deviceStatusBadge');
+                const statusText = document.getElementById('deviceStatusText');
+
+                if (data.device.isOnline) {
+                    badge.className = 'device-status-badge online';
+                    statusText.textContent = '온라인';
+                } else {
+                    badge.className = 'device-status-badge offline';
+                    statusText.textContent = '오프라인';
+                }
+
+                document.getElementById('deviceIP').textContent = data.device.ipAddress || '-';
+                document.getElementById('deviceFirmware').textContent = data.device.firmwareVersion || '-';
+                
+                // 배터리 레벨 표시
+                const battery = data.device.batteryLevel;
+                if (battery !== null && battery !== undefined) {
+                    let batteryIcon = '🔋';
+                    if (battery <= 20) batteryIcon = '🪫';
+                    document.getElementById('deviceBattery').textContent = `${batteryIcon} ${battery}%`;
+                } else {
+                    document.getElementById('deviceBattery').textContent = '연결없음';
+                }
+                
+                document.getElementById('deviceLastComm').textContent = 
+                    data.device.timeSinceLastHeartbeat !== null ? `${data.device.timeSinceLastHeartbeat}초 전` : '-';
+                
+                if (data.sensorRawData) {
+                    for (let i = 1; i <= 4; i++) {
+                        const el = document.getElementById(`rawSensor${i}`);
+                        const val = data.sensorRawData[i]?.value || 0;
+                        el.textContent = val;
+                        el.className = val === 1 ? 'sensor-value on' : 'sensor-value off';
+                    }
+                }
+            } catch (e) {
+                console.error('loadDeviceStatus:', e);
+            }
+        }
+
+        async function calibrateSensors() {
+            if (!confirm('센서 영점 조절을 진행하시겠습니까?')) return;
+            try {
+                await fetch(`${API_URL}/api/device/calibrate`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                alert('센서 영점 조절 완료');
+                loadDeviceStatus();
+            } catch (e) {
+                alert('센서 영점 조절 실패');
+            }
+        }
+
+        async function testEmail() {
+            const btn = document.getElementById('testEmailBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 발송 중...';
+            try {
+                const response = await fetch(`${API_URL}/api/device/test-email`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    alert(data.message || '테스트 이메일 발송 완료');
+                } else {
+                    alert(data.error || '발송 실패');
+                }
+            } catch (e) {
+                alert('이메일 발송 실패');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-envelope"></i> 테스트 이메일 발송';
+            }
+        }
+
+        async function loadNotificationSettings() {
+            try {
+                const response = await fetch(`${API_URL}/api/notifications/settings`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (!response.ok) return;
+                const data = await response.json();
+                document.getElementById('notifEnabled').checked = data.settings.enabled;
+                document.getElementById('nightModeEnabled').checked = data.settings.nightModeEnabled;
+            } catch (e) {
+                console.error('loadNotificationSettings:', e);
+            }
+        }
+
+        async function updateNotificationSettings() {
+            try {
+                await fetch(`${API_URL}/api/notifications/settings`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        enabled: document.getElementById('notifEnabled').checked,
+                        nightModeEnabled: document.getElementById('nightModeEnabled').checked
+                    })
+                });
+            } catch (e) {
+                console.error('updateNotificationSettings:', e);
+            }
+        }
+
+        function openResetModal() {
+            document.getElementById('resetModal').classList.add('show');
+            document.getElementById('resetConfirmInput').value = '';
+        }
+
+        function closeResetModal() {
+            document.getElementById('resetModal').classList.remove('show');
+        }
+
+        async function confirmReset() {
+            if (document.getElementById('resetConfirmInput').value !== '초기화') {
+                alert('"초기화"를 정확히 입력하세요.');
+                return;
+            }
+            try {
+                const response = await fetch(`${API_URL}/api/data/reset`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ confirmText: '초기화' })
+                });
+                if (response.ok) {
+                    alert('데이터가 초기화되었습니다.');
+                    closeResetModal();
+                    location.reload();
+                } else {
+                    const data = await response.json();
+                    alert(data.error || '초기화 실패');
+                }
+            } catch (e) {
+                alert('초기화 실패');
+            }
+        }
+        function showNotification(message, type = 'info') {
+            console.log(`[${type}] ${message}`);
+        }
+
+        // [새로고침 기능 추가]
+        function refreshPage() {
+            location.reload();
+        }
+        
+        // ========== 통계 섹션 함수들 ==========
+        let currentStatsPeriod = 'daily';
+        let fullStatsData = null; // 전체 데이터 캐시
+        
+        function switchStatsPeriod(period) {
+            currentStatsPeriod = period;
+            document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.period-tab[data-period="${period}"]`).classList.add('active');
+            
+            const labels = { daily: '오늘', weekly: '이번 주', monthly: '이번 달' };
+            document.getElementById('statsPeriodLabel').textContent = labels[period];
+            
+            // ✅ 추가: 차트도 함께 업데이트
+            switchActivityPeriod(period);
+            
+            // 이미 데이터가 있으면 필터링만 다시 수행
+            if (fullStatsData) {
+                applyPeriodFilter(fullStatsData);
+            } else {
+                loadStatsData();
+            }
+        }
+        
+        async function loadStatsData() {
+            try {
+                const response = await fetch(`${API_URL}/api/reports/detailed`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const data = await response.json();
+                fullStatsData = data; // 전체 데이터 저장
+                applyPeriodFilter(data);
+            } catch (e) {
+                console.error('Stats load error:', e);
+            }
+        }
+        
+        function applyPeriodFilter(data) {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            // 기간별 시작일 계산
+            let startDate;
+            switch (currentStatsPeriod) {
+                case 'daily':
+                    startDate = today;
+                    break;
+                case 'weekly':
+                    startDate = new Date(today);
+                    startDate.setDate(startDate.getDate() - 6); // 최근 7일
+                    break;
+                case 'monthly':
+                    startDate = new Date(today);
+                    startDate.setDate(startDate.getDate() - 29); // 최근 30일
+                    break;
+                default:
+                    startDate = today;
+            }
+            
+            // 히스토리 필터링
+            const filteredHistory = (data.history || []).filter(h => {
+                const recordDate = new Date(h.timestamp);
+                return recordDate >= startDate && h.action === 'removed';
+            });
+            
+            // dailyStats 필터링
+            const filteredDailyStats = {};
+            for (let dateKey in (data.dailyStats || {})) {
+                const recordDate = new Date(dateKey);
+                if (recordDate >= startDate) {
+                    filteredDailyStats[dateKey] = data.dailyStats[dateKey];
+                }
+            }
+            
+            // 필터링된 데이터로 분포 계산
+            const filteredDistributions = calculateDistributions(filteredHistory);
+            
+            // 필터링된 메트릭스 계산
+            const filteredMetrics = calculateFilteredMetrics(filteredHistory, filteredDailyStats, currentStatsPeriod);
+            
+            updateStatsCards({
+                history: filteredHistory,
+                dailyStats: filteredDailyStats,
+                adherenceMetrics: filteredMetrics,
+                totalDays: Object.keys(filteredDailyStats).length || (currentStatsPeriod === 'daily' ? 1 : 0)
+            });
+            
+            updateStatsHistory(filteredHistory);
+        }
+        
+        function calculateDistributions(history) {
+            const hourly = new Array(24).fill(0);
+            const weekday = new Array(7).fill(0);
+            
+            history.forEach(h => {
+                if (h.timestamp) {
+                    const d = new Date(h.timestamp);
+                    hourly[d.getHours()]++;
+                    weekday[d.getDay()]++;
+                }
+            });
+            
+            return { hourly, weekday };
+        }
+        
+        function calculateFilteredMetrics(history, dailyStats, period) {
+            const totalCount = history.length;
+            const totalDays = Object.keys(dailyStats).length || 1;
+            
+            // 기간별 예상 복용 횟수 (하루 4회 기준)
+            let expectedDays;
+            switch (period) {
+                case 'daily': expectedDays = 1; break;
+                case 'weekly': expectedDays = 7; break;
+                case 'monthly': expectedDays = 30; break;
+                default: expectedDays = 1;
+            }
+            
+            // 복약한 날 수 계산
+            let successDays = 0;
+            for (let dk in dailyStats) {
+                if (Object.values(dailyStats[dk].sensors || {}).filter(s => s.count > 0).length > 0) {
+                    successDays++;
+                }
+            }
+            
+            // PDC 계산 (기간 내 복약 일수 / 기간 일수)
+            const pdc = expectedDays > 0 ? Math.round((successDays / expectedDays) * 100) : 0;
+            
+            // 연속 복용일 계산
+            const dates = Object.keys(dailyStats).sort();
+            let maxStreak = 0, currentStreak = 0, prevDate = null;
+            for (let dk of dates) {
+                if (Object.values(dailyStats[dk].sensors || {}).filter(s => s.count > 0).length > 0) {
+                    if (prevDate) {
+                        const diff = Math.round((new Date(dk) - new Date(prevDate)) / (1000 * 60 * 60 * 24));
+                        currentStreak = (diff === 1) ? currentStreak + 1 : 1;
+                    } else { currentStreak = 1; }
+                    prevDate = dk;
+                } else { currentStreak = 0; prevDate = null; }
+                maxStreak = Math.max(maxStreak, currentStreak);
+            }
+            
+            // 최장 미복용 기간 계산
+            let maxGap = 0;
+            prevDate = null;
+            for (let dk of dates) {
+                if (prevDate) {
+                    const diff = Math.round((new Date(dk) - new Date(prevDate)) / (1000 * 60 * 60 * 24));
+                    if (diff > 1) {
+                        maxGap = Math.max(maxGap, diff - 1);
+                    }
+                }
+                prevDate = dk;
+            }
+            
+            // 시간 정확도 계산
+            const targetTimes = { 1: '08:00', 2: '13:00', 3: '18:00', 4: '22:00' };
+            let totalAccuracy = 0;
+            let accuracyCount = 0;
+        
+            history.forEach(h => {
+                if (h.timestamp && h.sensorId) {
+                    const target = targetTimes[h.sensorId];
+                    if (target) {
+                        const [targetH, targetM] = target.split(':').map(Number);
+                        const actualTime = new Date(h.timestamp);
+                        const targetMinutes = targetH * 60 + targetM;
+                        const actualMinutes = actualTime.getHours() * 60 + actualTime.getMinutes();
+                        const diffMinutes = Math.abs(actualMinutes - targetMinutes);
+                        const accuracy = Math.max(0, 100 - (diffMinutes / 1.2));
+                        totalAccuracy += accuracy;
+                        accuracyCount++;
+                    }
+                }
+            });
+        
+            const timeAccuracy = accuracyCount > 0 ? Math.round(totalAccuracy / accuracyCount) : 0;
+            
+            return {
+                pdc: Math.min(pdc, 100),
+                maxStreak,
+                maxGap,
+                totalCount,
+                averagePerDay: totalDays > 0 ? totalCount / totalDays : 0,
+                timeAccuracy
+            };
+        }
+        
+        function updateStatsCards(data) {
+            const metrics = data.adherenceMetrics || {};
+            
+            document.getElementById('statsPDC').textContent = (metrics.pdc || 0) + '%';
+            document.getElementById('statsStreak').textContent = (metrics.maxStreak || 0) + '일';
+            document.getElementById('statsAccuracy').textContent = (metrics.timeAccuracy || 0) + '%';
+            document.getElementById('statsGap').textContent = (metrics.maxGap || 0) + '일';
+            
+            const totalCount = data.history?.length || 0;
+            const totalDays = data.totalDays || 1;
+            
+            document.getElementById('statsTotalCount').textContent = totalCount + '회';
+            document.getElementById('statsTotalDays').textContent = totalDays + '일';
+            document.getElementById('statsAvgPerDay').textContent = totalDays > 0 ? (totalCount / totalDays).toFixed(1) + '회' : '0회';
+            document.getElementById('statsCompletionRate').textContent = (metrics.pdc || 0) + '%';
+            
+            // 미복용 기간에 따른 카드 색상
+            const gapCard = document.getElementById('statsGapCard');
+            gapCard.classList.remove('warning', 'danger');
+            if ((metrics.maxGap || 0) >= 3) gapCard.classList.add('danger');
+            else if ((metrics.maxGap || 0) >= 1) gapCard.classList.add('warning');
+        }
+        
+        function updateStatsHistory(history) {
+            const container = document.getElementById('statsHistoryTable');
+            if (!history || history.length === 0) {
+                const periodLabel = { daily: '오늘', weekly: '이번 주', monthly: '이번 달' }[currentStatsPeriod];
+                container.innerHTML = `<div class="no-data-message">${periodLabel} 복약 기록이 없습니다.</div>`;
+                return;
+            }
+            
+            const recentHistory = history.slice(0, 20);
+            let html = '';
+            
+            recentHistory.forEach(h => {
+                const date = new Date(h.timestamp);
+                const timeStr = date.toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                
+                html += `
+                    <div class="stats-history-item">
+                        <div>
+                            <div class="history-name">${h.sensorName || '약통 ' + h.sensorId}</div>
+                            <div class="history-time">${timeStr}</div>
+                        </div>
+                        <span class="history-status taken">복용완료</span>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // 통계 섹션 전환 시 데이터 로드
+        const originalSwitchSection = switchSection;
+        switchSection = function(section) {
+            originalSwitchSection(section);
+            if (section === 'stats') {
+                loadStatsData();
+            }
+            if (section === 'about') {
+                initHeartArt();
+            }
+        };
+
+        // ========== 심장 미디어아트 (Three.js) ==========
+        let heartScene, heartCamera, heartRenderer, heartSphere, heartGeometry;
+        let heartOriginalPositions, heartPulseTime = 0, heartIsPulsing = false;
+        let heartRotation = 0, heartCurrentPaletteIndex = 0;
+        let heartAnimationId = null;
+        let heartInitialized = false;
+
+        const heartColorPalettes = [
+            ['#0A3B0A', '#D4AF37', '#8B4513', '#F0E6D2', '#3D2B1F'],
+            ['#004225', '#FADADD', '#B0B0B0', '#333333'],
+            ['#2F4F2F', '#E07A5F', '#F4F1DE', '#6B4F4F', '#F7F3E3'],
+            ['#013220', '#000080', '#4A90E2', '#E1E5EA'],
+            ['#228B22', '#800020', '#FFDB58', '#FDF5E6', '#5C4033'],
+            ['#193A1F', '#E6E6FA', '#483D8B', '#C0C0C0'],
+            ['#005000', '#CC5500', '#E1AD01', '#FFF8DC', '#3E2723'],
+            ['#004B49', '#AFE1AF', '#F4A460', '#87CEEB'],
+            ['#0A3B0A', '#2E8B57', '#8FBC8F', '#F0FFF0', '#474747'],
+            ['#004d00', '#0F52BA', '#E0115F', '#FFD700']
+        ];
+
+        function initHeartArt() {
+            if (heartInitialized) return;
+            
+            const container = document.getElementById('heartArtContainer');
+            const canvas = document.getElementById('heartCanvas');
+            if (!container || !canvas || typeof THREE === 'undefined') return;
+
+            heartScene = new THREE.Scene();
+            heartScene.background = new THREE.Color(0x1a1a1a);
+
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            heartCamera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+            heartCamera.position.z = 2.6;
+
+            heartRenderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            heartRenderer.setSize(width, height);
+            heartRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            heartGeometry = new THREE.SphereGeometry(1, 120, 120);
+            
+            const vertexCount = heartGeometry.attributes.position.count;
+            const colors = new Float32Array(vertexCount * 3);
+            heartGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const wireframeMaterial = new THREE.MeshBasicMaterial({ 
+                wireframe: true,
+                vertexColors: true
+            });
+            heartSphere = new THREE.Mesh(heartGeometry, wireframeMaterial);
+            heartScene.add(heartSphere);
+
+            const faceMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0x888888,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.15
+            });
+            const faceMesh = new THREE.Mesh(heartGeometry, faceMaterial);
+            heartScene.add(faceMesh);
+
+            heartOriginalPositions = heartGeometry.attributes.position.array.slice();
+            
+            applyHeartPaletteColors(0);
+            
+            container.addEventListener('click', triggerHeartPulse);
+            container.style.cursor = 'pointer';
+
+            heartInitialized = true;
+            animateHeart();
+        }
+
+        function applyHeartPaletteColors(paletteIndex) {
+            const palette = heartColorPalettes[paletteIndex];
+            const colorAttribute = heartGeometry.attributes.color;
+            const color = new THREE.Color();
+            const vertexCount = heartGeometry.attributes.position.count;
+            
+            for (let i = 0; i < vertexCount; i++) {
+                const colorHex = palette[i % palette.length];
+                color.set(colorHex);
+                colorAttribute.setXYZ(i, color.r, color.g, color.b);
+            }
+            colorAttribute.needsUpdate = true;
+        }
+
+        function triggerHeartPulse() {
+            if (!heartIsPulsing) {
+                heartIsPulsing = true;
+                heartPulseTime = 0;
+                heartCurrentPaletteIndex = (heartCurrentPaletteIndex + 1) % heartColorPalettes.length;
+                applyHeartPaletteColors(heartCurrentPaletteIndex);
+            }
+        }
+
+        function animateHeart() {
+            if (!heartInitialized) return;
+            heartAnimationId = requestAnimationFrame(animateHeart);
+
+            heartRotation += 0.003;
+            heartSphere.rotation.y = heartRotation;
+            heartSphere.rotation.x = heartRotation * 0.6;
+
+            const positions = heartGeometry.attributes.position.array;
+            const time = Date.now() * 0.0005;
+
+            if (heartIsPulsing) {
+                heartPulseTime += 0.025;
+                if (heartPulseTime > 2) {
+                    heartIsPulsing = false;
+                    heartPulseTime = 0;
+                }
+            }
+
+            for (let i = 0; i < positions.length; i += 3) {
+                const x = heartOriginalPositions[i];
+                const y = heartOriginalPositions[i + 1];
+                const z = heartOriginalPositions[i + 2];
+
+                const turb1 = Math.sin(x * 5 + time * 3) * Math.cos(y * 4 - time * 2);
+                const turb2 = Math.sin(z * 6 + time * 1.5) * Math.cos(x * 3 + time);
+                const turbulence = (turb1 + turb2) * 0.08;
+
+                const angle = Math.atan2(y, x) + time * 0.5;
+                const spiral = Math.sin(angle * 5 + z * 10) * 0.06;
+
+                let implosionEffect = 0;
+                if (heartIsPulsing) {
+                    const t = heartPulseTime / 2;
+                    if (t < 0.2) {
+                        implosionEffect = -Math.pow(t / 0.2, 2) * 0.4;
+                    } else if (t < 0.5) {
+                        const releaseT = (t - 0.2) / 0.3;
+                        implosionEffect = -0.4 * (1 - releaseT) + Math.sin(releaseT * Math.PI * 2) * 0.12 * (1 - releaseT);
+                    } else {
+                        const dampT = (t - 0.5) / 0.5;
+                        implosionEffect = Math.sin(dampT * Math.PI * 3) * 0.06 * Math.exp(-dampT * 4);
+                    }
+                }
+
+                const scale = 1 + turbulence + spiral + implosionEffect;
+                positions[i] = x * scale;
+                positions[i + 1] = y * scale;
+                positions[i + 2] = z * scale;
+            }
+
+            heartGeometry.attributes.position.needsUpdate = true;
+            heartRenderer.render(heartScene, heartCamera);heartRenderer.render(heartScene, heartCamera);
+        }
+
+        // ========== 약 보충 관리 기능 ==========
+        let isRefillMode = false;
+        let refillStartTime = null;
+        
+        async function loadRefillStatus() {
+            try {
+                const res = await fetch(`${API_URL}/api/refill/status`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    isRefillMode = data.isRefillMode;
+                    refillStartTime = data.refillStartTime;
+                    updateRefillUI();
+                }
+            } catch (e) {
+                console.error('리필 상태 로드 실패:', e);
+            }
+        }
+        
+        function updateRefillUI() {
+            const statusArea = document.getElementById('refillStatusArea');
+            const statusIcon = document.getElementById('refillStatusIcon');
+            const statusText = document.getElementById('refillStatusText');
+            const statusSub = document.getElementById('refillStatusSub');
+            const refillBtn = document.getElementById('refillBtn');
+            const refillBtnText = document.getElementById('refillBtnText');
+            const refillOptions = document.getElementById('refillOptions');
+            
+            if (isRefillMode) {
+                statusArea.classList.add('active');
+                statusIcon.textContent = '📦';
+                statusText.textContent = '약 보충 중...';
+                const startTime = refillStartTime ? new Date(refillStartTime).toLocaleTimeString('ko-KR', {hour: '2-digit', minute:'2-digit'}) : '';
+                statusSub.textContent = startTime ? `${startTime}부터 센서 일시 중단` : '센서 감지가 일시 중단됩니다';
+                refillBtn.className = 'refill-btn end';
+                refillBtnText.textContent = '약 보충 완료';
+                refillBtn.querySelector('i').className = 'fa-solid fa-check';
+                refillOptions.style.display = 'block';
+            } else {
+                statusArea.classList.remove('active');
+                statusIcon.innerHTML = '<i class="fa-solid fa-pills" style="color: white;"></i>';
+                statusText.textContent = '정상 모니터링 중';
+                statusSub.textContent = '센서가 복용을 감지합니다';
+                refillBtn.className = 'refill-btn start';
+                refillBtnText.textContent = '약 보충 시작';
+                refillBtn.querySelector('i').className = 'fa-solid fa-pills';
+                refillOptions.style.display = 'none';
+            }
+            
+            loadRefillHistory();
+        }
+        
+        let pendingRefillAction = null; // 'start' or 'end'
+        
+        async function toggleRefillMode() {
+            if (!isRefillMode) {
+                // 시작 모달 표시
+                pendingRefillAction = 'start';
+                document.getElementById('refillModalHeader').className = 'refill-modal-header';
+                document.getElementById('refillModalIcon').className = 'fa-solid fa-pills';
+                document.getElementById('refillModalTitle').textContent = '약 보충 시작';
+                document.getElementById('refillModalMessage').innerHTML = '약 보충을 시작합니다.<br>보충 중에는 센서 감지가 일시 중단됩니다.';
+                document.getElementById('refillModalConfirmBtn').textContent = '시작';
+                document.getElementById('refillModalConfirmBtn').className = 'refill-modal-btn confirm';
+                document.getElementById('refillModal').classList.add('show');
+            } else {
+                // 종료 모달 표시
+                pendingRefillAction = 'end';
+                const deleteRecords = document.getElementById('deleteRefillRecords').checked;
+                document.getElementById('refillModalHeader').className = 'refill-modal-header end';
+                document.getElementById('refillModalIcon').className = 'fa-solid fa-check-circle';
+                document.getElementById('refillModalTitle').textContent = '약 보충 완료';
+                let msg = '약 보충을 완료합니다.';
+                if (deleteRecords) {
+                    msg += '<br><br><span style="color:#F44336;">⚠️ 보충 중 기록된 복용 내역이 삭제됩니다.</span>';
+                }
+                document.getElementById('refillModalMessage').innerHTML = msg;
+                document.getElementById('refillModalConfirmBtn').textContent = '완료';
+                document.getElementById('refillModalConfirmBtn').className = 'refill-modal-btn confirm end';
+                document.getElementById('refillModal').classList.add('show');
+            }
+        }
+        
+        function closeRefillModal() {
+            document.getElementById('refillModal').classList.remove('show');
+            pendingRefillAction = null;
+        }
+        
+        async function confirmRefillAction() {
+            const action = pendingRefillAction;  // ✅ 추가: 먼저 저장
+            closeRefillModal();
+            
+            if (action === 'start') {  // ✅ 변경: pendingRefillAction → action
+                try {
+                    const res = await fetch(`${API_URL}/api/refill/start`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${authToken}` 
+                        }
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        isRefillMode = true;
+                        refillStartTime = data.refillStartTime;
+                        updateRefillUI();
+                        showToast('약 보충 모드가 시작되었습니다', 'success');
+                    }
+                } catch (e) {
+                    console.error('리필 시작 실패:', e);
+                    showToast('오류가 발생했습니다', 'error');
+                }
+            } else if (action === 'end') {  // ✅ 변경: pendingRefillAction → action
+                const deleteRecords = document.getElementById('deleteRefillRecords').checked;
+                try {
+                    const res = await fetch(`${API_URL}/api/refill/end`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${authToken}` 
+                        },
+                        body: JSON.stringify({
+                            deleteRecordsDuringRefill: deleteRecords,
+                            refilledSlots: [1, 2, 3, 4]
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        isRefillMode = false;
+                        refillStartTime = null;
+                        updateRefillUI();
+                        const msg = data.deletedCount > 0 
+                            ? `약 보충 완료! (${data.deletedCount}건 기록 삭제됨)`
+                            : '약 보충이 완료되었습니다';
+                        showToast(msg, 'success');
+                        loadDashboardData();
+                    }
+                } catch (e) {
+                    console.error('리필 종료 실패:', e);
+                    showToast('오류가 발생했습니다', 'error');
+                }
+            }
+        }
+        
+        function toggleRefillHistory() {
+            const toggle = document.querySelector('.refill-history-toggle');
+            const list = document.getElementById('refillHistoryList');
+            toggle.classList.toggle('open');
+            list.classList.toggle('show');
+        }
+        
+        async function loadRefillHistory() {
+            try {
+                const res = await fetch(`${API_URL}/api/reports/detailed`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const data = await res.json();
+                const historyList = document.getElementById('refillHistoryList');
+                
+                if (!data.history || data.history.length === 0) {
+                    historyList.innerHTML = '<div class="refill-history-item"><span>기록이 없습니다</span></div>';
+                    return;
+                }
+                
+                const recentHistory = data.history.slice(0, 10);
+                historyList.innerHTML = recentHistory.map((h, idx) => {
+                    const date = new Date(h.timestamp);
+                    const timeStr = date.toLocaleString('ko-KR', { 
+                        month: 'numeric', day: 'numeric', 
+                        hour: '2-digit', minute: '2-digit' 
+                    });
+                    return `
+                        <div class="refill-history-item">
+                            <span>${h.sensorName || '약통 ' + h.sensorId} - ${timeStr}</span>
+                            <button class="refill-delete-btn" onclick="deleteHistoryItem(${idx})">
+                                <i class="fa-solid fa-trash"></i> 삭제
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                console.error('히스토리 로드 실패:', e);
+            }
+        }
+        
+        let pendingDeleteIndex = null;
+        
+        function deleteHistoryItem(index) {
+            pendingDeleteIndex = index;
+            document.getElementById('deleteConfirmModal').classList.add('show');
+        }
+        
+        function closeDeleteConfirmModal() {
+            document.getElementById('deleteConfirmModal').classList.remove('show');
+            pendingDeleteIndex = null;
+        }
+        
+        async function confirmDeleteHistoryItem() {
+            if (pendingDeleteIndex === null) return;
+            
+            const index = pendingDeleteIndex;
+            closeDeleteConfirmModal();
+            
+            try {
+                const res = await fetch(`${API_URL}/api/history/${index}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('기록이 삭제되었습니다', 'success');
+                    loadRefillHistory();
+                    loadDashboardData();
+                } else {
+                    showToast('삭제에 실패했습니다', 'error');
+                }
+            } catch (e) {
+                console.error('삭제 실패:', e);
+                showToast('삭제에 실패했습니다', 'error');
+            }
+        }
+        
+        function showToast(message, type = 'info') {
+            // 간단한 토스트 메시지 (기존에 있다면 재사용)
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+                background: ${type === 'success' ? '#D4A5A5' : type === 'error' ? '#F44336' : '#333'};
+                color: white; padding: 12px 24px; border-radius: 25px;
+                font-size: 0.9rem; z-index: 9999; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+                
+    </script>
+            <!-- 리필 확인 모달 -->
+            <div class="refill-modal-overlay" id="refillModal">
+                <div class="refill-modal">
+                    <div class="refill-modal-header" id="refillModalHeader">
+                        <i class="fa-solid fa-pills" id="refillModalIcon"></i>
+                        <h3 id="refillModalTitle">약 보충 시작</h3>
+                    </div>
+                    <div class="refill-modal-body">
+                        <p id="refillModalMessage">약 보충을 시작합니다.<br>보충 중에는 센서 감지가 일시 중단됩니다.</p>
+                    </div>
+                    <div class="refill-modal-footer">
+                        <button class="refill-modal-btn cancel" onclick="closeRefillModal()">취소</button>
+                        <button class="refill-modal-btn confirm" id="refillModalConfirmBtn" onclick="confirmRefillAction()">시작</button>
+                    </div>
+                </div>
+            </div>
+            <!-- 삭제 확인 모달 -->
+            <div class="refill-modal-overlay" id="deleteConfirmModal">
+                <div class="delete-confirm-modal">
+                    <div class="delete-confirm-header">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <h3>기록 삭제</h3>
+                    </div>
+                    <div class="delete-confirm-body">
+                        <p id="deleteConfirmMessage">이 복용 기록을 삭제하시겠습니까?</p>
+                    </div>
+                    <div class="delete-confirm-footer">
+                        <button class="delete-confirm-btn cancel" onclick="closeDeleteConfirmModal()">취소</button>
+                        <button class="delete-confirm-btn delete" onclick="confirmDeleteHistoryItem()">삭제</button>
+                    </div>
+                </div>
+            </div>
+</body>
+</html>

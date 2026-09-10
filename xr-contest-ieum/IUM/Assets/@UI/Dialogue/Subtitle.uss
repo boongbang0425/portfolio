@@ -1,0 +1,34 @@
+/* 자막은 화면 하단에 둔다. 이음이 HUD가 중앙을 쓰므로 두 자막이 겹치지 않는다. */
+.subtitle-root {
+    flex-grow: 1;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 48px;
+}
+
+/* 배경 판 없이 글자만 띄운다. 컨테이너는 표시 토글과 줄바꿈 폭을 위해 남긴다. */
+.subtitle-box {
+    display: none;
+    max-width: 880px;
+    padding: 16px 28px;
+    align-items: center;
+}
+
+.subtitle-box--visible {
+    display: flex;
+}
+
+/* 이름표는 표시하지 않는다 — 화자 구분은 본문 글자색이 맡는다. 라벨 자체는 남겨 두어
+   SubtitleView의 계약(이름 갱신)과 되살릴 여지를 유지한다. */
+.subtitle-speaker {
+    display: none;
+}
+
+/* 긴 문장은 2줄 이내로 분리한다 (F-018 1.4). max-width가 줄바꿈 지점을 정한다. */
+/* 글자색은 화자별로 SubtitleView가 인라인으로 지정한다. */
+.subtitle-text {
+    font-size: 22px;
+    white-space: normal;
+    -unity-text-align: middle-center;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.85);
+}

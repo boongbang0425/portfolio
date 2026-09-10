@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmoLamp Dashboard v3.0</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --bg: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-card-hover: #1a1a25;
+            --text: #f0f0f5;
+            --text-secondary: #8888a0;
+            --text-muted: #555566;
+            --border: #2a2a3a;
+            --accent: #7c5cff;
+            --accent-glow: rgba(124, 92, 255, 0.3);
+            --success: #4ade80;
+            --warning: #fbbf24;
+            --danger: #f87171;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Outfit', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(180deg, var(--bg-card) 0%, transparent 100%);
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), #ff6b9d);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), #ff6b9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-version {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-left: 0.5rem;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 0.875rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Current State Hero */
+        .hero-section {
+            margin-bottom: 2rem;
+        }
+
+        .hero-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, #1a1a2e 100%);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .lamp-visual {
+            position: relative;
+        }
+
+        .lamp-glow {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+
+        .lamp-glow::before {
+            content: '';
+            position: absolute;
+            inset: -20px;
+            border-radius: 50%;
+            background: inherit;
+            filter: blur(30px);
+            opacity: 0.5;
+        }
+
+        .lamp-emoji {
+            font-size: 4rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .hero-mode {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent);
+        }
+
+        .hero-emotion {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .hero-summary {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .hero-hsv {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .hsv-item {
+            text-align: center;
+        }
+
+        .hsv-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .hsv-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero-weather {
+            text-align: right;
+            padding: 1rem 1.5rem;
+            background: var(--bg);
+            border-radius: 16px;
+        }
+
+        .weather-icon {
+            font-size: 2.5rem;
+        }
+
+        .weather-temp {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .weather-condition {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), #ff6b9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 0.25rem;
+        }
+
+        /* Grid Layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Timeline Chart */
+        .timeline-chart {
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            padding: 1rem 0;
+        }
+
+        .timeline-bar {
+            flex: 1;
+            min-width: 20px;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .timeline-bar:hover {
+            opacity: 0.8;
+            transform: scaleY(1.05);
+        }
+
+        .timeline-bar::after {
+            content: attr(data-hour);
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+
+        .timeline-labels {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            margin-top: 0.5rem;
+        }
+
+        .timeline-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* Emotion Distribution */
+        .emotion-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .emotion-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .emotion-emoji {
+            font-size: 1.5rem;
+            width: 40px;
+            text-align: center;
+        }
+
+        .emotion-info {
+            flex: 1;
+        }
+
+        .emotion-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .emotion-bar-bg {
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+
+        .emotion-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .emotion-percent {
+            font-size: 0.875rem;
+            font-weight: 600;
+            width: 50px;
+            text-align: right;
+        }
+
+        /* Time Pattern Cards */
+        .time-pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+        }
+
+        .time-pattern-card {
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .time-pattern-card:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .time-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .time-name {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .time-emotion {
+            font-size: 1.25rem;
+        }
+
+        .time-percent {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        /* Day of Week */
+        .dow-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+
+        .dow-item {
+            background: var(--bg);
+            border-radius: 10px;
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .dow-item:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .dow-day {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .dow-emoji {
+            font-size: 1.25rem;
+        }
+
+        .dow-count {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Weather Correlation */
+        .weather-correlation-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .weather-corr-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            background: var(--bg);
+            border-radius: 10px;
+        }
+
+        .weather-corr-icon {
+            font-size: 1.75rem;
+        }
+
+        .weather-corr-info {
+            flex: 1;
+        }
+
+        .weather-corr-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .weather-corr-emotion {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .weather-corr-stats {
+            text-align: right;
+        }
+
+        .weather-corr-percent {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .weather-corr-count {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* Hue Histogram */
+        .hue-histogram {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 100px;
+            padding: 1rem 0;
+        }
+
+        .hue-bar {
+            flex: 1;
+            border-radius: 2px 2px 0 0;
+            min-height: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .hue-bar:hover {
+            opacity: 0.8;
+        }
+
+        /* Top Colors */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.75rem;
+        }
+
+        .color-item {
+            text-align: center;
+        }
+
+        .color-swatch {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .color-swatch:hover {
+            transform: scale(1.05);
+            border-color: var(--text);
+        }
+
+        .color-hex {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-family: monospace;
+        }
+
+        .color-count {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        /* Advanced Stats */
+        .advanced-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .advanced-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: 12px;
+        }
+
+        .advanced-icon {
+            font-size: 2rem;
+            width: 50px;
+            text-align: center;
+        }
+
+        .advanced-info {
+            flex: 1;
+        }
+
+        .advanced-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .advanced-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .advanced-sub {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        /* Transition List */
+        .transition-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .transition-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: var(--bg);
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+
+        .transition-arrow {
+            color: var(--accent);
+        }
+
+        .transition-count {
+            margin-left: auto;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        /* Recent Activity */
+        .recent-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .recent-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            background: var(--bg);
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .recent-item:hover {
+            background: var(--bg-card-hover);
+            transform: translateX(4px);
+        }
+
+        .recent-color {
+            width: 4px;
+            height: 40px;
+            border-radius: 2px;
+        }
+
+        .recent-emoji {
+            font-size: 1.5rem;
+        }
+
+        .recent-info {
+            flex: 1;
+        }
+
+        .recent-emotion {
+            font-weight: 500;
+        }
+
+        .recent-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .recent-hsv {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: monospace;
+        }
+
+        /* Mode Ratio Bar */
+        .mode-ratio-bar {
+            height: 12px;
+            background: var(--bg);
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            margin: 1rem 0;
+        }
+
+        .mode-ratio-auto {
+            background: linear-gradient(90deg, var(--accent), #a78bfa);
+            transition: width 0.5s ease;
+        }
+
+        .mode-ratio-manual {
+            background: linear-gradient(90deg, #f472b6, #fb7185);
+            transition: width 0.5s ease;
+        }
+
+        .mode-ratio-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-grid { grid-template-columns: repeat(3, 1fr); }
+            .grid-3 { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 900px) {
+            .hero-card { grid-template-columns: 1fr; text-align: center; }
+            .hero-hsv { justify-content: center; }
+            .hero-weather { text-align: center; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .time-pattern-grid { grid-template-columns: repeat(2, 1fr); }
+            .color-grid { grid-template-columns: repeat(3, 1fr); }
+            .advanced-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 1rem; }
+            .header { padding: 1rem; }
+            .hero-card { padding: 1.5rem; }
+            .dow-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">🌈</div>
+                <span class="logo-text">EmoLamp</span>
+                <span class="logo-version">v3.0</span>
+            </div>
+            <div class="status-badge">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">연결됨</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Hero Section: Current State -->
+        <section class="hero-section">
+            <div class="hero-card" id="heroCard">
+                <div class="lamp-visual">
+                    <div class="lamp-glow" id="lampGlow">
+                        <span class="lamp-emoji" id="lampEmoji">😌</span>
+                    </div>
+                </div>
+                <div class="hero-info">
+                    <div class="hero-mode" id="heroMode">AUTO MODE</div>
+                    <div class="hero-emotion" id="heroEmotion">평온</div>
+                    <div class="hero-summary" id="heroSummary">감정 분석 대기중...</div>
+                    <div class="hero-hsv">
+                        <div class="hsv-item">
+                            <div class="hsv-value" id="hsvH">120°</div>
+                            <div class="hsv-label">Hue</div>
+                        </div>
+                        <div class="hsv-item">
+                            <div class="hsv-value" id="hsvS">70%</div>
+                            <div class="hsv-label">Saturation</div>
+                        </div>
+                        <div class="hsv-item">
+                            <div class="hsv-value" id="hsvV">70%</div>
+                            <div class="hsv-label">Brightness</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-weather" id="heroWeather">
+                    <div class="weather-icon" id="weatherIcon">🌤️</div>
+                    <div class="weather-temp" id="weatherTemp">--°C</div>
+                    <div class="weather-condition" id="weatherCondition">날씨 정보 없음</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Stats -->
+        <section class="section-title">📊 핵심 통계</section>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-value" id="statTotal">0</div>
+                <div class="stat-label">총 분석</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-value" id="statToday">0</div>
+                <div class="stat-label">오늘</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-value" id="statTopEmotion">😌</div>
+                <div class="stat-label">최다 감정</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎨</div>
+                <div class="stat-value" id="statAvgHue">0°</div>
+                <div class="stat-label">평균 Hue</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏰</div>
+                <div class="stat-value" id="statPeakHour">--</div>
+                <div class="stat-label">피크 시간</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏱️</div>
+                <div class="stat-value" id="statInterval">--</div>
+                <div class="stat-label">평균 간격</div>
+            </div>
+        </div>
+
+        <!-- Timeline & Distribution -->
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📈 오늘의 타임라인</div>
+                </div>
+                <div class="timeline-chart" id="timelineChart"></div>
+                <div class="timeline-labels">
+                    <span class="timeline-label">00:00</span>
+                    <span class="timeline-label">06:00</span>
+                    <span class="timeline-label">12:00</span>
+                    <span class="timeline-label">18:00</span>
+                    <span class="timeline-label">24:00</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🎭 감정 분포 TOP 5</div>
+                </div>
+                <div class="emotion-list" id="emotionList"></div>
+            </div>
+        </div>
+
+        <!-- Time Patterns -->
+        <section class="section-title">🕐 시간대별 패턴</section>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🌅 시간대별 주요 감정</div>
+                </div>
+                <div class="time-pattern-grid" id="timePatternGrid"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📆 요일별 패턴</div>
+                </div>
+                <div class="dow-grid" id="dowGrid"></div>
+            </div>
+        </div>
+
+        <!-- Weather & Colors -->
+        <section class="section-title">🌤️ 날씨 & 색상 분석</section>
+        <div class="grid-3">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🌡️ 날씨-감정 상관관계</div>
+                </div>
+                <div class="weather-correlation-list" id="weatherCorrelation"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🌈 Hue 분포</div>
+                </div>
+                <div class="hue-histogram" id="hueHistogram"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🎨 자주 사용된 색상</div>
+                </div>
+                <div class="color-grid" id="colorGrid"></div>
+            </div>
+        </div>
+
+        <!-- Advanced Stats -->
+        <section class="section-title">🔬 고급 분석</section>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📊 상세 통계</div>
+                </div>
+                <div class="advanced-grid" id="advancedGrid"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🔄 감정 전환 빈도</div>
+                </div>
+                <div class="transition-list" id="transitionList"></div>
+            </div>
+        </div>
+
+        <!-- Mode Ratio -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <div class="card-header">
+                <div class="card-title">⚙️ AUTO / MANUAL 모드 비율</div>
+            </div>
+            <div class="mode-ratio-bar">
+                <div class="mode-ratio-auto" id="modeRatioAuto" style="width: 50%"></div>
+                <div class="mode-ratio-manual" id="modeRatioManual" style="width: 50%"></div>
+            </div>
+            <div class="mode-ratio-labels">
+                <span>🤖 AUTO <span id="modeAutoPercent">50%</span></span>
+                <span>🎨 MANUAL <span id="modeManualPercent">50%</span></span>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <section class="section-title">📝 최근 활동</section>
+        <div class="card">
+            <div class="recent-list" id="recentList"></div>
+        </div>
+    </main>
+
+    <script>
+        const emotionColors = {
+            joy: '#FFD93D', sadness: '#6C9BCF', anger: '#FF6B6B',
+            calm: '#6BCB77', excited: '#FF8C42', fear: '#9D65C9', surprise: '#F9F871'
+        };
+        const emotionLabels = {
+            joy: '기쁨', sadness: '슬픔', anger: '분노',
+            calm: '평온', excited: '설렘', fear: '두려움', surprise: '놀람'
+        };
+        const emotionEmojis = {
+            joy: '😊', sadness: '😢', anger: '😡',
+            calm: '😌', excited: '🤩', fear: '😨', surprise: '😲'
+        };
+
+        const API_BASE = '';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAllData();
+            setInterval(fetchAllData, 5000);
+        });
+
+        async function fetchAllData() {
+            try {
+                await Promise.all([
+                    fetchCurrent(),
+                    fetchSummary(),
+                    fetchTimeline(),
+                    fetchDistribution(),
+                    fetchRecent(),
+                    fetchAdvanced(),
+                    fetchWeatherCorrelation(),
+                    fetchTimePatterns(),
+                    fetchColorAnalysis()
+                ]);
+                updateStatus(true);
+            } catch (error) {
+                console.error('Fetch error:', error);
+                updateStatus(false);
+            }
+        }
+
+        // Current State
+        async function fetchCurrent() {
+            const res = await fetch(`${API_BASE}/api/stats/current`);
+            const data = await res.json();
+            
+            const color = data.colorHex || '#6BCB77';
+            document.getElementById('lampGlow').style.background = color;
+            document.getElementById('lampGlow').style.boxShadow = `0 0 60px ${color}80`;
+            document.getElementById('lampEmoji').textContent = data.emotionEmoji || '😌';
+            
+            document.getElementById('heroMode').textContent = `${data.mode || 'AUTO'} MODE`;
+            document.getElementById('heroEmotion').textContent = data.emotionKorean || '평온';
+            document.getElementById('heroSummary').textContent = data.timeString || '';
+            
+            document.getElementById('hsvH').textContent = `${data.hue || 0}°`;
+            document.getElementById('hsvS').textContent = `${data.saturation || 0}%`;
+            document.getElementById('hsvV').textContent = `${data.brightness || 0}%`;
+            
+            if (data.weather) {
+                document.getElementById('weatherIcon').textContent = data.weatherEmoji || '🌤️';
+                document.getElementById('weatherTemp').textContent = `${data.temperature || '--'}°C`;
+                document.getElementById('weatherCondition').textContent = data.weatherKorean || data.weather;
+            }
+        }
+
+        // Summary Stats
+        async function fetchSummary() {
+            const res = await fetch(`${API_BASE}/api/stats/summary`);
+            const data = await res.json();
+            
+            document.getElementById('statTotal').textContent = data.totalAnalyses || 0;
+            document.getElementById('statToday').textContent = data.todayAnalyses || 0;
+            document.getElementById('statTopEmotion').textContent = data.topEmotionEmoji || '😌';
+            document.getElementById('statAvgHue').textContent = `${data.averageHue || 0}°`;
+            document.getElementById('statPeakHour').textContent = data.peakHourFormatted || '--';
+        }
+
+        // Timeline
+        async function fetchTimeline() {
+            const res = await fetch(`${API_BASE}/api/stats/timeline`);
+            const data = await res.json();
+            
+            const container = document.getElementById('timelineChart');
+            const maxCount = Math.max(...data.timeline.map(t => t.count), 1);
+            
+            container.innerHTML = data.timeline.map((item, i) => {
+                const height = item.count > 0 ? Math.max((item.count / maxCount) * 100, 10) : 5;
+                const color = item.colorHex || (item.emotion ? emotionColors[item.emotion] : 'var(--border)');
+                const showLabel = i % 4 === 0;
+                return `<div class="timeline-bar" style="height: ${height}%; background: ${color};" 
+                    data-hour="${showLabel ? item.hour + ':00' : ''}" 
+                    title="${item.hour}:00 - ${item.count}회 ${item.emotion ? emotionEmojis[item.emotion] : ''}"></div>`;
+            }).join('');
+        }
+
+        // Distribution
+        async function fetchDistribution() {
+            const res = await fetch(`${API_BASE}/api/stats/emotions`);
+            const data = await res.json();
+            
+            const container = document.getElementById('emotionList');
+            if (data.distribution.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div>데이터 없음</div>';
+                return;
+            }
+            
+            container.innerHTML = data.distribution.slice(0, 5).map(item => `
+                <div class="emotion-item">
+                    <div class="emotion-emoji">${item.emoji}</div>
+                    <div class="emotion-info">
+                        <div class="emotion-name">${item.korean}</div>
+                        <div class="emotion-bar-bg">
+                            <div class="emotion-bar-fill" style="width: ${item.percentage}%; background: ${emotionColors[item.emotion]}"></div>
+                        </div>
+                    </div>
+                    <div class="emotion-percent">${item.percentage}%</div>
+                </div>
+            `).join('');
+        }
+
+        // Recent Activity
+        async function fetchRecent() {
+            const res = await fetch(`${API_BASE}/api/stats/recent?limit=15`);
+            const data = await res.json();
+            
+            const container = document.getElementById('recentList');
+            if (data.logs.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon">📝</div>활동 없음</div>';
+                return;
+            }
+            
+            container.innerHTML = data.logs.map(log => `
+                <div class="recent-item">
+                    <div class="recent-color" style="background: ${log.colorHex || emotionColors[log.emotion]}"></div>
+                    <div class="recent-emoji">${log.emoji}</div>
+                    <div class="recent-info">
+                        <div class="recent-emotion">${log.emotionKorean}</div>
+                        <div class="recent-time">${formatTime(log.timestamp)}</div>
+                    </div>
+                    <div class="recent-hsv">H${log.hue} S${log.saturation} V${log.brightness}</div>
+                </div>
+            `).join('');
+        }
+
+        // Advanced Stats
+        async function fetchAdvanced() {
+            const res = await fetch(`${API_BASE}/api/stats/advanced`);
+            const data = await res.json();
+            
+            // Advanced Grid
+            const advancedGrid = document.getElementById('advancedGrid');
+            advancedGrid.innerHTML = `
+                <div class="advanced-item">
+                    <div class="advanced-icon">🔥</div>
+                    <div class="advanced-info">
+                        <div class="advanced-label">연속 동일 감정 최대 기록</div>
+                        <div class="advanced-value">${data.consecutiveRecord.emoji || '😌'} ${data.consecutiveRecord.count}회</div>
+                        <div class="advanced-sub">${data.consecutiveRecord.korean || '평온'}</div>
+                    </div>
+                </div>
+                <div class="advanced-item">
+                    <div class="advanced-icon">⏱️</div>
+                    <div class="advanced-info">
+                        <div class="advanced-label">평균 분석 간격</div>
+                        <div class="advanced-value">${data.averageInterval.formatted}</div>
+                        <div class="advanced-sub">${data.averageInterval.minutes}분</div>
+                    </div>
+                </div>
+                <div class="advanced-item">
+                    <div class="advanced-icon">🔄</div>
+                    <div class="advanced-info">
+                        <div class="advanced-label">감정 전환 횟수</div>
+                        <div class="advanced-value">${data.emotionTransitions.total}회</div>
+                        <div class="advanced-sub">총 분석 중</div>
+                    </div>
+                </div>
+                <div class="advanced-item">
+                    <div class="advanced-icon">⚙️</div>
+                    <div class="advanced-info">
+                        <div class="advanced-label">모드 전환 횟수</div>
+                        <div class="advanced-value">${data.modeTransitions}회</div>
+                        <div class="advanced-sub">AUTO ↔ MANUAL</div>
+                    </div>
+                </div>
+            `;
+            
+            // Stat Interval
+            document.getElementById('statInterval').textContent = data.averageInterval.formatted || '--';
+            
+            // Transition List
+            const transitionList = document.getElementById('transitionList');
+            if (data.emotionTransitions.transitions.length === 0) {
+                transitionList.innerHTML = '<div class="empty-state">전환 데이터 없음</div>';
+            } else {
+                transitionList.innerHTML = data.emotionTransitions.transitions.map(t => `
+                    <div class="transition-item">
+                        <span>${t.fromEmoji}</span>
+                        <span class="transition-arrow">→</span>
+                        <span>${t.toEmoji}</span>
+                        <span class="transition-count">${t.count}회</span>
+                    </div>
+                `).join('');
+            }
+            
+            // Mode Ratio
+            const autoPercent = data.modeRatio.autoPercent || 50;
+            const manualPercent = data.modeRatio.manualPercent || 50;
+            document.getElementById('modeRatioAuto').style.width = `${autoPercent}%`;
+            document.getElementById('modeRatioManual').style.width = `${manualPercent}%`;
+            document.getElementById('modeAutoPercent').textContent = `${autoPercent}%`;
+            document.getElementById('modeManualPercent').textContent = `${manualPercent}%`;
+        }
+
+        // Weather Correlation
+        async function fetchWeatherCorrelation() {
+            const res = await fetch(`${API_BASE}/api/stats/weather-correlation`);
+            const data = await res.json();
+            
+            const container = document.getElementById('weatherCorrelation');
+            if (data.correlations.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon">🌤️</div>날씨 데이터 없음</div>';
+                return;
+            }
+            
+            container.innerHTML = data.correlations.slice(0, 5).map(item => `
+                <div class="weather-corr-item">
+                    <div class="weather-corr-icon">${item.weatherEmoji}</div>
+                    <div class="weather-corr-info">
+                        <div class="weather-corr-name">${item.weatherKorean} (${item.avgTemperature}°C)</div>
+                        <div class="weather-corr-emotion">${item.dominantEmoji} ${item.dominantKorean} 우세</div>
+                    </div>
+                    <div class="weather-corr-stats">
+                        <div class="weather-corr-percent">${item.dominantPercent}%</div>
+                        <div class="weather-corr-count">${item.total}회</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Time Patterns
+        async function fetchTimePatterns() {
+            const res = await fetch(`${API_BASE}/api/stats/time-patterns`);
+            const data = await res.json();
+            
+            // Time of Day
+            const timeGrid = document.getElementById('timePatternGrid');
+            timeGrid.innerHTML = data.timeOfDay.map(item => `
+                <div class="time-pattern-card">
+                    <div class="time-icon">${item.icon}</div>
+                    <div class="time-name">${item.name}</div>
+                    <div class="time-emotion">${item.dominantEmoji}</div>
+                    <div class="time-percent">${item.dominantPercent}% (${item.total}회)</div>
+                </div>
+            `).join('');
+            
+            // Day of Week
+            const dowGrid = document.getElementById('dowGrid');
+            dowGrid.innerHTML = data.dayOfWeek.map(item => `
+                <div class="dow-item">
+                    <div class="dow-day">${item.day}</div>
+                    <div class="dow-emoji">${item.dominantEmoji}</div>
+                    <div class="dow-count">${item.total}회</div>
+                </div>
+            `).join('');
+        }
+
+        // Color Analysis
+        async function fetchColorAnalysis() {
+            const res = await fetch(`${API_BASE}/api/stats/color-analysis`);
+            const data = await res.json();
+            
+            // Hue Histogram
+            const hueContainer = document.getElementById('hueHistogram');
+            const maxHueCount = Math.max(...data.hueDistribution.map(h => h.count), 1);
+            hueContainer.innerHTML = data.hueDistribution.map(item => {
+                const height = item.count > 0 ? Math.max((item.count / maxHueCount) * 100, 5) : 5;
+                return `<div class="hue-bar" style="height: ${height}%; background: ${item.color};" title="${item.min}°-${item.max}°: ${item.count}회"></div>`;
+            }).join('');
+            
+            // Top Colors
+            const colorGrid = document.getElementById('colorGrid');
+            if (data.topColors.length === 0) {
+                colorGrid.innerHTML = '<div class="empty-state">색상 데이터 없음</div>';
+                return;
+            }
+            colorGrid.innerHTML = data.topColors.slice(0, 10).map(item => `
+                <div class="color-item">
+                    <div class="color-swatch" style="background: ${item.color}"></div>
+                    <div class="color-hex">${item.color}</div>
+                    <div class="color-count">${item.count}회</div>
+                </div>
+            `).join('');
+        }
+
+        // Utilities
+        function updateStatus(connected) {
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            dot.style.background = connected ? 'var(--success)' : 'var(--danger)';
+            text.textContent = connected ? '연결됨' : '연결 끊김';
+        }
+
+        function formatTime(timestamp) {
+            const diff = Date.now() - timestamp;
+            if (diff < 60000) return '방금 전';
+            if (diff < 3600000) return `${Math.floor(diff / 60000)}분 전`;
+            if (diff < 86400000) return `${Math.floor(diff / 3600000)}시간 전`;
+            return new Date(timestamp).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+    </script>
+</body>
+</html>

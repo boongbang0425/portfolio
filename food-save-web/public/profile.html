@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로필 - FoodSave</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/additional-styles.css">
+    <link rel="stylesheet" href="/fixes.css">
+    
+    <style>
+        .profile-hero {
+            background: linear-gradient(135deg, #A0522D 0%, #8B4513 100%);
+            padding: 3rem 0;
+            margin-top: 80px;
+        }
+        
+        .profile-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+        
+        .profile-header {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: -3rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .profile-avatar-section {
+            position: relative;
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .avatar-upload-btn {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #8B4513;
+            color: white;
+            border: 3px solid white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .profile-info {
+            flex: 1;
+        }
+        
+        .profile-name {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .profile-type {
+            color: #8B4513;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .profile-stats {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .profile-stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #8B4513;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.875rem;
+        }
+        
+        .profile-content {
+            display: grid;
+            gap: 2rem;
+        }
+        
+        .profile-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #8B4513;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        
+        .info-card {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .info-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .info-value {
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+        
+        .password-section {
+            background: #fff8e1;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .password-section h4 {
+            margin-bottom: 1rem;
+            color: #856404;
+        }
+        
+        .badge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .badge-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        
+        .badge-card:hover {
+            transform: translateY(-4px);
+        }
+        
+        .badge-card.earned {
+            background: linear-gradient(135deg, #A0522D 0%, #8B4513 100%);
+            color: white;
+        }
+        
+        .badge-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .badge-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-stats {
+                justify-content: center;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .badge-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <span class="logo-text">FOOD</span>
+                <span class="logo-accent">SAVE</span>
+            </a>
+            
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link">홈</a></li>
+                <li><a href="/donations" class="nav-link">나눔 찾기</a></li>
+                <li><a href="/mediaart" class="nav-link">미디어아트</a></li>
+                <li><a href="/info?page=about" class="nav-link">소개</a></li>
+                <li><a href="/info?page=contact" class="nav-link">문의</a></li>
+            </ul>
+            
+            <div class="nav-actions">
+                <button class="nav-icon-btn search-btn" onclick="toggleSearch()">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button class="nav-icon-btn" onclick="showFavorites()">
+                    <i class="far fa-heart"></i>
+                    <span class="badge" id="favCount">0</span>
+                </button>
+                <button class="btn-login" id="loginBtn" onclick="showAuthModal()">
+                    로그인
+                </button>
+                <div class="user-menu" id="userMenu" style="display: none;">
+                    <img src="" alt="Profile" class="user-avatar" id="userAvatar">
+                    <span class="user-name" id="userName"></span>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <a href="/dashboard"><i class="fas fa-tachometer-alt"></i> 대시보드</a>
+                        <a href="/profile"><i class="fas fa-user"></i> 프로필</a>
+                        <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 로그아웃</a>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="profile-hero">
+        <div class="container">
+            <h1 style="color: white; text-align: center;">내 프로필</h1>
+        </div>
+    </div>
+
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-avatar-section">
+                <img src="/images/default-avatar.png" alt="Profile" class="profile-avatar" id="profileAvatar">
+                <button class="avatar-upload-btn" onclick="document.getElementById('avatarInput').click()">
+                    <i class="fas fa-camera"></i>
+                </button>
+                <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="uploadAvatar()">
+            </div>
+            
+            <div class="profile-info">
+                <h2 class="profile-name" id="profileName">사용자</h2>
+                <div class="profile-type" id="profileType">수령자</div>
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <span class="stat-value" id="profileDonations">0</span>
+                        <span class="stat-label">나눔 횟수</span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="stat-value" id="profileRequests">0</span>
+                        <span class="stat-label">신청 횟수</span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="stat-value" id="profileRating">5.0</span>
+                        <span class="stat-label">평점</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-content">
+            <div class="profile-section">
+                <h3 class="section-title">개인 정보</h3>
+                <form id="profileForm" onsubmit="updateProfile(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>이름</label>
+                            <input type="text" id="inputName" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>이메일</label>
+                            <input type="email" id="inputEmail" name="email" required disabled>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>전화번호</label>
+                            <input type="tel" id="inputPhone" name="phone" placeholder="010-1234-5678">
+                        </div>
+                        <div class="form-group">
+                            <label>회원 유형</label>
+                            <input type="text" id="inputUserType" name="userType" disabled>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>주소</label>
+                        <input type="text" id="inputAddress" name="address" placeholder="서울시 강남구">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>자기소개</label>
+                        <textarea id="inputBio" name="bio" placeholder="간단한 자기소개를 입력해주세요"></textarea>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline" onclick="loadProfile()">취소</button>
+                        <button type="submit" class="btn btn-primary">저장하기</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="profile-section">
+                <h3 class="section-title">계정 정보</h3>
+                <div class="info-card">
+                    <div class="info-row">
+                        <span class="info-label">가입일</span>
+                        <span class="info-value" id="joinDate">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">마지막 로그인</span>
+                        <span class="info-value" id="lastLogin">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">계정 상태</span>
+                        <span class="info-value" style="color: #28a745;">활성</span>
+                    </div>
+                </div>
+                
+                <div class="password-section">
+                    <h4><i class="fas fa-lock"></i> 비밀번호 변경</h4>
+                    <form id="passwordForm" onsubmit="changePassword(event)">
+                        <div class="form-group">
+                            <label>현재 비밀번호</label>
+                            <input type="password" name="currentPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label>새 비밀번호</label>
+                            <input type="password" name="newPassword" required minlength="8">
+                        </div>
+                        <div class="form-group">
+                            <label>새 비밀번호 확인</label>
+                            <input type="password" name="confirmPassword" required minlength="8">
+                        </div>
+                        <button type="submit" class="btn btn-primary">비밀번호 변경</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h3 class="section-title">나의 뱃지</h3>
+                <div class="badge-grid">
+                    <div class="badge-card earned">
+                        <div class="badge-icon">🏆</div>
+                        <div class="badge-name">첫 나눔</div>
+                    </div>
+                    <div class="badge-card">
+                        <div class="badge-icon">⭐</div>
+                        <div class="badge-name">10회 나눔</div>
+                    </div>
+                    <div class="badge-card">
+                        <div class="badge-icon">💎</div>
+                        <div class="badge-name">50회 나눔</div>
+                    </div>
+                    <div class="badge-card">
+                        <div class="badge-icon">👑</div>
+                        <div class="badge-name">100회 나눔</div>
+                    </div>
+                    <div class="badge-card">
+                        <div class="badge-icon">❤️</div>
+                        <div class="badge-name">인기 기부자</div>
+                    </div>
+                    <div class="badge-card">
+                        <div class="badge-icon">🌟</div>
+                        <div class="badge-name">최우수 회원</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3 class="footer-logo">
+                        <span>FOOD</span><span class="accent">SAVE</span>
+                    </h3>
+                    <p>음식을 나누고, 행복을 더하는<br>지속가능한 푸드 쉐어링 플랫폼</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>빠른 링크</h4>
+                    <ul>
+                        <li><a href="/donations">나눔 찾기</a></li>
+                        <li><a href="/info?page=about">소개</a></li>
+                        <li><a href="/mediaart">미디어아트</a></li>
+                        <li><a href="/info?page=contact">문의하기</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>서비스</h4>
+                    <ul>
+                        <li><a href="/info?page=donor-guide">기부자 가이드</a></li>
+                        <li><a href="/info?page=receiver-guide">수령자 가이드</a></li>
+                        <li><a href="/info?page=safety">안전 가이드</a></li>
+                        <li><a href="/info?page=faq">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>연락처</h4>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-envelope"></i> contact@foodsave.kr</li>
+                        <li><i class="fas fa-phone"></i> 02-1234-5678</li>
+                        <li><i class="fas fa-map-marker-alt"></i> 서울시 강남구</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 FoodSave. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">이용약관</a>
+                    <a href="#">개인정보처리방침</a>
+                    <a href="#">쿠키 정책</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="/app.js"></script>
+    <script>
+        async function loadProfile() {
+            const token = localStorage.getItem('foodsave_token');
+            const userStr = localStorage.getItem('foodsave_user');
+            
+            if (!token || !userStr) {
+                window.location.href = '/';
+                return;
+            }
+            
+            try {
+                const user = JSON.parse(userStr);
+                
+                const response = await fetch('/api/user/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const profile = await response.json();
+                    
+                    // 헤더 정보
+                    document.getElementById('profileName').textContent = profile.name || '사용자';
+                    document.getElementById('profileType').textContent = profile.user_type === 'donor' ? '기부자' : '수령자';
+                    document.getElementById('profileDonations').textContent = profile.total_donations || 0;
+                    document.getElementById('profileRequests').textContent = profile.total_requests || 0;
+                    document.getElementById('profileRating').textContent = profile.rating || '5.0';
+                    
+                    // 아바타
+                    if (profile.avatar_url) {
+                        document.getElementById('profileAvatar').src = profile.avatar_url;
+                    }
+                    
+                    // 폼 입력값
+                    document.getElementById('inputName').value = profile.name || '';
+                    document.getElementById('inputEmail').value = profile.email || '';
+                    document.getElementById('inputPhone').value = profile.phone || '';
+                    document.getElementById('inputAddress').value = profile.address || '';
+                    document.getElementById('inputBio').value = profile.bio || '';
+                    document.getElementById('inputUserType').value = profile.user_type === 'donor' ? '기부자' : '수령자';
+                    
+                    // 계정 정보
+                    if (profile.created_at) {
+                        document.getElementById('joinDate').textContent = new Date(profile.created_at).toLocaleDateString('ko-KR');
+                    }
+                    if (profile.last_login) {
+                        document.getElementById('lastLogin').textContent = new Date(profile.last_login).toLocaleDateString('ko-KR');
+                    }
+                } else {
+                    // 기본 정보로 표시
+                    document.getElementById('profileName').textContent = user.name || '사용자';
+                    document.getElementById('profileType').textContent = user.userType === 'donor' ? '기부자' : '수령자';
+                    document.getElementById('inputName').value = user.name || '';
+                    document.getElementById('inputEmail').value = user.email || '';
+                    document.getElementById('inputUserType').value = user.userType === 'donor' ? '기부자' : '수령자';
+                }
+            } catch (error) {
+                console.error('프로필 로딩 실패:', error);
+                showToast('프로필 정보를 불러오는데 실패했습니다.');
+            }
+        }
+        
+        async function updateProfile(event) {
+            event.preventDefault();
+            const token = localStorage.getItem('foodsave_token');
+            
+            const formData = {
+                name: document.getElementById('inputName').value,
+                phone: document.getElementById('inputPhone').value,
+                address: document.getElementById('inputAddress').value,
+                bio: document.getElementById('inputBio').value
+            };
+            
+            try {
+                const response = await fetch('/api/user/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showToast('프로필이 성공적으로 업데이트되었습니다!');
+                    
+                    // 로컬 스토리지 업데이트
+                    const userStr = localStorage.getItem('foodsave_user');
+                    if (userStr) {
+                        const user = JSON.parse(userStr);
+                        user.name = formData.name;
+                        localStorage.setItem('foodsave_user', JSON.stringify(user));
+                        APP_STATE.user = user;
+                        updateNavForLoggedInUser();
+                    }
+                    
+                    // 페이지 새로고침
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    showToast(data.error || '업데이트 중 오류가 발생했습니다.');
+                }
+            } catch (error) {
+                showToast('업데이트 중 오류가 발생했습니다.');
+            }
+        }
+        
+        async function changePassword(event) {
+            event.preventDefault();
+            const token = localStorage.getItem('foodsave_token');
+            
+            const formData = new FormData(event.target);
+            const data = {
+                currentPassword: formData.get('currentPassword'),
+                newPassword: formData.get('newPassword'),
+                confirmPassword: formData.get('confirmPassword')
+            };
+            
+            if (data.newPassword !== data.confirmPassword) {
+                showToast('새 비밀번호가 일치하지 않습니다.');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/user/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showToast('비밀번호가 성공적으로 변경되었습니다!');
+                    event.target.reset();
+                } else {
+                    showToast(result.error || '비밀번호 변경 중 오류가 발생했습니다.');
+                }
+            } catch (error) {
+                showToast('비밀번호 변경 중 오류가 발생했습니다.');
+            }
+        }
+        
+        async function uploadAvatar() {
+            const token = localStorage.getItem('foodsave_token');
+            const fileInput = document.getElementById('avatarInput');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+            
+            const formData = new FormData();
+            formData.append('avatar', file);
+            
+            try {
+                const response = await fetch('/api/user/avatar', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showToast('프로필 사진이 업데이트되었습니다!');
+                    document.getElementById('profileAvatar').src = data.avatar_url;
+                } else {
+                    showToast(data.error || '업로드 중 오류가 발생했습니다.');
+                }
+            } catch (error) {
+                showToast('업로드 중 오류가 발생했습니다.');
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadProfile();
+        });
+    </script>
+</body>
+</html>

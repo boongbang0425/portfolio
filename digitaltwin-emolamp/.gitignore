@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.production
+config.json
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build
+dist/
+build/
+
+# Misc
+*.tmp
+*.temp
+
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+UserSettings/
+

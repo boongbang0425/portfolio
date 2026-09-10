@@ -1,0 +1,6 @@
+{
+  "applicationId": "IUM",
+  "contentVersion": 1,
+  "startScene": "StartScene",
+  "supportedLanguages": ["ko", "en"]
+}

@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "files": [
+    {
+      "key": "app",
+      "address": "ium/data/static/app",
+      "required": true
+    },
+    {
+      "key": "dialogue",
+      "address": "ium/data/static/dialogue",
+      "required": false
+    },
+    {
+      "key": "cutscene",
+      "address": "ium/data/static/cutscene",
+      "required": false
+    },
+    {
+      "key": "flow",
+      "address": "ium/data/static/flow",
+      "required": false
+    },
+    {
+      "key": "process",
+      "address": "ium/data/static/process",
+      "required": false
+    },
+    {
+      "key": "quest",
+      "address": "ium/data/static/quest",
+      "required": false
+    }
+  ]
+}

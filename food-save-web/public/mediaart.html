@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>미디어아트 - FoodSave</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/additional-styles.css">  <link rel="stylesheet" href="/fixes.css">
+    
+    <style>
+        body {
+            overflow-x: hidden;
+        }
+        
+        #artCanvas {
+            display: block;
+            width: 100%;
+            height: 600px;
+            background: linear-gradient(135deg, #FAF9F7 0%, #F5F4F2 100%);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            touch-action: none;
+            cursor: crosshair;
+        }
+        
+        .art-section {
+            padding: 3rem 0;
+            background: white;
+        }
+        
+        .art-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            padding: 0.75rem 1.5rem;
+            background: #8B4513;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .control-btn:hover {
+            background: #6B3410;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+        }
+        
+        .control-btn.active {
+            background: #D2691E;
+        }
+        
+        .art-description {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 2rem;
+            background: #FAF9F7;
+            border-radius: 12px;
+            line-height: 1.8;
+        }
+        
+        .art-description h3 {
+            color: #8B4513;
+            margin-bottom: 1rem;
+        }
+        
+        .instruction-box {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            border-left: 4px solid #8B4513;
+        }
+        
+        .instruction-box h4 {
+            margin-top: 0;
+            color: #8B4513;
+        }
+        
+        .instruction-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .instruction-list li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .instruction-list li i {
+            color: #8B4513;
+        }
+        
+        @media (max-width: 768px) {
+            #artCanvas {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <span class="logo-text">FOOD</span>
+                <span class="logo-accent">SAVE</span>
+            </a>
+            
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link">홈</a></li>
+                <li><a href="/donations" class="nav-link">나눔 찾기</a></li>
+                <li><a href="/mediaart" class="nav-link active">미디어아트</a></li>
+                <li><a href="/info?page=about" class="nav-link">소개</a></li>
+                <li><a href="/info?page=contact" class="nav-link">문의</a></li>
+            </ul>
+            
+            <div class="nav-actions">
+                <button class="btn-login" onclick="location.href='/'">
+                    홈으로
+                </button>
+            </div>
+            
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <section class="page-header">
+        <div class="container">
+            <h1>푸드셰어 미디어아트</h1>
+            <p>나눔의 아름다움을 인터렉티브 아트로 경험하세요</p>
+        </div>
+    </section>
+
+    <section class="art-section">
+        <div class="container">
+            <canvas id="artCanvas"></canvas>
+            
+            <div class="art-controls">
+                <button class="control-btn active" onclick="changeMode('circles')">
+                    <i class="fas fa-circle"></i> 나눔의 순환
+                </button>
+                <button class="control-btn" onclick="changeMode('particles')">
+                    <i class="fas fa-star"></i> 희망의 입자
+                </button>
+                <button class="control-btn" onclick="changeMode('waves')">
+                    <i class="fas fa-water"></i> 나눔의 파동
+                </button>
+                <button class="control-btn" onclick="changeMode('connections')">
+                    <i class="fas fa-project-diagram"></i> 연결의 네트워크
+                </button>
+            </div>
+            
+            <div class="art-description">
+                <h3>작품 소개</h3>
+                <p>
+                    이 인터렉티브 미디어아트는 FoodSave의 핵심 가치인 '나눔'과 '연결'을 시각적으로 표현합니다. 
+                    마우스나 터치로 움직이면 화면 속 요소들이 반응하며, 음식을 나누는 행위가 만들어내는 
+                    아름다운 연결의 파동을 보여줍니다.
+                </p>
+                
+                <div class="instruction-box">
+                    <h4>인터렉션 가이드</h4>
+                    <ul class="instruction-list">
+                        <li><i class="fas fa-mouse"></i> <strong>마우스 이동:</strong> 커서를 움직여 요소들과 상호작용하세요</li>
+                        <li><i class="fas fa-hand-pointer"></i> <strong>클릭/터치:</strong> 화면을 클릭하거나 터치하면 새로운 요소가 생성됩니다</li>
+                        <li><i class="fas fa-mobile-alt"></i> <strong>모바일:</strong> 손가락으로 화면을 터치하고 드래그하세요</li>
+                        <li><i class="fas fa-keyboard"></i> <strong>방향키:</strong> 키보드 화살표로도 제어할 수 있습니다</li>
+                        <li><i class="fas fa-palette"></i> <strong>모드 변경:</strong> 위의 버튼으로 다양한 시각화를 경험하세요</li>
+                    </ul>
+                </div>
+                
+                <h3>작품의 의미</h3>
+                <p>
+                    <strong>나눔의 순환:</strong> 원들이 끊임없이 움직이며 서로 영향을 주고받는 모습은 
+                    음식 나눔이 만들어내는 선순환을 상징합니다.
+                </p>
+                <p>
+                    <strong>희망의 입자:</strong> 수많은 작은 입자들이 모여 큰 흐름을 만드는 것처럼, 
+                    작은 나눔이 모여 큰 변화를 만듭니다.
+                </p>
+                <p>
+                    <strong>나눔의 파동:</strong> 한 번의 나눔이 만들어내는 파장이 멀리까지 퍼져나가는 모습을 표현합니다.
+                </p>
+                <p>
+                    <strong>연결의 네트워크:</strong> 기부자와 수령자, 그리고 우리 모두가 하나로 연결된 
+                    아름다운 네트워크를 시각화합니다.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3 class="footer-logo">
+                        <span>FOOD</span><span class="accent">SAVE</span>
+                    </h3>
+                    <p>음식을 나누고, 행복을 더하는<br>지속가능한 푸드 셰어링 플랫폼</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 FoodSave. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById('artCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Canvas 크기 설정
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 마우스, 터치, 키보드 입력 통합
+        let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+        let keyX = canvas.width / 2;
+        let keyY = canvas.height / 2;
+        let mode = 'circles';
+        
+        // 마우스 이벤트
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+        });
+        
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            addElements(x, y);
+        });
+        
+        // 터치 이벤트 (모바일 지원)
+        canvas.addEventListener('touchstart', handleTouch, { passive: false });
+        canvas.addEventListener('touchmove', handleTouch, { passive: false });
+        canvas.addEventListener('touchend', handleTouch, { passive: false });
+        
+        function handleTouch(e) {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0] || e.changedTouches[0];
+            
+            if (touch) {
+                mouse.x = touch.clientX - rect.left;
+                mouse.y = touch.clientY - rect.top;
+                
+                // 터치 시작 시 요소 추가
+                if (e.type === 'touchstart') {
+                    addElements(mouse.x, mouse.y);
+                }
+            }
+        }
+        
+        // 요소 추가 함수
+        function addElements(x, y) {
+            if (mode === 'circles') {
+                circles.push(new Circle(x, y));
+            } else if (mode === 'particles') {
+                for (let i = 0; i < 20; i++) {
+                    particles.push(new Particle(x, y));
+                }
+            } else if (mode === 'connections') {
+                nodes.push(new Node(x, y));
+            }
+        }
+        
+        // 키보드 입력
+        const keySpeed = 5;
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') keyX -= keySpeed;
+            if (e.key === 'ArrowRight') keyX += keySpeed;
+            if (e.key === 'ArrowUp') keyY -= keySpeed;
+            if (e.key === 'ArrowDown') keyY += keySpeed;
+            
+            keyX = Math.max(0, Math.min(canvas.width, keyX));
+            keyY = Math.max(0, Math.min(canvas.height, keyY));
+            mouse.x = keyX;
+            mouse.y = keyY;
+        });
+        
+        // 원 클래스
+        class Circle {
+            constructor(x, y) {
+                this.x = x || Math.random() * canvas.width;
+                this.y = y || Math.random() * canvas.height;
+                this.radius = Math.random() * 30 + 10;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2;
+                this.color = `hsl(${Math.random() * 60 + 20}, 70%, 60%)`;
+                this.opacity = Math.random() * 0.5 + 0.3;
+            }
+            
+            update() {
+                const dx = mouse.x - this.x;
+                const dy = mouse.y - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist < 150) {
+                    this.vx += dx / dist * 0.1;
+                    this.vy += dy / dist * 0.1;
+                }
+                
+                const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+                if (speed > 3) {
+                    this.vx = (this.vx / speed) * 3;
+                    this.vy = (this.vy / speed) * 3;
+                }
+                
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                this.vx *= 0.98;
+                this.vy *= 0.98;
+                
+                if (this.x < this.radius || this.x > canvas.width - this.radius) {
+                    this.vx *= -0.8;
+                    this.x = Math.max(this.radius, Math.min(canvas.width - this.radius, this.x));
+                }
+                if (this.y < this.radius || this.y > canvas.height - this.radius) {
+                    this.vy *= -0.8;
+                    this.y = Math.max(this.radius, Math.min(canvas.height - this.radius, this.y));
+                }
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.opacity;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        // 입자 클래스
+        class Particle {
+            constructor(x, y) {
+                this.x = x || Math.random() * canvas.width;
+                this.y = y || Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1;
+                this.vx = (Math.random() - 0.5) * 3;
+                this.vy = (Math.random() - 0.5) * 3;
+                this.life = 1;
+                this.decay = Math.random() * 0.01 + 0.005;
+                this.color = `hsl(${Math.random() * 60 + 20}, 70%, 60%)`;
+            }
+            
+            update() {
+                const dx = mouse.x - this.x;
+                const dy = mouse.y - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist < 100) {
+                    this.vx += dx / dist * 0.3;
+                    this.vy += dy / dist * 0.3;
+                }
+                
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life -= this.decay;
+                
+                this.vx *= 0.99;
+                this.vy *= 0.99;
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.life;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        // 파동 클래스
+        class Wave {
+            constructor() {
+                this.offset = Math.random() * Math.PI * 2;
+                this.speed = Math.random() * 0.02 + 0.01;
+                this.amplitude = Math.random() * 30 + 20;
+                this.y = Math.random() * canvas.height;
+                this.color = `hsl(${Math.random() * 60 + 20}, 70%, 60%)`;
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 2;
+                ctx.globalAlpha = 0.5;
+                
+                for (let x = 0; x < canvas.width; x += 5) {
+                    const mouseInfluence = Math.max(0, 100 - Math.abs(mouse.x - x)) / 100;
+                    const y = this.y + Math.sin(x * 0.01 + this.offset) * this.amplitude * (1 + mouseInfluence);
+                    
+                    if (x === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                
+                ctx.stroke();
+                ctx.globalAlpha = 1;
+                this.offset += this.speed;
+            }
+        }
+        
+        // 노드 클래스
+        class Node {
+            constructor(x, y) {
+                this.x = x || Math.random() * canvas.width;
+                this.y = y || Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 1;
+                this.vy = (Math.random() - 0.5) * 1;
+                this.radius = 5;
+            }
+            
+            update() {
+                const dx = mouse.x - this.x;
+                const dy = mouse.y - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist < 200) {
+                    this.vx += dx / dist * 0.05;
+                    this.vy += dy / dist * 0.05;
+                }
+                
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                this.vx *= 0.95;
+                this.vy *= 0.95;
+                
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+                
+                this.x = Math.max(0, Math.min(canvas.width, this.x));
+                this.y = Math.max(0, Math.min(canvas.height, this.y));
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = '#8B4513';
+                ctx.fill();
+            }
+        }
+        
+        // 초기화
+        let circles = [];
+        let particles = [];
+        let waves = [];
+        let nodes = [];
+        
+        for (let i = 0; i < 15; i++) circles.push(new Circle());
+        for (let i = 0; i < 100; i++) particles.push(new Particle());
+        for (let i = 0; i < 5; i++) waves.push(new Wave());
+        for (let i = 0; i < 30; i++) nodes.push(new Node());
+        
+        // 애니메이션 루프
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (mode === 'circles') {
+                circles.forEach(circle => {
+                    circle.update();
+                    circle.draw();
+                });
+            } else if (mode === 'particles') {
+                particles = particles.filter(p => p.life > 0);
+                while (particles.length < 100) particles.push(new Particle());
+                particles.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+                });
+            } else if (mode === 'waves') {
+                waves.forEach(wave => wave.draw());
+            } else if (mode === 'connections') {
+                nodes.forEach(node => {
+                    node.update();
+                    node.draw();
+                });
+                
+                for (let i = 0; i < nodes.length; i++) {
+                    for (let j = i + 1; j < nodes.length; j++) {
+                        const dx = nodes[i].x - nodes[j].x;
+                        const dy = nodes[i].y - nodes[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (dist < 150) {
+                            ctx.beginPath();
+                            ctx.strokeStyle = '#8B4513';
+                            ctx.globalAlpha = (150 - dist) / 150 * 0.3;
+                            ctx.lineWidth = 1;
+                            ctx.moveTo(nodes[i].x, nodes[i].y);
+                            ctx.lineTo(nodes[j].x, nodes[j].y);
+                            ctx.stroke();
+                            ctx.globalAlpha = 1;
+                        }
+                    }
+                }
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        animate();
+        
+        // 모드 변경
+        function changeMode(newMode) {
+            mode = newMode;
+            document.querySelectorAll('.control-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.closest('.control-btn').classList.add('active');
+        }
+        
+        // 모바일 메뉴 토글
+        function toggleMobileMenu() {
+            const navMenu = document.querySelector('.nav-menu');
+            navMenu.classList.toggle('active');
+        }
+        
+        window.changeMode = changeMode;
+        window.toggleMobileMenu = toggleMobileMenu;
+    </script>
+</body>
+</html>

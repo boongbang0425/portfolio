@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>실천가이드 - CAU Green Campus</title>
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --sage-bg: #A8B89A;
+            --sage-light: #C4D4B6;
+            --sage-dark: #8FA07A;
+            --forest-green: #2D4A1C;
+            --forest-mid: #3D5A2C;
+            --white: #FFFFFF;
+            --pale-grey: #F0F0F0;
+            --warm-grey: #E5E5E5;
+            --text-dark: #2C3E2D;
+            --text-muted: #5A6B5A;
+            --text-light: #7A8B7A;
+            --shadow-float: 0 20px 60px rgba(45, 74, 28, 0.15);
+            --shadow-card: 0 8px 32px rgba(45, 74, 28, 0.08);
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--sage-bg);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow-card);
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--forest-green);
+        }
+
+        .nav-logo { width: 32px; height: 32px; }
+        .brand-text { font-weight: 700; font-size: 1.1rem; }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--forest-green);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after { width: 100%; }
+
+        .nav-links a:hover,
+        .nav-links a.active { color: var(--forest-green); }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .main-content { padding-top: 5rem; }
+
+        .page-header {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: linear-gradient(180deg, var(--sage-bg) 0%, var(--sage-light) 100%);
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .page-header h1 svg {
+            width: 32px;
+            height: 32px;
+            stroke: var(--forest-green);
+        }
+
+        .page-header p {
+            font-size: 1rem;
+            color: var(--text-muted);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .section { padding: 4rem 2rem; }
+
+        .section-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .section-header h2 svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--forest-green);
+        }
+
+        .section-header p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        /* Campus Section */
+        .campus-section { background: var(--white); }
+
+        .campus-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+        }
+
+        .campus-card {
+            background: var(--pale-grey);
+            border-radius: 14px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .campus-card::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--forest-green);
+            border-radius: 0 0 14px 14px;
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .campus-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-float);
+        }
+
+        .campus-card:hover::before { transform: scaleX(1); }
+
+        .campus-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--white);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            box-shadow: var(--shadow-card);
+        }
+
+        .campus-icon svg {
+            width: 22px;
+            height: 22px;
+            stroke: var(--forest-green);
+        }
+
+        .campus-card h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+
+        .campus-card p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+        }
+
+        .campus-effect {
+            font-size: 0.7rem;
+            color: var(--forest-green);
+            font-weight: 600;
+            background: rgba(45, 74, 28, 0.1);
+            padding: 0.35rem 0.7rem;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        /* Programs Section */
+        .programs-section {
+            background: var(--forest-green);
+            color: var(--white);
+        }
+
+        .programs-section .section-header h2,
+        .programs-section .section-header p { color: var(--white); }
+        .programs-section .section-header p { opacity: 0.7; }
+        .programs-section .section-header h2 svg { stroke: var(--white); }
+
+        .programs-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem;
+        }
+
+        .program-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 1.75rem;
+            transition: all 0.4s ease;
+        }
+
+        .program-card:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-4px);
+        }
+
+        .program-header {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .program-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .program-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--sage-light);
+        }
+
+        .program-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .program-card p {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .program-tag {
+            display: inline-block;
+            padding: 0.3rem 0.75rem;
+            background: rgba(156, 175, 136, 0.3);
+            border-radius: 50px;
+            font-size: 0.7rem;
+            color: var(--sage-light);
+        }
+
+        /* Checklist Section */
+        .checklist-container {
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        .checklist-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-float);
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            padding: 0.85rem;
+            border-radius: 10px;
+            margin-bottom: 0.6rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--pale-grey);
+            border: 2px solid transparent;
+        }
+
+        .checklist-item:hover {
+            transform: translateX(4px);
+            border-color: var(--sage-dark);
+        }
+
+        .checklist-item.checked {
+            background: rgba(45, 74, 28, 0.1);
+            border-color: var(--forest-green);
+        }
+
+        .checklist-checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--text-light);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .checklist-item.checked .checklist-checkbox {
+            background: var(--forest-green);
+            border-color: var(--forest-green);
+        }
+
+        .checklist-checkbox svg {
+            width: 14px;
+            height: 14px;
+            stroke: var(--white);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .checklist-item.checked .checklist-checkbox svg { opacity: 1; }
+
+        .checklist-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .checklist-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke: var(--text-muted);
+        }
+
+        .checklist-content { flex: 1; }
+
+        .checklist-content h4 {
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.2rem;
+        }
+
+        .checklist-saving {
+            font-size: 0.7rem;
+            color: var(--forest-green);
+            font-weight: 600;
+        }
+
+        .checklist-total {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid var(--pale-grey);
+        }
+
+        .checklist-total h3 {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        .total-saving {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--forest-green);
+            transition: transform 0.2s ease;
+        }
+
+        .total-unit {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Challenge Section */
+        .challenge-section {
+            background: linear-gradient(180deg, var(--sage-bg) 0%, var(--sage-light) 100%);
+        }
+
+        .challenge-card {
+            max-width: 500px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 16px;
+            padding: 2.25rem;
+            text-align: center;
+            box-shadow: var(--shadow-float);
+        }
+
+        .challenge-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 0.9rem;
+            background: var(--forest-green);
+            border-radius: 50px;
+            color: var(--white);
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+        }
+
+        .challenge-badge svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .challenge-card h3 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 0.85rem;
+        }
+
+        .challenge-details {
+            text-align: left;
+            margin: 1.25rem 0;
+        }
+
+        .challenge-detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--pale-grey);
+            font-size: 0.85rem;
+        }
+
+        .challenge-detail-item:last-child { border-bottom: none; }
+
+        .challenge-detail-item span:first-child {
+            font-weight: 600;
+            min-width: 45px;
+            color: var(--text-muted);
+        }
+
+        .challenge-effect {
+            background: rgba(45, 74, 28, 0.1);
+            border-radius: 10px;
+            padding: 0.85rem;
+            margin-top: 1.25rem;
+        }
+
+        .challenge-effect p {
+            font-size: 0.8rem;
+            color: var(--forest-green);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .challenge-effect svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Timeline Section */
+        .timeline-section { background: var(--white); }
+
+        .timeline {
+            max-width: 650px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--sage-dark) 0%, var(--forest-green) 100%);
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(odd) { flex-direction: row-reverse; }
+
+        .timeline-content {
+            width: 42%;
+            background: var(--pale-grey);
+            border-radius: 12px;
+            padding: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-content:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content { text-align: right; }
+
+        .timeline-year {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 48px;
+            height: 48px;
+            background: var(--white);
+            border: 3px solid var(--sage-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: var(--forest-green);
+            box-shadow: var(--shadow-card);
+        }
+
+        .timeline-content h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: var(--forest-green);
+        }
+
+        .timeline-content p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .timeline-item:last-child .timeline-year {
+            background: var(--forest-green);
+            color: var(--white);
+            border: none;
+        }
+
+        .timeline-item:last-child .timeline-year svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--white);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--forest-green);
+            color: var(--white);
+            padding: 2rem;
+        }
+
+        .footer-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        /* [수정] .footer-main 정렬 추가 */
+        .footer-main {
+            width: 100%; /* 상단을 꽉 채우게 하여 Copyright를 아래로 밀어냄 */
+            display: flex;
+            justify-content: space-between; /* 내부 요소 양옆 배분 */
+            align-items: center; /* 수직 중앙 정렬 */
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .footer-brand svg { width: 24px; height: 24px; }
+        .footer-brand span { font-weight: 600; font-size: 0.9rem; }
+
+        .footer-info {
+            text-align: right;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* 로고와 학생 명단을 감싸는 컨테이너 */
+        .footer-left-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        /* 학생 명단 스타일 */
+        .student-list {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.4;
+            margin-left: 34px; /* 로고 아이콘 너비 + 간격만큼 들여쓰기 */
+        }
+
+        /* 하단 라이센스 스타일 */
+        .footer-copyright {
+            width: 100%; /* [수정] 너비를 100%로 주어 강제로 맨 아래로 줄바꿈 배치 */
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            text-align: center;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* 모바일 반응형 추가 수정 */
+        @media (max-width: 768px) {
+            .student-list {
+                margin-left: 0; /* 모바일에서는 가운데 정렬되므로 들여쓰기 제거 */
+                margin-bottom: 1rem;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .campus-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--white);
+                flex-direction: column;
+                padding: 1.5rem;
+                box-shadow: var(--shadow-card);
+                gap: 1rem;
+            }
+
+            .nav-links.active { display: flex; }
+            .mobile-menu-btn { display: block; }
+
+            .page-header { padding: 2rem 1.5rem; }
+            .page-header h1 { font-size: 1.5rem; }
+            .section { padding: 3rem 1.5rem; }
+            .campus-grid { grid-template-columns: 1fr; }
+            .programs-grid { grid-template-columns: 1fr; }
+            .checklist-card { padding: 1.5rem; }
+
+            .timeline::before { left: 22px; }
+
+            .timeline-item {
+                flex-direction: row !important;
+                padding-left: 65px;
+            }
+
+            .timeline-content {
+                width: 100%;
+                text-align: left !important;
+            }
+
+            .timeline-year {
+                left: 22px;
+                width: 40px;
+                height: 40px;
+                font-size: 0.65rem;
+            }
+
+            .footer-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            /* [수정] 모바일용 footer-main 정렬 */
+            .footer-main {
+                flex-direction: column; /* 모바일에서는 세로 정렬 */
+                gap: 1.5rem;
+            }
+
+            .footer-info { text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <svg class="nav-logo" viewBox="0 0 32 32" fill="none">
+                    <circle cx="16" cy="16" r="14" stroke="#2D4A1C" stroke-width="2"/>
+                    <path d="M16 6C16 6 20 12 20 18C20 22 18 26 16 26C14 26 12 22 12 18C12 12 16 6 16 6Z" fill="#2D4A1C"/>
+                </svg>
+                <span class="brand-text">CAU Green Campus</span>
+            </a>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html">홈</a>
+                <a href="calculator.html">탄소계산기</a>
+                <a href="action.html" class="active">실천가이드</a>
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2D4A1C" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1>
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                    <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+                    <path d="M7 13.5l-1.5 6L12 17l6.5 2.5L17 13.5"/>
+                    <circle cx="12" cy="8" r="2"/>
+                </svg>
+                캠퍼스 실천 가이드
+            </h1>
+            <p>오늘부터 중앙대 캠퍼스에서 바로 실천할 수 있는 친환경 행동을 알아보세요.</p>
+        </div>
+
+        <section class="section campus-section">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2>
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                            <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+                            <line x1="9" y1="3" x2="9" y2="18"/>
+                            <line x1="15" y1="6" x2="15" y2="21"/>
+                        </svg>
+                        캠퍼스 친환경 시설
+                    </h2>
+                    <p>중앙대 곳곳에 있는 친환경 시설을 활용해보세요</p>
+                </div>
+                <div class="campus-grid">
+                    <div class="campus-card">
+                        <div class="campus-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
+                                <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+                            </svg>
+                        </div>
+                        <h3>텀블러 할인 카페</h3>
+                        <p>중앙도서관 1층, 학생회관 지하</p>
+                        <div class="campus-effect">1회 30g CO₂ 절감</div>
+                    </div>
+                    <div class="campus-card">
+                        <div class="campus-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                <polyline points="23 4 23 10 17 10"/>
+                                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                            </svg>
+                        </div>
+                        <h3>분리수거 스테이션</h3>
+                        <p>각 건물 1층 로비</p>
+                        <div class="campus-effect">재활용률 40% 향상</div>
+                    </div>
+                    <div class="campus-card">
+                        <div class="campus-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                <circle cx="5.5" cy="17.5" r="3.5"/>
+                                <circle cx="18.5" cy="17.5" r="3.5"/>
+                                <path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM12 17.5V14l-3-3 4-3 2 3h3"/>
+                            </svg>
+                        </div>
+                        <h3>자전거 거치대</h3>
+                        <p>정문, 후문, 기숙사 앞</p>
+                        <div class="campus-effect">교통 탄소 제로화</div>
+                    </div>
+                    <div class="campus-card">
+                        <div class="campus-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+                                <path d="M7 13.5l-1.5 6L12 17l6.5 2.5L17 13.5"/>
+                            </svg>
+                        </div>
+                        <h3>캠퍼스 숲 산책로</h3>
+                        <p>중앙광장 → 후문 구간</p>
+                        <div class="campus-effect">일일 1.2kg CO₂ 흡수</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section programs-section">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2>
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="2" y1="12" x2="22" y2="12"/>
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                        </svg>
+                        환경 프로그램 & 동아리
+                    </h2>
+                    <p>함께하면 더 큰 변화를 만들 수 있습니다</p>
+                </div>
+                <div class="programs-grid">
+                    <div class="program-card">
+                        <div class="program-header">
+                            <div class="program-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                    <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+                                    <path d="M7 13.5l-1.5 6L12 17l6.5 2.5L17 13.5"/>
+                                </svg>
+                            </div>
+                            <h3>그린캠퍼스</h3>
+                        </div>
+                        <p>캠퍼스 환경 개선 프로젝트를 진행하는 환경 동아리입니다. 분리수거 캠페인, 플로깅, 환경 교육 등 다양한 활동을 합니다.</p>
+                        <span class="program-tag">매 학기 초 모집</span>
+                    </div>
+                    <div class="program-card">
+                        <div class="program-header">
+                            <div class="program-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="2" y1="12" x2="22" y2="12"/>
+                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/>
+                                </svg>
+                            </div>
+                            <h3>에코브릿지</h3>
+                        </div>
+                        <p>환경 봉사와 교육을 결합한 활동을 진행합니다. 지역 사회 환경 정화, 초등학교 환경 교육 등에 참여할 수 있습니다.</p>
+                        <span class="program-tag">홈페이지 상시 모집</span>
+                    </div>
+                    <div class="program-card">
+                        <div class="program-header">
+                            <div class="program-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                                </svg>
+                            </div>
+                            <h3>환경 교양 수업</h3>
+                        </div>
+                        <p>"기후변화와 에너지", "지속가능발전의 이해" 등 환경 관련 교양 수업을 통해 전문 지식을 쌓을 수 있습니다.</p>
+                        <span class="program-tag">수강신청 기간 확인</span>
+                    </div>
+                    <div class="program-card">
+                        <div class="program-header">
+                            <div class="program-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                            </div>
+                            <h3>탄소중립 챌린지</h3>
+                        </div>
+                        <p>학교에서 주관하는 월간 환경 이벤트입니다. 참여 인증 시 소정의 상품과 마일리지를 받을 수 있습니다.</p>
+                        <span class="program-tag">포털 공지 확인</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2>
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                            <polyline points="9 11 12 14 22 4"/>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                        </svg>
+                        일상 실천 체크리스트
+                    </h2>
+                    <p>오늘 실천한 항목을 체크하고 절감량을 확인하세요</p>
+                </div>
+                <div class="checklist-container">
+                    <div class="checklist-card">
+                        <div class="checklist-item" data-saving="30">
+                            <div class="checklist-checkbox">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="3">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                            </div>
+                            <div class="checklist-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                    <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
+                                    <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+                                </svg>
+                            </div>
+                            <div class="checklist-content">
+                                <h4>텀블러 사용하기</h4>
+                                <span class="checklist-saving">30g CO₂/회</span>
+                            </div>
+                        </div>
+                        <div class="checklist-item" data-saving="10">
+                            <div class="checklist-checkbox">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="3">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                            </div>
+                            <div class="checklist-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <path d="M14 2v6h6"/>
+                                </svg>
+                            </div>
+                            <div class="checklist-content">
+                                <h4>이면지 활용하기</h4>
+                                <span class="checklist-saving">10g CO₂/장</span>
+                            </div>
+                        </div>
+                        <div class="checklist-item" data-saving="15">
+                            <div class="checklist-checkbox">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="3">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                            </div>
+                            <div class="checklist-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                    <path d="M2 18v3h3"/>
+                                    <path d="M2 6V3h3"/>
+                                    <path d="M22 18v3h-3"/>
+                                    <path d="M22 6V3h-3"/>
+                                    <path d="M9 14l3-3 3 3"/>
+                                </svg>
+                            </div>
+                            <div class="checklist-content">
+                                <h4>계단 이용하기</h4>
+                                <span class="checklist-saving">15g CO₂/층</span>
+                            </div>
+                        </div>
+                        <div class="checklist-item" data-saving="100">
+                            <div class="checklist-checkbox">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="3">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                            </div>
+                            <div class="checklist-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                    <path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/>
+                                </svg>
+                            </div>
+                            <div class="checklist-content">
+                                <h4>에어컨 26°C 설정</h4>
+                                <span class="checklist-saving">100g CO₂/시간</span>
+                            </div>
+                        </div>
+                        <div class="checklist-item" data-saving="200">
+                            <div class="checklist-checkbox">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="3">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                            </div>
+                            <div class="checklist-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                    <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
+                                    <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+                                    <line x1="6" y1="1" x2="6" y2="4"/>
+                                    <line x1="10" y1="1" x2="10" y2="4"/>
+                                    <line x1="14" y1="1" x2="14" y2="4"/>
+                                </svg>
+                            </div>
+                            <div class="checklist-content">
+                                <h4>잔반 없이 먹기</h4>
+                                <span class="checklist-saving">200g CO₂/식사</span>
+                            </div>
+                        </div>
+                        <div class="checklist-item" data-saving="150">
+                            <div class="checklist-checkbox">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="3">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                            </div>
+                            <div class="checklist-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                    <rect x="4" y="3" width="16" height="16" rx="2"/>
+                                    <path d="M4 11h16"/>
+                                    <circle cx="8" cy="15" r="1"/>
+                                    <circle cx="16" cy="15" r="1"/>
+                                </svg>
+                            </div>
+                            <div class="checklist-content">
+                                <h4>대중교통 이용하기</h4>
+                                <span class="checklist-saving">150g CO₂/10km</span>
+                            </div>
+                        </div>
+
+                        <div class="checklist-total">
+                            <h3>오늘의 절감량</h3>
+                            <span class="total-saving" id="totalSaving">0</span>
+                            <span class="total-unit">g CO₂</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section challenge-section">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2>
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                        이달의 챌린지
+                    </h2>
+                    <p>함께 참여하고 더 큰 영향력을 만들어요</p>
+                </div>
+                <div class="challenge-card">
+                    <span class="challenge-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+                            <path d="M7 13.5l-1.5 6L12 17l6.5 2.5L17 13.5"/>
+                        </svg>
+                        11월 챌린지
+                    </span>
+                    <h3>NO 일회용 위크</h3>
+                    <div class="challenge-details">
+                        <div class="challenge-detail-item">
+                            <span>목표</span>
+                            <span>1주일간 일회용품 사용 제로</span>
+                        </div>
+                        <div class="challenge-detail-item">
+                            <span>기간</span>
+                            <span>11월 18일 ~ 11월 24일</span>
+                        </div>
+                        <div class="challenge-detail-item">
+                            <span>참여</span>
+                            <span>인스타그램 #CAU그린챌린지</span>
+                        </div>
+                        <div class="challenge-detail-item">
+                            <span>보상</span>
+                            <span>참여자 전원 에코백 증정</span>
+                        </div>
+                    </div>
+                    <div class="challenge-effect">
+                        <p>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="2" y1="12" x2="22" y2="12"/>
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/>
+                            </svg>
+                            예상 효과: 참여자 100명 × 주간 2kg = 200kg CO₂ 절감
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section timeline-section">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2>
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        중앙대의 기후 대응 여정
+                    </h2>
+                    <p>1위를 향한 우리 대학의 노력</p>
+                </div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h4>탄소중립 선언</h4>
+                            <p>2050년까지 캠퍼스 탄소중립 달성을 공식 선언</p>
+                        </div>
+                        <div class="timeline-year">2020</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h4>인프라 전환</h4>
+                            <p>전체 건물 LED 조명 100% 전환, 태양광 패널 설치</p>
+                        </div>
+                        <div class="timeline-year">2021</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h4>학생 참여 활성화</h4>
+                            <p>환경 동아리 3개 → 7개 확대, 학생 주도 캠페인</p>
+                        </div>
+                        <div class="timeline-year">2022</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h4>제도 정비</h4>
+                            <p>친환경 구매 정책, 에너지 절감 인센티브 제도 도입</p>
+                        </div>
+                        <div class="timeline-year">2023</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h4>기후 대응 1위 달성</h4>
+                            <p>서울 20개 대학 중 1위 달성</p>
+                        </div>
+                        <div class="timeline-year">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-main">
+                <div class="footer-left-group">
+                    <div class="footer-brand">
+                        <svg viewBox="0 0 32 32" fill="none">
+                            <circle cx="16" cy="16" r="14" stroke="white" stroke-width="2"/>
+                            <path d="M16 6C16 6 20 12 20 18C20 22 18 26 16 26C14 26 12 22 12 18C12 12 16 6 16 6Z" fill="white"/>
+                        </svg>
+                        <span>CAU Green Campus Action</span>
+                    </div>
+                    <div class="student-list">
+                        <div>20195432 임병현</div>
+                        <div>20215427 엄지용</div>
+                        <div>20233265 후쿠다 나나호(ふくだ　ななほ)</div>
+                    </div>
+                </div>
+
+                <div class="footer-info">
+                    <p>2025 생성형 AI 모델 활용 경진대회 2부</p>
+                    <p>중앙대학교 교육혁신원</p>
+                </div>
+            </div>
+            
+            <div class="footer-copyright">
+                Copyright © 2025 CAU Green Campus Action. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            document.getElementById('navLinks').classList.toggle('active');
+        });
+
+        // Checklist
+        const checklistItems = document.querySelectorAll('.checklist-item');
+        const totalSaving = document.getElementById('totalSaving');
+        let currentTotal = 0;
+
+        checklistItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const saving = parseInt(item.dataset.saving);
+                
+                if (item.classList.contains('checked')) {
+                    item.classList.remove('checked');
+                    currentTotal -= saving;
+                } else {
+                    item.classList.add('checked');
+                    currentTotal += saving;
+                }
+                
+                totalSaving.textContent = currentTotal;
+                totalSaving.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    totalSaving.style.transform = 'scale(1)';
+                }, 150);
+            });
+        });
+
+        // Intersection Observer
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.campus-card, .program-card, .timeline-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'all 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

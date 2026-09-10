@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나눔 상세 - FoodSave</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/additional-styles.css">
+    <link rel="stylesheet" href="/fixes.css">
+    
+    <style>
+        .detail-hero {
+            background: linear-gradient(135deg, #A0522D 0%, #8B4513 100%);
+            padding: 3rem 0;
+            margin-top: 80px;
+        }
+        
+        .detail-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .detail-map-section {
+            position: relative;
+        }
+        
+        /* 지도 스타일 */
+        #map {
+            width: 100%;
+            height: 500px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            z-index: 1;
+        }
+        
+        .detail-map-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .detail-info-section {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .detail-header {
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 2rem;
+        }
+        
+        .detail-category {
+            display: inline-block;
+            background: #FFF8DC;
+            color: #8B4513;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .detail-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+        
+        .detail-meta {
+            display: flex;
+            gap: 2rem;
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .meta-item i {
+            color: #8B4513;
+        }
+        
+        .detail-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-card {
+            background: #FFF8DC;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            display: block;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #8B4513;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.875rem;
+        }
+        
+        .detail-description {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .detail-description h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+        
+        .detail-description p {
+            line-height: 1.8;
+            color: #555;
+        }
+        
+        .detail-info-grid {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .info-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .info-value {
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+        
+        .detail-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .btn-request {
+            flex: 1;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #A0522D 0%, #8B4513 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .btn-request:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-favorite {
+            padding: 1rem 1.5rem;
+            background: white;
+            border: 2px solid #8B4513;
+            color: #8B4513;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-favorite:hover {
+            background: #8B4513;
+            color: white;
+        }
+        
+        .btn-favorite.active {
+            background: #8B4513;
+            color: white;
+        }
+        
+        .donor-info {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            margin-top: 2rem;
+        }
+        
+        .donor-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .donor-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .donor-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .donor-type {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .donor-stats {
+            display: flex;
+            gap: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .donor-stat {
+            text-align: center;
+        }
+        
+        .donor-stat-value {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #8B4513;
+        }
+        
+        .donor-stat-label {
+            color: #666;
+            font-size: 0.875rem;
+        }
+        
+        .loading-spinner {
+            text-align: center;
+            padding: 4rem;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #8B4513;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            text-align: center;
+            padding: 4rem;
+            color: #d32f2f;
+        }
+        
+        @media (max-width: 768px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            #map {
+                height: 300px;
+            }
+            
+            .detail-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .detail-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <span class="logo-text">FOOD</span>
+                <span class="logo-accent">SAVE</span>
+            </a>
+            
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link">홈</a></li>
+                <li><a href="/donations" class="nav-link active">나눔 찾기</a></li>
+                <li><a href="/mediaart" class="nav-link">미디어아트</a></li>
+                <li><a href="/info?page=about" class="nav-link">소개</a></li>
+                <li><a href="/info?page=contact" class="nav-link">문의</a></li>
+            </ul>
+            
+            <div class="nav-actions">
+                <button class="nav-icon-btn search-btn" onclick="toggleSearch()">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button class="nav-icon-btn" onclick="showFavorites()">
+                    <i class="far fa-heart"></i>
+                    <span class="badge" id="favCount">0</span>
+                </button>
+                <button class="btn-login" id="loginBtn" onclick="showAuthModal()">
+                    로그인
+                </button>
+                <div class="user-menu" id="userMenu" style="display: none;">
+                    <img src="" alt="Profile" class="user-avatar" id="userAvatar">
+                    <span class="user-name" id="userName"></span>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <a href="/dashboard"><i class="fas fa-tachometer-alt"></i> 대시보드</a>
+                        <a href="/profile"><i class="fas fa-user"></i> 프로필</a>
+                        <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 로그아웃</a>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+        
+        <div class="search-bar" id="searchBar">
+            <div class="search-container">
+                <input type="text" placeholder="원하는 음식을 검색해보세요..." id="searchInput">
+                <button onclick="performSearch()"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="detail-hero">
+        <div class="container">
+            <a href="/donations" style="color: white; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-arrow-left"></i> 나눔 목록으로 돌아가기
+            </a>
+        </div>
+    </div>
+
+    <div class="detail-container" id="detailContainer">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p style="margin-top: 1rem; color: #666;">로딩 중...</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3 class="footer-logo">
+                        <span>FOOD</span><span class="accent">SAVE</span>
+                    </h3>
+                    <p>음식을 나누고, 행복을 더하는<br>지속가능한 푸드 쉐어링 플랫폼</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>빠른 링크</h4>
+                    <ul>
+                        <li><a href="/donations">나눔 찾기</a></li>
+                        <li><a href="/info?page=about">소개</a></li>
+                        <li><a href="/mediaart">미디어아트</a></li>
+                        <li><a href="/info?page=contact">문의하기</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>서비스</h4>
+                    <ul>
+                        <li><a href="/info?page=donor-guide">기부자 가이드</a></li>
+                        <li><a href="/info?page=receiver-guide">수령자 가이드</a></li>
+                        <li><a href="/info?page=safety">안전 가이드</a></li>
+                        <li><a href="/info?page=faq">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>연락처</h4>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-envelope"></i> contact@foodsave.kr</li>
+                        <li><i class="fas fa-phone"></i> 02-1234-5678</li>
+                        <li><i class="fas fa-map-marker-alt"></i> 서울시 강남구</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 FoodSave. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal (Auth) -->
+    <div class="modal-overlay" id="authModal" onclick="closeAuthModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeAuthModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="modal-tabs">
+                <button class="modal-tab active" onclick="switchTab('login')">로그인</button>
+                <button class="modal-tab" onclick="switchTab('register')">회원가입</button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Login Form -->
+                <div class="tab-content active" id="loginTab">
+                    <form onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label>이메일</label>
+                            <input type="email" name="email" placeholder="your@email.com" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>비밀번호</label>
+                            <input type="password" name="password" placeholder="••••••••" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-full">
+                            로그인
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Register Form -->
+                <div class="tab-content" id="registerTab">
+                    <form onsubmit="handleRegister(event)">
+                        <div class="form-group">
+                            <label>이름</label>
+                            <input type="text" name="name" placeholder="홍길동" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>이메일</label>
+                            <input type="email" name="email" placeholder="your@email.com" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>비밀번호</label>
+                            <input type="password" name="password" placeholder="••••••••" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>사용자 유형</label>
+                            <div class="radio-group">
+                                <label class="radio">
+                                    <input type="radio" name="userType" value="receiver" checked>
+                                    <span>수령자 (일반 사용자)</span>
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="userType" value="donor">
+                                    <span>기부자 (가게/업체)</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>전화번호 (선택)</label>
+                            <input type="tel" name="phone" placeholder="010-1234-5678">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>주소 (선택)</label>
+                            <input type="text" name="address" placeholder="서울시 강남구">
+                        </div>
+                        
+                        <label class="checkbox">
+                            <input type="checkbox" required>
+                            <span><a href="#">이용약관</a> 및 <a href="#">개인정보처리방침</a>에 동의합니다</span>
+                        </label>
+                        
+                        <button type="submit" class="btn btn-primary btn-full">
+                            가입하기
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script src="/app.js"></script>
+    <script>
+        // 지도 인스턴스를 저장할 변수
+        let mapInstance = null;
+        
+        async function loadDonationDetail() {
+            const donationId = window.location.pathname.split('/').pop();
+            const container = document.getElementById('detailContainer');
+            
+            try {
+                const response = await fetch(`/api/donations/${donationId}`);
+                
+                if (!response.ok) {
+                    throw new Error('나눔 정보를 불러올 수 없습니다.');
+                }
+                
+                const donation = await response.json();
+                renderDonationDetail(donation);
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                        <h2>나눔 정보를 불러올 수 없습니다</h2>
+                        <p>${error.message}</p>
+                        <button class="btn btn-primary" onclick="window.location.href='/donations'" style="margin-top: 1rem;">
+                            나눔 목록으로 돌아가기
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        function renderDonationDetail(donation) {
+            const container = document.getElementById('detailContainer');
+            const isFavorite = APP_STATE.favorites.includes(donation.id);
+            
+            const expiryDate = new Date(donation.expiry_date || donation.expiry_time || Date.now() + 7*24*60*60*1000);
+            const now = new Date();
+            const daysLeft = Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24));
+            
+            // 주소 기반 좌표 매핑
+            const address = donation.pickup_address || donation.pickup_location || donation.location || '서울시청';
+            
+            // 지역별 좌표 매핑
+            const locationCoords = {
+                '강남': { lat: 37.4979, lng: 127.0276 },
+                '마포': { lat: 37.5663, lng: 126.9019 },
+                '홍대': { lat: 37.5563, lng: 126.9236 },
+                '송파': { lat: 37.5145, lng: 127.1059 },
+                '잠실': { lat: 37.5133, lng: 127.1028 },
+                '중구': { lat: 37.5641, lng: 126.9979 },
+                '명동': { lat: 37.5636, lng: 126.9860 },
+                '서초': { lat: 37.4837, lng: 127.0324 },
+                '용산': { lat: 37.5326, lng: 126.9905 },
+                '이촌': { lat: 37.5257, lng: 126.9657 },
+                '동대문': { lat: 37.5744, lng: 127.0399 },
+                '회기': { lat: 37.5896, lng: 127.0580 },
+                '광진': { lat: 37.5384, lng: 127.0822 },
+                '건대': { lat: 37.5403, lng: 127.0695 },
+                '성북': { lat: 37.5894, lng: 127.0167 },
+                '성신여대': { lat: 37.5925, lng: 127.0167 },
+                '은평': { lat: 37.6176, lng: 126.9227 },
+                '연신내': { lat: 37.6192, lng: 126.9210 },
+                '영등포': { lat: 37.5264, lng: 126.8962 },
+                '여의도': { lat: 37.5219, lng: 126.9245 },
+                '종로': { lat: 37.5735, lng: 126.9788 },
+                '광화문': { lat: 37.5720, lng: 126.9769 }
+            };
+            
+            // 주소에서 지역 찾기
+            let lat = 37.5665; // 기본값: 서울시청
+            let lng = 126.9780;
+            
+            for (const [area, coords] of Object.entries(locationCoords)) {
+                if (address.includes(area)) {
+                    lat = coords.lat;
+                    lng = coords.lng;
+                    break;
+                }
+            }
+            
+            container.innerHTML = `
+                <div class="detail-grid">
+                    <div class="detail-map-section">
+                        <div id="map"></div>
+                        <div class="detail-map-badge">
+                            <i class="fas fa-clock"></i> D-${daysLeft}
+                        </div>
+                    </div>
+                    
+                    <div class="detail-info-section">
+                        <div class="detail-header">
+                            <span class="detail-category">${donation.category_name || donation.category || '기타'}</span>
+                            <h1 class="detail-title">${donation.title}</h1>
+                            <div class="detail-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>${address}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="far fa-calendar"></i>
+                                    <span>${new Date(donation.created_at || Date.now()).toLocaleDateString('ko-KR')}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-stats">
+                            <div class="stat-card">
+                                <span class="stat-value">${donation.quantity || '1'}${donation.unit ? donation.unit : '개'}</span>
+                                <span class="stat-label">수량</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-value">D-${daysLeft}</span>
+                                <span class="stat-label">남은 기간</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-value">${donation.views || 0}</span>
+                                <span class="stat-label">조회수</span>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-description">
+                            <h3>상세 설명</h3>
+                            <p>${donation.description || '설명이 없습니다.'}</p>
+                        </div>
+                        
+                        <div class="detail-info-grid">
+                            <div class="info-row">
+                                <span class="info-label">픽업 가능 시간</span>
+                                <span class="info-value">${donation.pickup_time || donation.pickup_time_start && donation.pickup_time_end ? `${donation.pickup_time_start} - ${donation.pickup_time_end}` : '협의 가능'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">픽업 장소</span>
+                                <span class="info-value">${address}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">유통기한</span>
+                                <span class="info-value">${expiryDate.toLocaleDateString('ko-KR')}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-actions">
+                            <button class="btn-request" onclick="requestDonation(${donation.id})">
+                                <i class="fas fa-hand-holding-heart"></i> 나눔 신청하기
+                            </button>
+                            <button class="btn-favorite ${isFavorite ? 'active' : ''}" onclick="toggleFavoriteDetail(${donation.id})">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="donor-info">
+                    <div class="donor-header">
+                        <img src="${donation.donor_avatar || '/images/default-avatar.png'}" 
+                             alt="${donation.donor_name || '익명'}" 
+                             class="donor-avatar"
+                             onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(donation.donor_name || '익명')}&background=8B4513&color=fff'">
+                        <div>
+                            <div class="donor-name">${donation.donor_name || '익명'}</div>
+                            <div class="donor-type">${donation.donor_type === 'business' ? '업체' : '개인'} 기부자</div>
+                        </div>
+                    </div>
+                    <div class="donor-stats">
+                        <div class="donor-stat">
+                            <span class="donor-stat-value">${donation.donor_donations || 0}</span>
+                            <span class="donor-stat-label">총 나눔 횟수</span>
+                        </div>
+                        <div class="donor-stat">
+                            <span class="donor-stat-value">${donation.donor_rating || '5.0'}</span>
+                            <span class="donor-stat-label">평점</span>
+                        </div>
+                        <div class="donor-stat">
+                            <span class="donor-stat-value">${donation.donor_response_rate || '95'}%</span>
+                            <span class="donor-stat-label">응답률</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 지도 초기화 (DOM이 렌더링된 후)
+            setTimeout(() => {
+                initializeMap(lat, lng, address);
+            }, 100);
+        }
+        
+        function initializeMap(lat, lng, address) {
+            // 기존 지도 인스턴스가 있으면 제거
+            if (mapInstance) {
+                mapInstance.remove();
+            }
+            
+            // 새 지도 생성
+            mapInstance = L.map('map').setView([lat, lng], 15);
+            
+            // 타일 레이어 추가
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(mapInstance);
+            
+            // 마커 추가
+            const marker = L.marker([lat, lng]).addTo(mapInstance);
+            
+            // 팝업 추가
+            marker.bindPopup(`
+                <div style="text-align: center;">
+                    <b style="font-size: 14px;">픽업 위치</b><br>
+                    <span style="font-size: 12px; color: #666;">${address}</span>
+                </div>
+            `).openPopup();
+        }
+        
+        async function requestDonation(donationId) {
+            const token = localStorage.getItem('foodsave_token');
+            
+            if (!token) {
+                showToast('로그인이 필요한 서비스입니다.');
+                showAuthModal();
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/reservations`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        donationId: donationId,
+                        notes: ''
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showToast('나눔 신청이 완료되었습니다!');
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 1500);
+                } else {
+                    showToast(data.error || '신청 중 오류가 발생했습니다.');
+                }
+            } catch (error) {
+                showToast('신청 중 오류가 발생했습니다.');
+            }
+        }
+        
+        function toggleFavoriteDetail(donationId) {
+            toggleFavorite(donationId);
+            const btn = document.querySelector('.btn-favorite');
+            if (btn) {
+                btn.classList.toggle('active');
+            }
+        }
+        
+        // *** 중요: DOMContentLoaded 이벤트 리스너 추가 ***
+        // 이것이 없어서 loadDonationDetail()이 실행되지 않았습니다!
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDonationDetail();
+        });
+    </script>
+</body>
+</html>

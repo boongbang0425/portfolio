@@ -1,0 +1,206 @@
+/* FixedUI 유리 디자인 토큰 (StartScene 월드 캔버스 · VRGlassButton 기준)
+ * 패널(스모키 유리): rgba(72, 70, 82, 0.66) + 흰 제목 · 카드(흰 유리): rgba(255, 255, 255, 0.92)
+ * 버튼: 흰 유리 0.9 → hover 1.0 → pressed rgb(125, 199, 255) · disabled 배경 α0.24, 전경 α0.28
+ * 전경: rgb(25, 25, 25) α0.86 · 악센트: rgb(125, 199, 255)
+ * 폰트: Giants-Bold · 모션: 배경 0.12s, press scale 0.975
+ *
+ * 이 화면은 external 모드에서 월드 캔버스에 주 메뉴를 넘기고, 옵션·확인 패널만 UXML로 띄운다.
+ * 주 메뉴 카드 스타일은 월드 캔버스 없이 열 때의 폴백으로 같은 토큰을 따른다. */
+
+.screen {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(16, 16, 20);
+    color: rgb(255, 255, 255);
+    -unity-font-definition: url("../../@Developers/RYU/Quest/UI/Fonts/Giants-Bold.ttf");
+}
+
+.ambient {
+    position: absolute;
+    width: 720px;
+    height: 720px;
+    border-radius: 360px;
+    background-color: rgba(125, 199, 255, 0.1);
+}
+
+.ambient--top {
+    top: -390px;
+    right: -170px;
+}
+
+.ambient--bottom {
+    bottom: -430px;
+    left: -210px;
+    background-color: rgba(190, 217, 255, 0.08);
+}
+
+.menu-card, .options-card {
+    width: 520px;
+    padding: 44px 48px;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.28);
+    border-radius: 14px;
+    background-color: rgba(72, 70, 82, 0.66);
+}
+
+.eyebrow {
+    font-size: 16px;
+    letter-spacing: 8px;
+    color: rgb(125, 199, 255);
+    -unity-text-align: middle-center;
+}
+
+.title {
+    margin-top: 12px;
+    font-size: 38px;
+    letter-spacing: 2px;
+    color: rgb(255, 255, 255);
+    -unity-text-align: middle-center;
+}
+
+.subtitle {
+    margin-top: 14px;
+    font-size: 17px;
+    color: rgba(255, 255, 255, 0.6);
+    -unity-text-align: middle-center;
+}
+
+.divider {
+    height: 1px;
+    margin-top: 30px;
+    margin-bottom: 24px;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* StartScene 월드 캔버스의 흰 유리 버튼과 같은 재질. */
+.menu-button {
+    height: 54px;
+    margin-top: 12px;
+    border-width: 0;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: rgba(25, 25, 25, 0.86);
+    font-size: 20px;
+    transition-property: background-color, scale;
+    transition-duration: 0.12s;
+}
+
+.menu-button:hover,
+.menu-button:focus {
+    background-color: rgb(255, 255, 255);
+    color: rgb(25, 25, 25);
+}
+
+.menu-button:active {
+    background-color: rgb(125, 199, 255);
+    color: rgb(25, 25, 25);
+    scale: 0.975;
+}
+
+/* 주 동작 버튼은 악센트 테두리로만 구분한다 — 유리 재질은 모두 같다. */
+.menu-button--primary {
+    border-width: 2px;
+    border-color: rgb(125, 199, 255);
+}
+
+.menu-button--quiet {
+    background-color: rgba(255, 255, 255, 0.55);
+    color: rgba(25, 25, 25, 0.6);
+}
+
+.menu-button--quiet:hover,
+.menu-button--quiet:focus {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.modal-layer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(4, 8, 13, 0.78);
+}
+
+.options-card {
+    width: 560px;
+}
+
+.options-title {
+    margin-bottom: 30px;
+    font-size: 30px;
+    color: rgb(255, 255, 255);
+    -unity-text-align: middle-center;
+}
+
+.field-label {
+    margin-bottom: 12px;
+    font-size: 17px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.volume-slider {
+    height: 38px;
+}
+
+.volume-slider .unity-base-slider__tracker {
+    height: 6px;
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.24);
+}
+
+.volume-slider .unity-base-slider__dragger {
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: rgb(255, 255, 255);
+    background-color: rgb(125, 199, 255);
+}
+
+.volume-scale {
+    flex-direction: row;
+    justify-content: space-between;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 13px;
+}
+
+.close-button {
+    margin-top: 32px;
+}
+
+/* 두 번째 볼륨부터는 위 슬라이더와 간격을 벌린다. */
+.field-label--spaced {
+    margin-top: 20px;
+}
+
+/* 저장 데이터가 없거나 손상된 경우의 안내 (F-001 1.5, 1.8). 평소에는 자리를 차지하지 않는다. */
+.save-notice {
+    display: none;
+    margin-top: 18px;
+    font-size: 15px;
+    color: rgb(255, 196, 128);
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+
+.save-notice--visible {
+    display: flex;
+}
+
+.confirm-message {
+    margin-bottom: 28px;
+    font-size: 17px;
+    color: rgba(255, 255, 255, 0.75);
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+
+/* 비활성 버튼은 눌리지 않는다는 것이 한눈에 보여야 한다 (F-001 1.5). */
+.menu-button:disabled {
+    background-color: rgba(255, 255, 255, 0.24);
+    color: rgba(25, 25, 25, 0.28);
+}

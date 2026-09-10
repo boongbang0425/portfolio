@@ -1,0 +1,8 @@
+{
+  "_comment": "제작 공정은 전부 quest.json의 퀘스트 그래프로 이관했다. 실행기는 QuestManager 하나이며 ProcessRunner는 더 이상 이 표를 쓰지 않는다. settings는 퀘스트 표(quest.json)에도 같은 값이 있어 여기 남긴 것은 형식 유지용이다.",
+  "settings": {
+    "retryAfterSeconds": 10,
+    "stepGapSeconds": 0.4
+  },
+  "processes": []
+}

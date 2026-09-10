@@ -1,0 +1,33 @@
+{
+  "_comment": "프롤로그와 튜토리얼 이후 네 단계(짧은·중간·긴 부재 가공과 조립)는 모두 Play 씬에서 연속 실행한다. 같은 씬 안의 QuestManager가 다음 공정 정의를 이어 받으므로 단계마다 씬을 다시 로드하지 않는다. completed 항목은 없다. 엔딩 컷씬이 진행을 삭제하므로 completed 상태에는 도달하지 않는다.",
+  "entries": [
+    {
+      "process": "prologue",
+      "cutscene": "prologue"
+    },
+    {
+      "process": "tutorial",
+      "scene": "Play"
+    },
+    {
+      "process": "shortPart",
+      "scene": "Play"
+    },
+    {
+      "process": "mediumPart",
+      "scene": "Play"
+    },
+    {
+      "process": "longPart",
+      "scene": "Play"
+    },
+    {
+      "process": "gongpoPuzzle",
+      "scene": "Play"
+    },
+    {
+      "process": "ending",
+      "cutscene": "ending"
+    }
+  ]
+}

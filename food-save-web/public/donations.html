@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나눔 찾기 - FoodSave</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/additional-styles.css">  <link rel="stylesheet" href="/fixes.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <span class="logo-text">FOOD</span>
+                <span class="logo-accent">SAVE</span>
+            </a>
+            
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link">홈</a></li>
+                <li><a href="/donations" class="nav-link active">나눔 찾기</a></li>
+                <li><a href="/mediaart" class="nav-link">미디어아트</a></li>
+                <li><a href="/info?page=about" class="nav-link">소개</a></li>
+                <li><a href="/info?page=contact" class="nav-link">문의</a></li>
+            </ul>
+            
+            <div class="nav-actions">
+                <button class="nav-icon-btn search-btn" onclick="toggleSearch()">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button class="nav-icon-btn" onclick="showFavorites()">
+                    <i class="far fa-heart"></i>
+                    <span class="badge" id="favCount">0</span>
+                </button>
+                <button class="btn-login" id="loginBtn" onclick="showAuthModal()">
+                    로그인
+                </button>
+                <div class="user-menu" id="userMenu" style="display: none;">
+                    <img src="" alt="Profile" class="user-avatar" id="userAvatar">
+                    <span class="user-name" id="userName"></span>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <a href="/dashboard"><i class="fas fa-tachometer-alt"></i> 대시보드</a>
+                        <a href="/profile"><i class="fas fa-user"></i> 프로필</a>
+                        <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 로그아웃</a>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+        
+        <div class="search-bar active" id="searchBar">
+            <div class="search-container">
+                <input type="text" placeholder="원하는 음식을 검색해보세요..." id="searchInput">
+                <button onclick="performSearch()"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="page-header">
+        <div class="container">
+            <h1>나눔 찾기</h1>
+            <p>신선한 음식을 나누는 따뜻한 마음</p>
+        </div>
+    </section>
+
+    <section class="filters-section">
+        <div class="container">
+            <div class="filters-callout">
+                <div class="filters-container">
+                    <div class="filter-group">
+                        <label>카테고리</label>
+                        <select id="categoryFilter" onchange="applyFilters()">
+                            <option value="">전체</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>정렬</label>
+                        <select id="sortFilter" onchange="applyFilters()">
+                            <option value="newest">최신순</option>
+                            <option value="oldest">오래된순</option>
+                            <option value="expiring">마감 임박순</option>
+                            <option value="popular">인기순</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-actions">
+                        <button class="btn btn-outline btn-small" onclick="resetFilters()">
+                            <i class="fas fa-redo"></i> 초기화
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="donations-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 id="donationsCount">나눔 목록</h2>
+                <div class="view-toggle">
+                    <button class="view-btn active" onclick="setView('grid')">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button class="view-btn" onclick="setView('list')">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="donations-grid" id="donationsGrid"></div>
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3 class="footer-logo">
+                        <span>FOOD</span><span class="accent">SAVE</span>
+                    </h3>
+                    <p>음식을 나누고, 행복을 더하는<br>지속가능한 푸드 셰어링 플랫폼</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>빠른 링크</h4>
+                    <ul>
+                        <li><a href="/donations">나눔 찾기</a></li>
+                        <li><a href="/info?page=about">소개</a></li>
+                        <li><a href="/mediaart">미디어아트</a></li>
+                        <li><a href="/info?page=contact">문의하기</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>서비스</h4>
+                    <ul>
+                        <li><a href="/info?page=donor-guide">기부자 가이드</a></li>
+                        <li><a href="/info?page=receiver-guide">수령자 가이드</a></li>
+                        <li><a href="/info?page=safety">안전 가이드</a></li>
+                        <li><a href="/info?page=faq">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>연락처</h4>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-envelope"></i> contact@foodsave.kr</li>
+                        <li><i class="fas fa-phone"></i> 02-1234-5678</li>
+                        <li><i class="fas fa-map-marker-alt"></i> 서울시 강남구</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 FoodSave. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">이용약관</a>
+                    <a href="#">개인정보처리방침</a>
+                    <a href="#">쿠키 정책</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="modal" id="authModal">
+        <div class="modal-overlay" onclick="closeAuthModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeAuthModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" onclick="switchAuthTab('login')">로그인</button>
+                    <button class="auth-tab" onclick="switchAuthTab('register')">회원가입</button>
+                </div>
+                
+                <div class="auth-form" id="loginForm">
+                    <h2>다시 만나서 반가워요!</h2>
+                    <p class="auth-subtitle">계속하려면 로그인해주세요</p>
+                    
+                    <form onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label>이메일</label>
+                            <input type="email" name="email" required placeholder="example@email.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>비밀번호</label>
+                            <input type="password" name="password" required placeholder="비밀번호를 입력하세요">
+                        </div>
+                        
+                        <div class="form-options">
+                            <label class="checkbox">
+                                <input type="checkbox" name="remember">
+                                <span>로그인 상태 유지</span>
+                            </label>
+                            <a href="#" class="link">비밀번호 찾기</a>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-full">
+                            로그인
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="auth-form" id="registerForm" style="display: none;">
+                    <h2>FoodSave 가입하기</h2>
+                    <p class="auth-subtitle">나눔의 첫걸음을 시작하세요</p>
+                    
+                    <form onsubmit="handleRegister(event)">
+                        <div class="form-group">
+                            <label>이름</label>
+                            <input type="text" name="name" required placeholder="홍길동">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>이메일</label>
+                            <input type="email" name="email" required placeholder="example@email.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>비밀번호</label>
+                            <input type="password" name="password" required placeholder="8자 이상, 영문+숫자 조합">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>회원 유형</label>
+                            <div class="radio-group">
+                                <label class="radio">
+                                    <input type="radio" name="userType" value="receiver" checked>
+                                    <span>수령자</span>
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="userType" value="donor">
+                                    <span>기부자 (가게/업체)</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>전화번호 (선택)</label>
+                            <input type="tel" name="phone" placeholder="010-1234-5678">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>주소 (선택)</label>
+                            <input type="text" name="address" placeholder="서울시 강남구">
+                        </div>
+                        
+                        <label class="checkbox">
+                            <input type="checkbox" required>
+                            <span><a href="#">이용약관</a> 및 <a href="#">개인정보처리방침</a>에 동의합니다</span>
+                        </label>
+                        
+                        <button type="submit" class="btn btn-primary btn-full">
+                            가입하기
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="/app.js"></script>
+    <script src="/donations.js"></script>
+</body>
+</html>

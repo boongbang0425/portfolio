@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodSave - 음식을 나누고, 행복을 더하다</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/additional-styles.css">  <link rel="stylesheet" href="/fixes.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <span class="logo-text">FOOD</span><span class="logo-accent">SAVE</span>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link active">홈</a></li>
+                <li><a href="/donations" class="nav-link">나눔 찾기</a></li>
+                <li><a href="/mediaart" class="nav-link">미디어아트</a></li>
+                <li><a href="/info?page=about" class="nav-link">소개</a></li>
+                <li><a href="/info?page=contact" class="nav-link">문의</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="nav-icon-btn search-btn" onclick="toggleSearch()">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button class="nav-icon-btn" onclick="showFavorites()">
+                    <i class="far fa-heart"></i>
+                    <span class="badge" id="favCount">0</span>
+                </button>
+                <button class="btn-login" id="loginBtn" onclick="showAuthModal()">로그인</button>
+                <div class="user-menu" id="userMenu" style="display: none;">
+                    <img src="" alt="Profile" class="user-avatar" id="userAvatar">
+                    <span class="user-name" id="userName"></span>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <a href="/dashboard"><i class="fas fa-tachometer-alt"></i> 대시보드</a>
+                        <a href="/profile"><i class="fas fa-user"></i> 프로필</a>
+                        <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 로그아웃</a>
+                    </div>
+                </div>
+            </div>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+        <div class="search-bar" id="searchBar">
+            <div class="search-container">
+                <input type="text" placeholder="원하는 음식을 검색해보세요..." id="searchInput">
+                <button onclick="performSearch()"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </nav>
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    <span class="title-line">ORGANIC FOOD &</span>
+                    <span class="title-line">SUSTAINABLE SHARING</span>
+                </h1>
+                <div class="hero-rating">
+                    <div class="stars">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <span>(5,678 리뷰)</span>
+                </div>
+                <p class="hero-description">
+                    신선한 음식을 나누고, 지속가능한 미래를 만듭니다.<br>
+                    FoodSave와 함께 음식물 쓰레기를 줄이고 따뜻한 나눔을 실천해보세요.
+                </p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="location.href='/donations'">나눔 찾아보기</button>
+                    <button class="btn btn-secondary" onclick="showDonateModal()"><i class="fas fa-plus"></i> 나눔 시작하기</button>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="hero-image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800" alt="Fresh Food">
+                    <div class="floating-badge badge-1"><i class="fas fa-leaf"></i><span>100% 신선</span></div>
+                    <div class="floating-badge badge-2"><i class="fas fa-recycle"></i><span>Zero Waste</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-product-card">
+            <div class="product-image">
+                <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400" alt="베이커리">
+            </div>
+            <div class="product-info">
+                <h3>오늘의 특별 나눔</h3>
+                <p class="product-title">신선한 크로와상 & 베이글 세트</p>
+                <div class="product-meta">
+                    <span class="price">무료 나눔</span>
+                    <span class="time"><i class="far fa-clock"></i> 마감 2시간</span>
+                </div>
+                <button class="btn btn-small" onclick="location.href='/donation/1'">자세히 보기 <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+    </section>
+    <section class="quote-section">
+        <div class="container">
+            <blockquote class="main-quote">
+                <p>"SOME THINGS & THOUGHTS<br>
+                ABOUT THESE THINGS TAKE<br>
+                FOREVER, BUT <span>SHARING</span><br>
+                SHOULDN'T BE ONE OF IT"</p>
+                <cite>- FoodSave Team</cite>
+            </blockquote>
+        </div>
+    </section>
+    <section class="process-section">
+        <div class="container">
+            <div class="process-grid">
+                <div class="process-step">
+                    <div class="step-number">STEP 1</div>
+                    <div class="step-icon"><i class="fas fa-user-plus"></i></div>
+                    <h3>간편 가입</h3>
+                    <p>간단한 회원가입으로 나눔의 첫걸음을 시작하세요</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">STEP 2</div>
+                    <div class="step-icon"><i class="fas fa-search-location"></i></div>
+                    <h3>나눔 찾기</h3>
+                    <p>주변의 신선한 음식 나눔을 쉽게 찾아보세요</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">STEP 3</div>
+                    <div class="step-icon"><i class="fas fa-handshake"></i></div>
+                    <h3>행복한 나눔</h3>
+                    <p>약속된 시간에 방문하여 음식을 받아가세요</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="featured-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">TODAY'S SPECIAL</h2>
+                <p class="section-subtitle">오늘의 특별한 나눔을 만나보세요</p>
+            </div>
+            <div class="featured-grid" id="featuredGrid"></div>
+            <div class="section-footer">
+                <button class="btn btn-outline" onclick="location.href='/donations'">
+                    더 많은 나눔 보기 <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-icon"><i class="fas fa-store"></i></div>
+                    <div class="stat-content"><h3 class="stat-number" data-target="1234">0</h3><p>참여 가게</p></div>
+                </div>
+                <div class="stat-card"><div class="stat-icon"><i class="fas fa-utensils"></i></div>
+                    <div class="stat-content"><h3 class="stat-number" data-target="5678">0</h3><p>나눔 완료</p></div>
+                </div>
+                <div class="stat-card"><div class="stat-icon"><i class="fas fa-seedling"></i></div>
+                    <div class="stat-content"><h3 class="stat-number" data-target="2500">0</h3><p>절약된 음식(kg)</p></div>
+                </div>
+                <div class="stat-card"><div class="stat-icon"><i class="fas fa-smile"></i></div>
+                    <div class="stat-content"><h3 class="stat-number" data-target="98">0</h3><span>%</span><p>만족도</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="newsletter-section">
+        <div class="container">
+            <div class="newsletter-content">
+                <h2>나눔 소식 받아보기</h2>
+                <p>새로운 나눔 정보와 특별한 소식을 이메일로 받아보세요</p>
+                <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+                    <input type="email" placeholder="이메일 주소를 입력하세요" required>
+                    <button type="submit" class="btn btn-primary">구독하기</button>
+                </form>
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3 class="footer-logo"><span>FOOD</span><span class="accent">SAVE</span></h3>
+                    <p>음식을 나누고, 행복을 더하는<br>지속가능한 푸드 셰어링 플랫폼</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>빠른 링크</h4>
+                    <ul>
+                        <li><a href="/donations">나눔 찾기</a></li>
+                        <li><a href="/info?page=about">소개</a></li>
+                        <li><a href="/mediaart">미디어아트</a></li>
+                        <li><a href="/info?page=contact">문의하기</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>서비스</h4>
+                    <ul>
+                        <li><a href="#">기부자 가이드</a></li>
+                        <li><a href="#">수령자 가이드</a></li>
+                        <li><a href="#">안전 가이드</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>연락처</h4>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-envelope"></i> contact@foodsave.kr</li>
+                        <li><i class="fas fa-phone"></i> 02-1234-5678</li>
+                        <li><i class="fas fa-map-marker-alt"></i> 서울시 강남구</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FoodSave. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">이용약관</a>
+                    <a href="#">개인정보처리방침</a>
+                    <a href="#">쿠키 정책</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <div class="modal" id="authModal">
+        <div class="modal-overlay" onclick="closeAuthModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeAuthModal()"><i class="fas fa-times"></i></button>
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" onclick="switchAuthTab('login')">로그인</button>
+                    <button class="auth-tab" onclick="switchAuthTab('register')">회원가입</button>
+                </div>
+                <div class="auth-form" id="loginForm">
+                    <h2>다시 만나서 반가워요!</h2>
+                    <p class="auth-subtitle">계속하려면 로그인해주세요</p>
+                    <form onsubmit="handleLogin(event)">
+                        <div class="form-group"><label>이메일</label><input type="email" name="email" required placeholder="example@email.com"></div>
+                        <div class="form-group"><label>비밀번호</label><input type="password" name="password" required placeholder="비밀번호를 입력하세요"></div>
+                        <div class="form-options">
+                            <label class="checkbox"><input type="checkbox" name="remember"><span>로그인 상태 유지</span></label>
+                            <a href="#" class="link">비밀번호 찾기</a>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">로그인</button>
+                    </form>
+                    <div class="auth-divider"><span>또는</span></div>
+                    <div class="social-auth">
+                        <button class="social-btn google"><i class="fab fa-google"></i> Google로 계속하기</button>
+                        <button class="social-btn kakao"><img src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_small.png" alt="Kakao" width="20"> Kakao로 계속하기</button>
+                    </div>
+                </div>
+                <div class="auth-form" id="registerForm" style="display: none;">
+                    <h2>FoodSave 가입하기</h2>
+                    <p class="auth-subtitle">나눔의 첫걸음을 시작하세요</p>
+                    <form onsubmit="handleRegister(event)">
+                        <div class="form-group"><label>이름</label><input type="text" name="name" required placeholder="홍길동"></div>
+                        <div class="form-group"><label>이메일</label><input type="email" name="email" required placeholder="example@email.com"></div>
+                        <div class="form-group"><label>비밀번호</label><input type="password" name="password" required placeholder="8자 이상, 영문+숫자 조합"></div>
+                        <div class="form-group">
+                            <label>회원 유형</label>
+                            <div class="radio-group">
+                                <label class="radio"><input type="radio" name="userType" value="receiver" checked><span>수령자</span></label>
+                                <label class="radio"><input type="radio" name="userType" value="donor"><span>기부자 (가게/업체)</span></label>
+                            </div>
+                        </div>
+                        <div class="form-group"><label>전화번호 (선택)</label><input type="tel" name="phone" placeholder="010-1234-5678"></div>
+                        <div class="form-group"><label>주소 (선택)</label><input type="text" name="address" placeholder="서울시 강남구"></div>
+                        <label class="checkbox"><input type="checkbox" required><span><a href="#">이용약관</a> 및 <a href="#">개인정보처리방침</a>에 동의합니다</span></label>
+                        <button type="submit" class="btn btn-primary btn-full">가입하기</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="toast" id="toast"></div>
+    <script src="app.js"></script>
+</body>
+</html>

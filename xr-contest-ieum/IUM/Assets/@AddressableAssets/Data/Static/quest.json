@@ -1,0 +1,580 @@
+{
+  "_comment": "공정 단위가 도구에서 부재로 바뀌었다. 튜토리얼 뒤로 ShortPart → MediumPart → LongPart → 조립(도리·공포) 네 단계이며, 한 부재를 먹매김부터 끌질까지 이어서 끝낸다.",
+  "_comment_amount": "신호 키가 목표마다 갈리므로(main.<부재>.<작업>) amount는 누계가 아니라 그 부재의 해당 존 개수 그대로다. 예외는 main.gongpo.assembled 하나로, 세 목표가 한 키를 나눠 써 1 → 18 → 37의 누계를 쓴다.",
+  "_comment_hint": "controlHint는 데스크톱, controlHintVr은 VR 문안이다. goal과 대사에는 장치 이름을 넣지 않는다 — 장치 차이는 힌트 한 곳에서만 갈린다. controlHintVr이 비면 controlHint로 폴백한다.",
+  "schemaVersion": 1,
+  "settings": {
+    "retryAfterSeconds": 40,
+    "stepGapSeconds": 0.4
+  },
+  "quests": [
+    {
+      "id": "tutorial",
+      "title": "기초 조작 훈련",
+      "process": "tutorial",
+      "entryNode": "entry",
+      "introDialogue": "tutorial_nojang_welcome",
+      "completeDialogue": "tutorial_complete",
+      "grade": "none",
+      "nodes": [
+        {
+          "id": "entry",
+          "kind": "entry",
+          "position": { "x": 40, "y": 220 }
+        },
+        {
+          "id": "greeting",
+          "kind": "objective",
+          "controlHint": "안내를 들으면 자동으로 다음 목표가 시작됩니다.",
+          "position": { "x": 300, "y": 220 },
+          "objective": {
+            "id": "greeting",
+            "condition": "none",
+            "introDialogue": "tutorial_greeting",
+            "goal": "이음이의 인사를 듣는다"
+          }
+        },
+        {
+          "_comment": "VR에서는 PlayerCommands.Look이 0이라(머리를 HMD가 직접 몬다) ProcessStep이 HMD가 실제로 돈 각도를 잰다. amount 단위는 양쪽 다 '도'라 그대로 쓴다.",
+          "id": "look",
+          "kind": "objective",
+          "controlHint": "마우스 오른쪽 버튼을 누른 채 시점을 움직이세요.",
+          "controlHintVr": "고개를 돌려 작업장을 천천히 둘러보세요.",
+          "position": { "x": 560, "y": 220 },
+          "objective": {
+            "id": "look",
+            "condition": "look",
+            "amount": 90,
+            "introDialogue": "tutorial_look_intro",
+            "retryDialogue": "tutorial_look_retry",
+            "successDialogue": "tutorial_look_success",
+            "goal": "주변을 둘러본다"
+          }
+        },
+        {
+          "id": "move",
+          "kind": "objective",
+          "controlHint": "WASD로 작업장 안을 이동하세요.",
+          "controlHintVr": "왼쪽 스틱을 밀어 작업장 안을 이동하세요.",
+          "position": { "x": 820, "y": 220 },
+          "objective": {
+            "id": "move",
+            "condition": "move",
+            "amount": 3,
+            "introDialogue": "tutorial_move_intro",
+            "retryDialogue": "tutorial_move_retry",
+            "successDialogue": "tutorial_move_success",
+            "goal": "작업장을 걸어 본다"
+          }
+        },
+        {
+          "id": "point",
+          "kind": "objective",
+          "controlHint": "톱을 화면 중앙 레이저로 조준해 0.5초 유지하세요.",
+          "controlHintVr": "컨트롤러로 톱을 겨눠 0.5초 유지하세요.",
+          "position": { "x": 1340, "y": 220 },
+          "objective": {
+            "id": "point",
+            "condition": "point",
+            "target": "tool_saw",
+            "unlock": ["tool_saw"],
+            "holdSeconds": 0.5,
+            "introDialogue": "tutorial_point_intro",
+            "retryDialogue": "tutorial_point_retry",
+            "successDialogue": "tutorial_point_success",
+            "goal": "톱을 가리킨다"
+          }
+        },
+        {
+          "id": "grab",
+          "kind": "objective",
+          "controlHint": "톱을 조준하고 마우스 왼쪽 버튼을 1초 이상 유지하세요.",
+          "controlHintVr": "톱을 겨눈 채 그립 버튼을 1초 이상 쥐고 있으세요.",
+          "position": { "x": 1600, "y": 220 },
+          "objective": {
+            "id": "grab",
+            "condition": "grab",
+            "target": "tool_saw",
+            "unlock": ["tool_saw"],
+            "holdSeconds": 1,
+            "introDialogue": "tutorial_grab_intro",
+            "retryDialogue": "tutorial_grab_retry",
+            "successDialogue": "tutorial_grab_success",
+            "goal": "톱을 1초 이상 쥔다"
+          }
+        },
+        {
+          "_comment": "VR 호출 버튼은 미정이라(07 문서 미정 17번) VR 힌트를 중립 문구로 둔다. 현재 XRInputSource는 왼손 Primary를 PTT로 읽는다.",
+          "id": "ptt",
+          "kind": "objective",
+          "controlHint": "T를 0.5초 이상 눌러 이음이를 부르세요.",
+          "controlHintVr": "이음이 호출 버튼을 0.5초 이상 누른 채 말하세요.",
+          "position": { "x": 2120, "y": 220 },
+          "objective": {
+            "id": "ptt",
+            "condition": "pushToTalk",
+            "holdSeconds": 0.5,
+            "introDialogue": "tutorial_ptt_intro",
+            "retryDialogue": "tutorial_ptt_retry",
+            "successDialogue": "tutorial_ptt_success",
+            "goal": "이음이를 불러 본다"
+          }
+        },
+        {
+          "id": "complete",
+          "kind": "complete",
+          "position": { "x": 2380, "y": 220 }
+        }
+      ],
+      "edges": [
+        { "from": "entry", "to": "greeting" },
+        { "from": "greeting", "to": "look" },
+        { "from": "look", "to": "move" },
+        { "from": "move", "to": "point" },
+        { "from": "point", "to": "grab" },
+        { "from": "grab", "to": "ptt" },
+        { "from": "ptt", "to": "complete" }
+      ]
+    },
+    {
+      "_comment": "ShortPart 존 실측: 먹 1 · 톱 1 · 평대패 3 · 끌 3. 곡면 존은 없다.",
+      "id": "shortPart",
+      "title": "짧은 부재 다듬기",
+      "process": "shortPart",
+      "entryNode": "entry",
+      "introDialogue": "short_part_intro",
+      "completeDialogue": "short_part_result_pass",
+      "grade": "pass",
+      "nodes": [
+        {
+          "id": "entry",
+          "kind": "entry",
+          "position": { "x": 40, "y": 220 }
+        },
+        {
+          "id": "short_ink",
+          "kind": "objective",
+          "controlHint": "마우스 왼쪽 버튼으로 먹통을 잡고, 목재 위에 표시된 선을 따라 끝까지 그은 뒤 버튼을 놓으세요.",
+          "controlHintVr": "그립 버튼으로 먹통을 쥐고, 목재 위에 표시된 선을 따라 손을 끝까지 움직이세요.",
+          "position": { "x": 300, "y": 220 },
+          "objective": {
+            "id": "short_ink",
+            "condition": "signal",
+            "target": "main.short.ink",
+            "amount": 1,
+            "introDialogue": "short_ink_intro",
+            "retryDialogue": "short_ink_retry",
+            "successDialogue": "short_ink_success",
+            "goal": "짧은 부재에 기준선을 먹매김한다"
+          }
+        },
+        {
+          "id": "short_saw",
+          "kind": "objective",
+          "controlHint": "마우스 왼쪽 버튼으로 톱을 잡고, 절단선 위에서 표시된 방향으로 길게 밀고 당기세요.",
+          "controlHintVr": "그립 버튼으로 톱을 쥐고, 절단선 위에서 팔을 표시된 방향으로 길게 밀고 당기세요.",
+          "position": { "x": 560, "y": 220 },
+          "objective": {
+            "id": "short_saw",
+            "condition": "signal",
+            "target": "main.short.saw",
+            "amount": 1,
+            "introDialogue": "short_saw_intro",
+            "retryDialogue": "short_saw_retry",
+            "successDialogue": "short_saw_success",
+            "goal": "먹선을 따라 필요 없는 부분을 잘라 낸다"
+          }
+        },
+        {
+          "id": "short_plane",
+          "kind": "objective",
+          "controlHint": "마우스 왼쪽 버튼으로 대패를 잡고, 표시된 면마다 지정 방향으로 길게 밀어 세 면을 다듬으세요.",
+          "controlHintVr": "그립 버튼으로 대패를 쥐고, 표시된 면마다 지정 방향으로 팔을 길게 밀어 세 면을 다듬으세요.",
+          "position": { "x": 820, "y": 220 },
+          "objective": {
+            "id": "short_plane",
+            "condition": "signal",
+            "target": "main.short.plane",
+            "amount": 3,
+            "introDialogue": "short_plane_intro",
+            "retryDialogue": "short_plane_retry",
+            "successDialogue": "short_plane_success",
+            "goal": "톱자국이 남은 세 면을 대패로 다듬는다"
+          }
+        },
+        {
+          "id": "short_chisel",
+          "kind": "objective",
+          "controlHint": "F 키로 끌을 잡아 홈 자리에 대고, 마우스 왼쪽 버튼으로 망치를 잡아 목표 깊이까지 타격하세요.",
+          "controlHintVr": "한 손 그립으로 끌을 홈 자리에 대고, 다른 손 그립으로 망치를 쥐어 목표 깊이까지 타격하세요.",
+          "position": { "x": 1080, "y": 220 },
+          "objective": {
+            "id": "short_chisel",
+            "condition": "signal",
+            "target": "main.short.chisel",
+            "amount": 3,
+            "introDialogue": "short_chisel_intro",
+            "retryDialogue": "short_chisel_retry",
+            "successDialogue": "short_chisel_success",
+            "goal": "결구가 들어갈 홈 세 곳을 파낸다"
+          }
+        },
+        {
+          "id": "complete",
+          "kind": "complete",
+          "position": { "x": 1340, "y": 220 }
+        }
+      ],
+      "edges": [
+        { "from": "entry", "to": "short_ink" },
+        { "from": "short_ink", "to": "short_saw" },
+        { "from": "short_saw", "to": "short_plane" },
+        { "from": "short_plane", "to": "short_chisel" },
+        { "from": "short_chisel", "to": "complete" }
+      ]
+    },
+    {
+      "_comment": "MediumPart 존 실측: 먹 1 · 톱 2 · 자귀 1 · 평대패 3 · 배대패 4 · 끌 3. 목표 순서는 PartZoneGate의 선행 규칙(자귀 → 평대패 → 배대패 → 끌)과 같다.",
+      "id": "mediumPart",
+      "title": "중간 부재 다듬기",
+      "process": "mediumPart",
+      "entryNode": "entry",
+      "introDialogue": "medium_part_intro",
+      "completeDialogue": "medium_part_result_pass",
+      "grade": "pass",
+      "nodes": [
+        {
+          "id": "entry",
+          "kind": "entry",
+          "position": { "x": 40, "y": 220 }
+        },
+        {
+          "id": "medium_ink",
+          "kind": "objective",
+          "controlHint": "마우스 왼쪽 버튼으로 먹통을 잡고, 목재 위에 표시된 선을 따라 끝까지 그은 뒤 버튼을 놓으세요.",
+          "controlHintVr": "그립 버튼으로 먹통을 쥐고, 목재 위에 표시된 선을 따라 손을 끝까지 움직이세요.",
+          "position": { "x": 300, "y": 220 },
+          "objective": {
+            "id": "medium_ink",
+            "condition": "signal",
+            "target": "main.medium.ink",
+            "amount": 1,
+            "introDialogue": "medium_ink_intro",
+            "retryDialogue": "medium_ink_retry",
+            "successDialogue": "medium_ink_success",
+            "goal": "중간 부재에 기준선을 먹매김한다"
+          }
+        },
+        {
+          "id": "medium_saw",
+          "kind": "objective",
+          "controlHint": "마우스 왼쪽 버튼으로 톱을 잡고, 절단선 두 곳을 각각 표시된 방향으로 길게 밀고 당기세요.",
+          "controlHintVr": "그립 버튼으로 톱을 쥐고, 절단선 두 곳을 각각 표시된 방향으로 길게 밀고 당기세요.",
+          "position": { "x": 560, "y": 220 },
+          "objective": {
+            "id": "medium_saw",
+            "condition": "signal",
+            "target": "main.medium.saw",
+            "amount": 2,
+            "introDialogue": "medium_saw_intro",
+            "retryDialogue": "medium_saw_retry",
+            "successDialogue": "medium_saw_success",
+            "goal": "양 끝 절단선 두 곳을 잘라 낸다"
+          }
+        },
+        {
+          "id": "medium_adze",
+          "kind": "objective",
+          "controlHint": "마우스 왼쪽 버튼으로 자귀를 잡고, 표시된 자리를 향해 위에서 아래로 내리치세요.",
+          "controlHintVr": "그립 버튼으로 자귀를 쥐고, 표시된 자리를 향해 팔을 위에서 아래로 내리치세요.",
+          "position": { "x": 820, "y": 220 },
+          "objective": {
+            "id": "medium_adze",
+            "condition": "signal",
+            "target": "main.medium.adze",
+            "amount": 1,
+            "introDialogue": "medium_adze_intro",
+            "retryDialogue": "medium_adze_retry",
+            "successDialogue": "medium_adze_success",
+            "goal": "자귀로 윗면의 굵은 살을 쳐낸다"
+          }
+        },
+        {
+          "id": "medium_plane",
+          "kind": "objective",
+          "controlHint": "마우스 왼쪽 버튼으로 평대패를 잡고, 표시된 면마다 지정 방향으로 길게 밀어 세 면을 다듬으세요.",
+          "controlHintVr": "그립 버튼으로 평대패를 쥐고, 표시된 면마다 지정 방향으로 팔을 길게 밀어 세 면을 다듬으세요.",
+          "position": { "x": 1080, "y": 220 },
+          "objective": {
+            "id": "medium_plane",
+            "condition": "signal",
+            "target": "main.medium.plane",
+            "amount": 3,
+            "introDialogue": "medium_plane_intro",
+            "retryDialogue": "medium_plane_retry",
+            "successDialogue": "medium_plane_success",
+            "goal": "자귀 자국이 남은 세 면을 평대패로 고른다"
+          }
+        },
+        {
+          "id": "medium_curved",
+          "kind": "objective",
+          "controlHint": "마우스 왼쪽 버튼으로 배대패를 잡고, 곡면 표시를 따라 지정 방향으로 길게 밀어 네 곳을 다듬으세요.",
+          "controlHintVr": "그립 버튼으로 배대패를 쥐고, 곡면 표시를 따라 지정 방향으로 팔을 길게 밀어 네 곳을 다듬으세요.",
+          "position": { "x": 1340, "y": 220 },
+          "objective": {
+            "id": "medium_curved",
+            "condition": "signal",
+            "target": "main.medium.curved",
+            "amount": 4,
+            "introDialogue": "medium_curved_intro",
+            "retryDialogue": "medium_curved_retry",
+            "successDialogue": "medium_curved_success",
+            "goal": "배대패로 곡면 네 곳을 파낸다"
+          }
+        },
+        {
+          "id": "medium_chisel",
+          "kind": "objective",
+          "controlHint": "F 키로 끌을 잡아 홈 자리에 대고, 마우스 왼쪽 버튼으로 망치를 잡아 목표 깊이까지 타격하세요.",
+          "controlHintVr": "한 손 그립으로 끌을 홈 자리에 대고, 다른 손 그립으로 망치를 쥐어 목표 깊이까지 타격하세요.",
+          "position": { "x": 1600, "y": 220 },
+          "objective": {
+            "id": "medium_chisel",
+            "condition": "signal",
+            "target": "main.medium.chisel",
+            "amount": 3,
+            "introDialogue": "medium_chisel_intro",
+            "retryDialogue": "medium_chisel_retry",
+            "successDialogue": "medium_chisel_success",
+            "goal": "결구가 들어갈 홈 세 곳을 파낸다"
+          }
+        },
+        {
+          "id": "complete",
+          "kind": "complete",
+          "position": { "x": 1860, "y": 220 }
+        }
+      ],
+      "edges": [
+        { "from": "entry", "to": "medium_ink" },
+        { "from": "medium_ink", "to": "medium_saw" },
+        { "from": "medium_saw", "to": "medium_adze" },
+        { "from": "medium_adze", "to": "medium_plane" },
+        { "from": "medium_plane", "to": "medium_curved" },
+        { "from": "medium_curved", "to": "medium_chisel" },
+        { "from": "medium_chisel", "to": "complete" }
+      ]
+    },
+    {
+      "_comment": "LongPart 존 실측: 먹 1 · 톱 1 · 자귀 3 · 대패 3 · 끌 10. 대패 3 중 둘(PlaneZoneTailHigh/Low)은 배대패를 요구하므로 이 부재의 대패 목표는 두 대패를 모두 열어 둔다.",
+      "id": "longPart",
+      "title": "긴 부재 다듬기",
+      "process": "longPart",
+      "entryNode": "entry",
+      "introDialogue": "long_part_intro",
+      "completeDialogue": "long_part_result_pass",
+      "grade": "pass",
+      "nodes": [
+        {
+          "id": "entry",
+          "kind": "entry",
+          "position": { "x": 40, "y": 220 }
+        },
+        {
+          "id": "long_ink",
+          "kind": "objective",
+          "controlHint": "마우스 왼쪽 버튼으로 먹통을 잡고, 목재 위에 표시된 선을 따라 끝까지 그은 뒤 버튼을 놓으세요.",
+          "controlHintVr": "그립 버튼으로 먹통을 쥐고, 목재 위에 표시된 선을 따라 손을 끝까지 움직이세요.",
+          "position": { "x": 300, "y": 220 },
+          "objective": {
+            "id": "long_ink",
+            "condition": "signal",
+            "target": "main.long.ink",
+            "amount": 1,
+            "introDialogue": "long_ink_intro",
+            "retryDialogue": "long_ink_retry",
+            "successDialogue": "long_ink_success",
+            "goal": "긴 부재에 기준선을 먹매김한다"
+          }
+        },
+        {
+          "id": "long_saw",
+          "kind": "objective",
+          "controlHint": "마우스 왼쪽 버튼으로 톱을 잡고, 절단선 위에서 표시된 방향으로 길게 밀고 당기세요.",
+          "controlHintVr": "그립 버튼으로 톱을 쥐고, 절단선 위에서 팔을 표시된 방향으로 길게 밀고 당기세요.",
+          "position": { "x": 560, "y": 220 },
+          "objective": {
+            "id": "long_saw",
+            "condition": "signal",
+            "target": "main.long.saw",
+            "amount": 1,
+            "introDialogue": "long_saw_intro",
+            "retryDialogue": "long_saw_retry",
+            "successDialogue": "long_saw_success",
+            "goal": "먹선을 따라 부재의 길이를 맞춘다"
+          }
+        },
+        {
+          "id": "long_adze",
+          "kind": "objective",
+          "controlHint": "마우스 왼쪽 버튼으로 자귀를 잡고, 표시된 세 자리를 위에서 아래로 내리치세요.",
+          "controlHintVr": "그립 버튼으로 자귀를 쥐고, 표시된 세 자리를 향해 팔을 위에서 아래로 내리치세요.",
+          "position": { "x": 820, "y": 220 },
+          "objective": {
+            "id": "long_adze",
+            "condition": "signal",
+            "target": "main.long.adze",
+            "amount": 3,
+            "introDialogue": "long_adze_intro",
+            "retryDialogue": "long_adze_retry",
+            "successDialogue": "long_adze_success",
+            "goal": "자귀로 머리와 바닥의 굵은 살 세 곳을 쳐낸다"
+          }
+        },
+        {
+          "id": "long_plane",
+          "kind": "objective",
+          "controlHint": "마우스 왼쪽 버튼으로 대패를 잡고, 표시된 자리마다 지정 방향으로 길게 밀어 세 곳을 다듬으세요. 곡면 표시에는 배대패를 쓰세요.",
+          "controlHintVr": "그립 버튼으로 대패를 쥐고, 표시된 자리마다 지정 방향으로 팔을 길게 밀어 세 곳을 다듬으세요. 곡면 표시에는 배대패를 쓰세요.",
+          "position": { "x": 1080, "y": 220 },
+          "objective": {
+            "id": "long_plane",
+            "condition": "signal",
+            "target": "main.long.plane",
+            "amount": 3,
+            "introDialogue": "long_plane_intro",
+            "retryDialogue": "long_plane_retry",
+            "successDialogue": "long_plane_success",
+            "goal": "윗면과 꼬리 곡면 세 곳을 대패로 다듬는다"
+          }
+        },
+        {
+          "id": "long_chisel",
+          "kind": "objective",
+          "controlHint": "F 키로 끌을 잡아 홈 자리에 대고, 마우스 왼쪽 버튼으로 망치를 잡아 열 곳을 목표 깊이까지 파내세요.",
+          "controlHintVr": "한 손 그립으로 끌을 홈 자리에 대고, 다른 손 그립으로 망치를 쥐어 열 곳을 목표 깊이까지 파내세요.",
+          "position": { "x": 1340, "y": 220 },
+          "objective": {
+            "id": "long_chisel",
+            "condition": "signal",
+            "target": "main.long.chisel",
+            "amount": 10,
+            "introDialogue": "long_chisel_intro",
+            "retryDialogue": "long_chisel_retry",
+            "successDialogue": "long_chisel_success",
+            "goal": "결구가 들어갈 홈 열 곳을 파낸다"
+          }
+        },
+        {
+          "id": "complete",
+          "kind": "complete",
+          "position": { "x": 1600, "y": 220 }
+        }
+      ],
+      "edges": [
+        { "from": "entry", "to": "long_ink" },
+        { "from": "long_ink", "to": "long_saw" },
+        { "from": "long_saw", "to": "long_adze" },
+        { "from": "long_adze", "to": "long_plane" },
+        { "from": "long_plane", "to": "long_chisel" },
+        { "from": "long_chisel", "to": "complete" }
+      ]
+    },
+    {
+      "_comment": "도리 설치와 공포 조립을 한 단계에서 이어서 한다. 두 목표군의 신호 키가 다르므로 브릿지는 결합 ID('1floor')로 어느 쪽 신호를 올릴지 가른다.",
+      "id": "gongpoPuzzle",
+      "title": "도리 설치와 공포 조립",
+      "process": "gongpoPuzzle",
+      "entryNode": "entry",
+      "introDialogue": "gongpo_intro",
+      "completeDialogue": "gongpo_result_pass",
+      "grade": "pass",
+      "nodes": [
+        {
+          "id": "entry",
+          "kind": "entry",
+          "position": { "x": 40, "y": 220 }
+        },
+        {
+          "id": "install_purlin",
+          "kind": "objective",
+          "controlHint": "마우스 왼쪽 버튼으로 도리를 잡아 열린 결합 위치에 맞춘 뒤 버튼을 놓으세요.",
+          "controlHintVr": "그립 버튼으로 도리를 쥐어 열린 결합 위치에 맞춘 뒤 그립을 놓으세요.",
+          "position": { "x": 300, "y": 220 },
+          "objective": {
+            "id": "install_purlin",
+            "condition": "signal",
+            "target": "main.purlin.install",
+            "amount": 1,
+            "introDialogue": "purlin_joint_intro",
+            "retryDialogue": "assembly_retry",
+            "successDialogue": "purlin_complete_ieumi",
+            "goal": "가공한 도리를 기둥 위 결합 자리에 건다"
+          }
+        },
+        {
+          "id": "gongpo_first_piece",
+          "kind": "objective",
+          "controlHint": "마우스 왼쪽 버튼으로 부재를 잡아 열린 결합 위치에 맞춘 뒤 버튼을 놓으세요. 아래에서 위 순서입니다.",
+          "controlHintVr": "그립 버튼으로 부재를 쥐어 열린 결합 위치에 맞춘 뒤 그립을 놓으세요. 아래에서 위 순서입니다.",
+          "position": { "x": 560, "y": 220 },
+          "objective": {
+            "id": "gongpo_first_piece",
+            "condition": "signal",
+            "target": "main.gongpo.assembled",
+            "amount": 1,
+            "introDialogue": "gongpo_obj1_intro",
+            "retryDialogue": "assembly_retry",
+            "successDialogue": "gongpo_first_success",
+            "goal": "첫 공포 부재를 순서에 맞게 조립한다"
+          }
+        },
+        {
+          "_comment": "amount는 신호 버스의 누계다. 세 목표가 같은 키를 나눠 쓰므로 1 → 18 → 37로 적는다.",
+          "id": "gongpo_lower_tier",
+          "kind": "objective",
+          "controlHint": "마우스 왼쪽 버튼으로 부재를 잡아 열린 결합 위치에 맞춘 뒤 버튼을 놓으세요. 아래에서 위 순서입니다.",
+          "controlHintVr": "그립 버튼으로 부재를 쥐어 열린 결합 위치에 맞춘 뒤 그립을 놓으세요. 아래에서 위 순서입니다.",
+          "position": { "x": 820, "y": 220 },
+          "objective": {
+            "id": "gongpo_lower_tier",
+            "condition": "signal",
+            "target": "main.gongpo.assembled",
+            "amount": 18,
+            "retryDialogue": "assembly_retry",
+            "successDialogue": "gongpo_lower_success",
+            "goal": "공포 아래 단 열여덟 개를 완성한다"
+          }
+        },
+        {
+          "id": "gongpo_complete_all",
+          "kind": "objective",
+          "controlHint": "마우스 왼쪽 버튼으로 부재를 잡아 열린 결합 위치에 맞춘 뒤 버튼을 놓으세요. 아래에서 위 순서입니다.",
+          "controlHintVr": "그립 버튼으로 부재를 쥐어 열린 결합 위치에 맞춘 뒤 그립을 놓으세요. 아래에서 위 순서입니다.",
+          "position": { "x": 1080, "y": 220 },
+          "objective": {
+            "id": "gongpo_complete_all",
+            "condition": "signal",
+            "target": "main.gongpo.assembled",
+            "amount": 37,
+            "retryDialogue": "assembly_retry",
+            "goal": "남은 부재를 모두 조립해 공포를 완성한다"
+          }
+        },
+        {
+          "id": "complete",
+          "kind": "complete",
+          "position": { "x": 1340, "y": 220 }
+        }
+      ],
+      "edges": [
+        { "from": "entry", "to": "install_purlin" },
+        { "from": "install_purlin", "to": "gongpo_first_piece" },
+        { "from": "gongpo_first_piece", "to": "gongpo_lower_tier" },
+        { "from": "gongpo_lower_tier", "to": "gongpo_complete_all" },
+        { "from": "gongpo_complete_all", "to": "complete" }
+      ]
+    }
+  ]
+}

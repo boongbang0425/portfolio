@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodSave - 대시보드</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="additional-styles.css">
+    
+    <style>
+        /* Dashboard Hero Section */
+        .dashboard-hero {
+            background: linear-gradient(135deg, #A0522D 0%, #8B4513 100%);
+            color: white;
+            padding: 4rem 0 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dashboard-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+        }
+        
+        .dashboard-hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .dashboard-welcome {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-family: var(--font-heading);
+        }
+        
+        .dashboard-subtitle {
+            font-size: 1.125rem;
+            opacity: 0.95;
+            margin-bottom: 2rem;
+        }
+        
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            max-width: 1280px;
+            margin: -3rem auto 3rem;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #A0522D, #8B4513);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-icon i {
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.25rem;
+            font-family: var(--font-heading);
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        /* Main Dashboard Content */
+        .dashboard-main {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+        
+        /* Tab Navigation */
+        .dashboard-tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 2px solid #f0f0f0;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .tab {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            position: relative;
+        }
+        
+        .tab:hover {
+            color: #8B4513;
+        }
+        
+        .tab.active {
+            color: #8B4513;
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #A0522D, #8B4513);
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Dashboard Section */
+        .dashboard-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Quick Actions */
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .quick-action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .quick-action-btn:hover {
+            background: linear-gradient(135deg, #A0522D, #8B4513);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(139,69,19,0.3);
+        }
+        
+        .quick-action-btn i {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .quick-action-btn span {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        /* Donation List */
+        .donation-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .donation-item {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1.25rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            align-items: center;
+        }
+        
+        .donation-item:hover {
+            background: #f0f0f0;
+            transform: translateX(5px);
+        }
+        
+        .donation-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        
+        .donation-details {
+            flex: 1;
+        }
+        
+        .donation-title {
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-bottom: 0.25rem;
+            color: #1a1a1a;
+        }
+        
+        .donation-meta {
+            display: flex;
+            gap: 1rem;
+            color: #666;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .donation-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .donation-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-completed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .donation-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn.primary {
+            background: #8B4513;
+            color: white;
+        }
+        
+        .action-btn.primary:hover {
+            background: #6B3410;
+        }
+        
+        .action-btn.secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .action-btn.secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.25rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-state p {
+            color: #999;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .dashboard-main {
+                padding: 0 1rem 3rem;
+            }
+            
+            .stats-container {
+                padding: 0 1rem;
+                margin: -2rem auto 2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-welcome {
+                font-size: 1.75rem;
+            }
+            
+            .dashboard-tabs {
+                gap: 0;
+            }
+            
+            .tab {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .donation-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .donation-image {
+                width: 100%;
+                height: 150px;
+            }
+            
+            .quick-actions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .dashboard-hero {
+                padding: 3rem 0 2rem;
+            }
+            
+            .dashboard-section {
+                padding: 1.5rem 1rem;
+            }
+            
+            .donation-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .action-btn {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <span class="logo-text">Food</span><span class="logo-accent">Save</span>
+            </a>
+            
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link">홈</a></li>
+                <li><a href="/donations" class="nav-link">나눔 찾기</a></li>
+                <li><a href="/info" class="nav-link">이용안내</a></li>
+                <li><a href="/mediaart" class="nav-link">미디어아트</a></li>
+            </ul>
+            
+            <div class="nav-actions">
+                <button class="nav-icon-btn" onclick="toggleSearch()">
+                    <i class="fas fa-search"></i>
+                </button>
+                
+                <button class="nav-icon-btn" onclick="showFavorites()">
+                    <i class="fas fa-heart"></i>
+                    <span class="badge" id="favCount" style="display: none;">0</span>
+                </button>
+                
+                <button class="btn-login" id="loginBtn" onclick="showAuthModal()">
+                    <i class="fas fa-user"></i> 로그인
+                </button>
+                
+                <div class="user-menu" id="userMenu" style="display: none;">
+                    <img src="https://ui-avatars.com/api/?name=User&background=8B4513&color=fff" alt="User" class="user-avatar" id="userAvatar">
+                    <span class="user-name" id="userName">사용자</span>
+                    <div class="dropdown-menu">
+                        <a href="/dashboard"><i class="fas fa-chart-bar"></i> 대시보드</a>
+                        <a href="/profile"><i class="fas fa-user-circle"></i> 프로필</a>
+                        <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 로그아웃</a>
+                    </div>
+                </div>
+                
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Search Bar -->
+    <div class="search-bar" id="searchBar">
+        <div class="search-container">
+            <input type="text" placeholder="원하는 나눔을 검색해보세요..." id="searchInput">
+            <button onclick="performSearch()">
+                <i class="fas fa-search"></i> 검색
+            </button>
+        </div>
+    </div>
+    
+    <!-- Dashboard Hero -->
+    <section class="dashboard-hero">
+        <div class="dashboard-hero-content">
+            <h1 class="dashboard-welcome" id="dashboardWelcome">안녕하세요, 사용자님!</h1>
+            <p class="dashboard-subtitle">오늘도 따뜻한 나눔을 실천해주셔서 감사합니다 ❤️</p>
+        </div>
+    </section>
+    
+    <!-- Stats Cards -->
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-hand-holding-heart"></i>
+            </div>
+            <div class="stat-value" id="totalDonations">0</div>
+            <div class="stat-label">나의 나눔</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-heart"></i>
+            </div>
+            <div class="stat-value" id="totalFavorites">0</div>
+            <div class="stat-label">찜한 나눔</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-value" id="completedApplications">0</div>
+            <div class="stat-label">완료된 나눔</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-value" id="totalImpact">0</div>
+            <div class="stat-label">도움받은 사람</div>
+        </div>
+    </div>
+    
+    <!-- Main Dashboard Content -->
+    <div class="dashboard-main">
+        <!-- Tab Navigation -->
+        <div class="dashboard-tabs">
+            <button class="tab active" onclick="switchTab('overview')">
+                <i class="fas fa-th-large"></i> 전체보기
+            </button>
+            <button class="tab" onclick="switchTab('donations')">
+                <i class="fas fa-hand-holding-heart"></i> 나의 나눔
+            </button>
+            <button class="tab" onclick="switchTab('favorites')">
+                <i class="fas fa-heart"></i> 찜 목록
+            </button>
+            <button class="tab" onclick="switchTab('reservations')">
+                <i class="fas fa-calendar-check"></i> 예약 내역
+            </button>
+            <button class="tab" onclick="switchTab('history')">
+                <i class="fas fa-history"></i> 완료 내역
+            </button>
+        </div>
+        
+        <!-- Tab Content: Overview -->
+        <div class="tab-content active" id="overview-tab">
+            <!-- Quick Actions -->
+            <div class="dashboard-section">
+                <h2 class="section-title">빠른 실행</h2>
+                <div class="quick-actions-grid">
+                    <a href="#" class="quick-action-btn" onclick="showDonateModal()">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>새 나눔 등록</span>
+                    </a>
+                    <a href="/donations" class="quick-action-btn">
+                        <i class="fas fa-search"></i>
+                        <span>나눔 찾기</span>
+                    </a>
+                    <a href="/profile" class="quick-action-btn">
+                        <i class="fas fa-user-edit"></i>
+                        <span>프로필 수정</span>
+                    </a>
+                    <a href="#" class="quick-action-btn" onclick="switchTab('history')">
+                        <i class="fas fa-chart-line"></i>
+                        <span>나눔 통계</span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Recent Donations -->
+            <div class="dashboard-section">
+                <h2 class="section-title">
+                    최근 등록한 나눔
+                    <button class="btn btn-small btn-primary" onclick="switchTab('donations')">
+                        전체보기 <i class="fas fa-arrow-right"></i>
+                    </button>
+                </h2>
+                <div class="donation-list" id="recentDonationsList">
+                    <!-- 동적으로 생성됨 -->
+                </div>
+            </div>
+            
+            <!-- Recent Favorites -->
+            <div class="dashboard-section">
+                <h2 class="section-title">
+                    최근 찜한 나눔
+                    <button class="btn btn-small btn-primary" onclick="switchTab('favorites')">
+                        전체보기 <i class="fas fa-arrow-right"></i>
+                    </button>
+                </h2>
+                <div class="donation-list" id="recentFavoritesList">
+                    <!-- 동적으로 생성됨 -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab Content: My Donations -->
+        <div class="tab-content" id="donations-tab">
+            <div class="dashboard-section">
+                <h2 class="section-title">
+                    나의 나눔 목록
+                    <button class="btn btn-primary" onclick="showDonateModal()">
+                        <i class="fas fa-plus"></i> 새 나눔 등록
+                    </button>
+                </h2>
+                <div class="donation-list" id="donationsList">
+                    <!-- 동적으로 생성됨 -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab Content: Favorites -->
+        <div class="tab-content" id="favorites-tab">
+            <div class="dashboard-section">
+                <h2 class="section-title">찜한 나눔</h2>
+                <div class="donation-list" id="favoritesList">
+                    <!-- 동적으로 생성됨 -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab Content: Reservations -->
+        <div class="tab-content" id="reservations-tab">
+            <div class="dashboard-section">
+                <h2 class="section-title">예약 내역</h2>
+                <div class="donation-list" id="reservationsList">
+                    <!-- 동적으로 생성됨 -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab Content: History -->
+        <div class="tab-content" id="history-tab">
+            <div class="dashboard-section">
+                <h2 class="section-title">완료된 나눔</h2>
+                <div class="donation-list" id="historyList">
+                    <!-- 동적으로 생성됨 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-column">
+                        <h3 class="footer-logo">
+                            <span>Food</span><span class="accent">Save</span>
+                        </h3>
+                        <p>음식물 쓰레기를 줄이고 이웃과 함께 나누는 따뜻한 세상을 만들어갑니다.</p>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-youtube"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h4>빠른 메뉴</h4>
+                        <ul>
+                            <li><a href="/donations">나눔 찾기</a></li>
+                            <li><a href="/info">이용안내</a></li>
+                            <li><a href="/mediaart">미디어아트</a></li>
+                            <li><a href="/dashboard">대시보드</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h4>고객센터</h4>
+                        <ul class="contact-info">
+                            <li><i class="fas fa-phone"></i> 02-1234-5678</li>
+                            <li><i class="fas fa-envelope"></i> info@foodsave.org</li>
+                            <li><i class="fas fa-clock"></i> 평일 09:00 - 18:00</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h4>연락처</h4>
+                        <ul class="contact-info">
+                            <li><i class="fas fa-envelope"></i> contact@foodsave.kr</li>
+                            <li><i class="fas fa-phone"></i> 02-1234-5678</li>
+                            <li><i class="fas fa-map-marker-alt"></i> 서울시 강남구</li>
+                        </ul>
+                    </div>
+                </div>  <!-- footer-content 닫기 -->
+                
+                <div class="footer-bottom">
+                    <p>&copy; 2024 FoodSave. All rights reserved.</p>
+                    <div class="footer-links">
+                        <a href="#">이용약관</a>
+                        <a href="#">개인정보처리방침</a>
+                    </div>
+                </div>
+            </div>  <!-- container 닫기 -->
+        </footer>
+    
+    <!-- Auth Modal -->
+    <div class="modal" id="authModal">
+        <div class="modal-overlay" onclick="closeAuthModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeAuthModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" onclick="switchAuthTab('login')">로그인</button>
+                    <button class="auth-tab" onclick="switchAuthTab('register')">회원가입</button>
+                </div>
+                
+                <!-- Login Form -->
+                <form class="auth-form" id="loginForm" onsubmit="handleLogin(event)">
+                    <h2>로그인</h2>
+                    <p class="auth-subtitle">FoodSave 계정으로 로그인하세요</p>
+                    
+                    <div class="form-group">
+                        <label for="login-email">이메일</label>
+                        <input type="email" id="login-email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="login-password">비밀번호</label>
+                        <input type="password" id="login-password" name="password" required>
+                    </div>
+                    
+                    <div class="form-options">
+                        <label class="checkbox">
+                            <input type="checkbox" name="remember">
+                            <span>로그인 상태 유지</span>
+                        </label>
+                        <a href="#" class="link">비밀번호 찾기</a>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-sign-in-alt"></i> 로그인
+                    </button>
+                </form>
+                
+                <!-- Register Form -->
+                <form class="auth-form" id="registerForm" style="display: none;" onsubmit="handleRegister(event)">
+                    <h2>회원가입</h2>
+                    <p class="auth-subtitle">FoodSave와 함께 나눔을 시작하세요</p>
+                    
+                    <div class="form-group">
+                        <label for="register-name">이름</label>
+                        <input type="text" id="register-name" name="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="register-email">이메일</label>
+                        <input type="email" id="register-email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="register-password">비밀번호</label>
+                        <input type="password" id="register-password" name="password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="register-phone">전화번호</label>
+                        <input type="tel" id="register-phone" name="phone">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>사용자 유형</label>
+                        <div class="radio-group">
+                            <label class="radio">
+                                <input type="radio" name="userType" value="donor" required>
+                                <span>기부자</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="userType" value="receiver" required>
+                                <span>수혜자</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="register-address">주소</label>
+                        <input type="text" id="register-address" name="address">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-user-plus"></i> 가입하기
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Message -->
+    <div class="toast" id="toast"></div>
+    
+    <!-- Dashboard Specific Scripts -->
+    <script>
+        // Tab Switching
+        function switchTab(tabName) {
+            // Remove active from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active from all content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Add active to clicked tab
+            event.target.classList.add('active');
+            
+            // Show corresponding content
+            const tabContent = document.getElementById(tabName + '-tab');
+            if (tabContent) {
+                tabContent.classList.add('active');
+            }
+            
+            // Load content for specific tab
+            loadTabContent(tabName);
+        }
+        
+        // Load tab-specific content
+        function loadTabContent(tabName) {
+            const user = getCurrentUser();
+            if (!user) return;
+            
+            switch(tabName) {
+                case 'overview':
+                    loadOverviewData();
+                    break;
+                case 'donations':
+                    loadMyDonations();
+                    break;
+                case 'favorites':
+                    loadMyFavorites();
+                    break;
+                case 'reservations':
+                    loadMyReservations();
+                    break;
+                case 'history':
+                    loadHistory();
+                    break;
+            }
+        }
+        
+        // Get current user
+        function getCurrentUser() {
+            const userStr = localStorage.getItem('foodsave_user');
+            return userStr ? JSON.parse(userStr) : null;
+        }
+        
+        // Load overview data
+        function loadOverviewData() {
+            // Load recent donations
+            const recentDonationsList = document.getElementById('recentDonationsList');
+            if (recentDonationsList) {
+                recentDonationsList.innerHTML = `
+                    <div class="donation-item">
+                        <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400" alt="Coffee" class="donation-image">
+                        <div class="donation-details">
+                            <h3 class="donation-title">아메리카노 & 라떼</h3>
+                            <div class="donation-meta">
+                                <span><i class="fas fa-clock"></i> 2시간 전</span>
+                                <span><i class="fas fa-map-marker-alt"></i> 강남구</span>
+                            </div>
+                            <span class="donation-status status-approved">승인됨</span>
+                        </div>
+                        <div class="donation-actions">
+                            <button class="action-btn primary">상세보기</button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Load recent favorites
+            const recentFavoritesList = document.getElementById('recentFavoritesList');
+            if (recentFavoritesList) {
+                recentFavoritesList.innerHTML = `
+                    <div class="donation-item">
+                        <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400" alt="Bakery" class="donation-image">
+                        <div class="donation-details">
+                            <h3 class="donation-title">신선한 크로와상</h3>
+                            <div class="donation-meta">
+                                <span><i class="fas fa-clock"></i> 3시간 남음</span>
+                                <span><i class="fas fa-map-marker-alt"></i> 마포구</span>
+                            </div>
+                            <span class="donation-status status-pending">예약가능</span>
+                        </div>
+                        <div class="donation-actions">
+                            <button class="action-btn primary">예약하기</button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Load my donations
+        function loadMyDonations() {
+            const donationsList = document.getElementById('donationsList');
+            if (donationsList) {
+                donationsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-box-open"></i>
+                        <h3>등록한 나눔이 없습니다</h3>
+                        <p>첫 나눔을 시작해보세요!</p>
+                        <button class="btn btn-primary" onclick="showDonateModal()">
+                            <i class="fas fa-plus"></i> 나눔 등록하기
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        // Load my favorites
+        function loadMyFavorites() {
+            const favoritesList = document.getElementById('favoritesList');
+            if (favoritesList) {
+                favoritesList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-heart"></i>
+                        <h3>찜한 나눔이 없습니다</h3>
+                        <p>마음에 드는 나눔을 찜해보세요!</p>
+                        <button class="btn btn-primary" onclick="window.location.href='/donations'">
+                            <i class="fas fa-search"></i> 나눔 찾기
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        // Load my reservations
+        function loadMyReservations() {
+            const reservationsList = document.getElementById('reservationsList');
+            if (reservationsList) {
+                reservationsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-calendar"></i>
+                        <h3>예약 내역이 없습니다</h3>
+                        <p>필요한 나눔을 예약해보세요!</p>
+                        <button class="btn btn-primary" onclick="window.location.href='/donations'">
+                            <i class="fas fa-search"></i> 나눔 찾기
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        // Load history
+        function loadHistory() {
+            const historyList = document.getElementById('historyList');
+            if (historyList) {
+                historyList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-history"></i>
+                        <h3>완료된 나눔이 없습니다</h3>
+                        <p>나눔 활동을 시작해보세요!</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = getCurrentUser();
+            
+            if (user) {
+                // Update welcome message
+                const welcomeEl = document.getElementById('dashboardWelcome');
+                if (welcomeEl) {
+                    welcomeEl.textContent = `안녕하세요, ${user.name}님!`;
+                }
+                
+                // Load initial data
+                loadOverviewData();
+                
+                // Update stats (demo data)
+                document.getElementById('totalDonations').textContent = '5';
+                document.getElementById('totalFavorites').textContent = '12';
+                document.getElementById('completedApplications').textContent = '3';
+                document.getElementById('totalImpact').textContent = '28';
+            } else {
+                // Redirect to home if not logged in
+                window.location.href = '/';
+            }
+        });
+    </script>
+    
+    <!-- Main App Script -->
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+# OS 관련 캐시
+.DS_Store
+Thumbs.db
+
+# Node.js
+node_modules/
+npm-debug.log
+.env
+
+# C++ / ROS2 관련
+build/
+install/
+log/
+bin/
+*.o
+*.obj
+*.out
+
+# Unity 관련 (가장 중요)
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+
+# Visual Studio / IDE 관련
+.vs/
+.vsconfig
+.vscode/
+.idea/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.boop
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# 기타 임시 파일
+sysinfo.txt
+UpgradeLog.htm
+tempCodeRunnerFile.*
