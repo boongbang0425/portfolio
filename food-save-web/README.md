@@ -1,72 +1,91 @@
-# 🌿 FoodSave (v2.0.0)  
-### _음식 나눔을 통해 지속가능한 따뜻함을 전하는 플랫폼_  
-[👉 바로가기](https://app.cloudtype.io/@sean3124/chatbot:main/front#)
+# FoodSave
 
----
+남는 음식을 등록하고 필요한 사람이 예약·수령하도록 연결하는 푸드 쉐어링 웹 서비스.
 
-## 📌 개요  
-**FoodSave**는 남은 음식을 필요로 하는 이웃에게 연결해주는 푸드 쉐어링 서비스입니다.  
-단순한 기술이 아닌, **‘나눔’과 ‘연결’의 문화**를 확산시키는 사회적 플랫폼입니다.
+## 개요
 
----
+- 목적: 버려지는 음식을 줄이고 기부자와 수령자를 연결
+- 대회·수업명: (작성 예정)
+- 기간: (작성 예정)
 
-## 🧭 우리의 목표  
-- 버려지는 음식을 줄이고  
-- 필요한 이웃에게 기회를 주며  
-- 모두가 존중받는 공동체를 만듭니다  
+사용자 유형은 기부자, 수령자, 봉사자·단체 셋으로 구분합니다.
 
----
+## 시스템 구성
 
-## 👥 사용자 유형  
-| 구분 | 설명 |
-|------|------|
-| 🍞 **기부자** | 남는 음식을 등록하여 나누는 사람 |
-| 🥗 **수령자** | 필요한 음식을 예약하고 픽업하는 사람 |
-| 🤝 **봉사자·단체** | 나눔을 매개하고 지원하는 조력자 |
+```mermaid
+flowchart LR
+  BROWSER[브라우저<br/>정적 페이지] -->|REST API| SRV[Node.js / Express 서버]
+  BROWSER -->|multipart 업로드| SRV
+  SRV --> DB[(MySQL)]
+  SRV -->|JWT 발급·검증| AUTH[인증]
+```
 
----
+주요 화면
 
-## 🌱 사용의 가치  
-| 가치 | 의미 |
-|-------|------|
-| 🧩 **실용성** | 등록·검색·예약으로 빠르고 쉽게 나눔 실현 |
-| 🔒 **안전성** | 예약 코드와 인증으로 투명하게 관리 |
-| 💬 **공동체성** | 거래가 아닌 ‘연결’의 경험 제공 |
-| 🌍 **환경성** | 음식물 쓰레기 및 탄소 배출 저감 |
+| 페이지 | 역할 |
+|---|---|
+| `index.html` | 랜딩 |
+| `donations.html`, `donation-detail.html` | 기부 목록·상세 |
+| `dashboard.html` | 대시보드 |
+| `profile.html` | 프로필 |
+| `info.html`, `mediaart.html` | 소개·미디어 |
 
----
+## 기술 스택
 
-## 🎯 기대 효과  
-- **개인:** 식비 절감, 이웃과의 유대감, 나눔의 보람  
-- **지역:** 취약계층 지원 강화, 음식 자원의 선순환  
-- **환경:** 폐기물 감소 → 지속가능한 생태 기여  
+**하드웨어**
 
----
+- 해당 없음 (웹 전용)
 
-## 🚀 빠른 시작 (누구나 체험 가능)
+**소프트웨어**
+
+- Node.js, Express 4
+- 인증: `jsonwebtoken`, `bcryptjs`
+- 파일 업로드: `multer`
+- 프런트엔드: 정적 HTML/CSS/JS (`public/`)
+
+**서버·인프라**
+
+- MySQL (`mysql2` 드라이버)
+- 설정: `dotenv`
+- Cloudtype 배포 (이전 README 기준)
+
+## 폴더 구조
+
+```text
+food-save-web/
+├─ public/          정적 페이지와 클라이언트 스크립트
+│  ├─ app.js, donations.js
+│  └─ styles.css, additional-styles.css, fixes.css
+├─ logo/            로고 이미지
+├─ server.js        Express 서버 + API
+├─ package.json
+└─ docs/            이전 README
+```
+
+## 실행 방법
+
+필요 버전: Node.js 18 이상 권장 (`package.json`에 engines 명시는 없음)
 
 ```bash
-# 1️⃣ 레포지토리 클론
-git clone <your-repository-url>
-cd foodsave-redesign
-
-# 2️⃣ 의존성 설치
 npm install
 
-# 3️⃣ .env 설정 (환경 변수)
-cat <<EOF > .env
-PORT=3000
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your_password
-DB_NAME=foodsave
-DB_PORT=3306
-JWT_SECRET=your_secret_key_here
-EOF
+# 환경변수 파일을 직접 만들어야 합니다 (샘플 파일 없음)
+# 필요한 키는 server.js 에서 확인하십시오
 
-# 4️⃣ 실행 방법
-# 개발 모드 (자동 갱신)
-npm run dev
+npm start        # 또는 npm run dev (nodemon)
+```
 
-# 프로덕션 모드 (서비스용)
-npm run start
+## 팀 구성 및 내 역할
+
+(작성 예정)
+
+## 결과
+
+(작성 예정)
+
+## 알려진 제한
+
+- `.env.example`이 없어 필요한 환경변수를 문서만으로는 알 수 없습니다.
+- DB 스키마 정의 파일(마이그레이션/SQL)이 없습니다.
+- `package.json`의 `test` 스크립트가 실패를 반환하도록 되어 있습니다. 테스트 코드가 없습니다.
+- 이전 README에 적힌 배포 링크의 동작 여부는 확인하지 않았습니다.

@@ -1,59 +1,52 @@
-# Python
+# ── ROS2 빌드 산출물 ────────────────────────────
+# bin/ 은 무시하지 않습니다 — proj_main/bin/proj 는 실행 스크립트로 커밋 대상입니다.
+**/ros2_ws/build/
+**/ros2_ws/install/
+**/ros2_ws/log/
+
+# ── Python ──────────────────────────────────────
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
-
-# Virtual environments
 .venv/
 venv/
 env/
+.pytest_cache/
+.coverage
+htmlcov/
 
-# macOS
-.DS_Store
-
-# Windows
-Thumbs.db
-Desktop.ini
-
-# IDE
-.vscode/
-.idea/
-
-# Secrets
+# ── 환경변수 / 비밀 ─────────────────────────────
 .env
 .env.*
+!.env.example
 *.key
 *.pem
 
-# Models and caches
+# ── 모델 / 캐시 ─────────────────────────────────
 .cache/
 models/
 *.bin
 *.pt
 *.onnx
 
-# Runtime outputs
+# ── 런타임 출력 / 오디오 데이터 ─────────────────
 output/
 *.log
-
-# Audio data
 *.wav
 *.mp3
 *.flac
 
-# Test cache
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Generated packages
+# ── 기타 ────────────────────────────────────────
 *.zip
-
-# Temporary files
 *.tmp
 *.swp
 *.orig
-
-# Reference-only upstream source
 whisperlive_reference/
+
+# ── IDE / OS ────────────────────────────────────
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini

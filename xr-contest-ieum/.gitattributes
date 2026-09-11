@@ -1,0 +1,59 @@
+* text=auto eol=lf
+
+# ── 텍스트 강제 (Unity YAML) ────────────────────
+*.cs         text diff=csharp
+*.shader     text
+*.cginc      text
+*.hlsl       text
+*.json       text
+*.md         text
+*.txt        text
+*.csv        text
+*.uxml       text
+*.uss        text
+*.tss        text
+*.unity      text
+*.prefab     text
+*.mat        text
+*.asset      text
+*.meta       text
+*.anim       text
+*.controller text
+*.asmdef     text
+*.inputactions text
+
+# ── LFS: 모델 ───────────────────────────────────
+*.fbx   filter=lfs diff=lfs merge=lfs -text
+*.obj   filter=lfs diff=lfs merge=lfs -text
+*.blend filter=lfs diff=lfs merge=lfs -text
+
+# ── LFS: 텍스처 ─────────────────────────────────
+*.png   filter=lfs diff=lfs merge=lfs -text
+*.jpg   filter=lfs diff=lfs merge=lfs -text
+*.jpeg  filter=lfs diff=lfs merge=lfs -text
+*.tga   filter=lfs diff=lfs merge=lfs -text
+*.tif   filter=lfs diff=lfs merge=lfs -text
+*.tiff  filter=lfs diff=lfs merge=lfs -text
+*.bmp   filter=lfs diff=lfs merge=lfs -text
+*.psd   filter=lfs diff=lfs merge=lfs -text
+*.exr   filter=lfs diff=lfs merge=lfs -text
+*.hdr   filter=lfs diff=lfs merge=lfs -text
+*.cubemap filter=lfs diff=lfs merge=lfs -text
+
+# ── LFS: 오디오 / 영상 ──────────────────────────
+*.wav   filter=lfs diff=lfs merge=lfs -text
+*.mp3   filter=lfs diff=lfs merge=lfs -text
+*.ogg   filter=lfs diff=lfs merge=lfs -text
+*.mp4   filter=lfs diff=lfs merge=lfs -text
+*.webm  filter=lfs diff=lfs merge=lfs -text
+
+# ── LFS: 폰트 / 문서 ────────────────────────────
+*.ttf   filter=lfs diff=lfs merge=lfs -text
+*.otf   filter=lfs diff=lfs merge=lfs -text
+*.pdf   filter=lfs diff=lfs merge=lfs -text
+
+# ── LFS: 대용량 .asset 개별 지정 ────────────────
+# .asset 은 대부분 수 KB YAML 이라 확장자 단위로 넣으면 안 됩니다.
+# TMP SDF 폰트 아틀라스처럼 수 MB 짜리만 경로로 지정합니다.
+*[ ]SDF.asset          filter=lfs diff=lfs merge=lfs -text
+*[ ]Dynamic[ ]SDF.asset filter=lfs diff=lfs merge=lfs -text
