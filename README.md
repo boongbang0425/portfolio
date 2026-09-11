@@ -1,11 +1,9 @@
 # portfolio
 
 ## 소개
-
-(작성 예정)
+제출용으로 정리한 코드파일묶음입니다.
 
 ## 프로젝트 목록
-
 | 폴더 | 한 줄 요약 | 분야 | 핵심 기술 | 형태 |
 |---|---|---|---|---|
 | [esw-contest-ieum](esw-contest-ieum/) | 4채널 마이크로 방향을 추정해 특정 화자만 분리하고 한국어 실시간 자막을 생성 | 임베디드 · 음성 | ROS 2 Humble, Jetson Orin Nano, PyTorch, BlazeFace | 임베디드 시스템 |
