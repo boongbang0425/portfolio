@@ -14,7 +14,7 @@ using UnityEngine.UIElements;
 /// </summary>
 public sealed class QuestGraphWindow : EditorWindow
 {
-    const string QuestDataPath = "Assets/@AddressableAssets/Data/Static/quest.json";
+    const string QuestDataPath = "Assets/@Data/Static/quest.json";
     const string None = "<none>";
 
     readonly JsonDataSerializer _serializer = new();

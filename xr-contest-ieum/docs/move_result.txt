@@ -1,0 +1,73 @@
+moved=52 skipped=7 failed=0 foldersCreated=0
+MKDIR-EXISTS	Assets/@Scripts/Board
+MKDIR-EXISTS	Assets/@Scripts/Gaze
+MKDIR-EXISTS	Assets/@Scripts/Dev
+MKDIR-EXISTS	Assets/@Scripts/Sungnyemun
+MKDIR-EXISTS	Assets/@Prefabs
+MKDIR-EXISTS	Assets/@Art
+MKDIR-EXISTS	Assets/@Art/Characters
+MKDIR-EXISTS	Assets/@Art/Environment
+MKDIR-EXISTS	Assets/@Art/Props
+MKDIR-EXISTS	Assets/@Art/Props/WoodParts
+MKDIR-EXISTS	Assets/@Art/Materials
+MKDIR-EXISTS	Assets/@Art/Textures
+MKDIR-EXISTS	Assets/ThirdParty
+SKIP-NOSRC	Assets/UnityTechnologies/ParticlePack/URP.asset	Assets/Settings/URP.asset
+SKIP-NOSRC	Assets/UnityTechnologies/ParticlePack/URP_Renderer.asset	Assets/Settings/URP_Renderer.asset
+MOVED	Assets/Scripts/Board3DButton.cs	Assets/@Scripts/Board/Board3DButton.cs
+MOVED	Assets/Scripts/Board3DSlider.cs	Assets/@Scripts/Board/Board3DSlider.cs
+MOVED	Assets/Scripts/BoardSwitcher.cs	Assets/@Scripts/Board/BoardSwitcher.cs
+MOVED	Assets/Scripts/MouseRayTester.cs	Assets/@Scripts/Board/MouseRayTester.cs
+SKIP-NOSRC	Assets/Editor/MeasureBounds.cs	Assets/@Scripts/Editor/MeasureBounds.cs
+SKIP-NOSRC	Assets/Editor/TriplanarMaterialGenerator.cs	Assets/@Scripts/Editor/TriplanarMaterialGenerator.cs
+MOVED	Assets/GazeSystem/CameraHorizontalAligner.cs	Assets/@Scripts/Gaze/CameraHorizontalAligner.cs
+MOVED	Assets/GazeSystem/EeumAnimationTrigger.cs	Assets/@Scripts/Gaze/EeumAnimationTrigger.cs
+MOVED	Assets/GazeSystem/ElderlyAnimationTrigger.cs	Assets/@Scripts/Gaze/ElderlyAnimationTrigger.cs
+MOVED	Assets/GazeSystem/GazeTarget.cs	Assets/@Scripts/Gaze/GazeTarget.cs
+MOVED	Assets/GazeSystem/GazeTracker.cs	Assets/@Scripts/Gaze/GazeTracker.cs
+MOVED	Assets/GazeSystem/IGazeSelectionPolicy.cs	Assets/@Scripts/Gaze/IGazeSelectionPolicy.cs
+MOVED	Assets/GazeSystem/IGazeTarget.cs	Assets/@Scripts/Gaze/IGazeTarget.cs
+MOVED	Assets/GazeSystem/IntervalGazeSelectionPolicy.cs	Assets/@Scripts/Gaze/IntervalGazeSelectionPolicy.cs
+MOVED	Assets/GazeSystem/NPCGazeController.cs	Assets/@Scripts/Gaze/NPCGazeController.cs
+MOVED	Assets/GazeSystem/NPCGazeDirector.cs	Assets/@Scripts/Gaze/NPCGazeDirector.cs
+MOVED	Assets/GazeSystem/PlayerGazeTargetAutoSetup.cs	Assets/@Scripts/Gaze/PlayerGazeTargetAutoSetup.cs
+MOVED	Assets/GazeSystem/PlayerMovement.cs	Assets/@Scripts/Gaze/PlayerMovement.cs
+MOVED	Assets/GazeSystem/PlayerSceneInitializer.cs	Assets/@Scripts/Gaze/PlayerSceneInitializer.cs
+MOVED	Assets/GazeSystem/SequenceGazeSelectionPolicy.cs	Assets/@Scripts/Gaze/SequenceGazeSelectionPolicy.cs
+MOVED	Assets/SimpleFreeCamera.cs	Assets/@Scripts/Dev/SimpleFreeCamera.cs
+MOVED	Assets/@GameAssets/Sungnyemun/숭례문조립/BuildingStageDirector.cs	Assets/@Scripts/Sungnyemun/BuildingStageDirector.cs
+MOVED	Assets/Prefabs/Line.prefab	Assets/@Prefabs/Line.prefab
+MOVED	Assets/Prefabs/PlaneWood.fbx	Assets/@Prefabs/PlaneWood.fbx
+MOVED	Assets/Prefabs/Player.prefab	Assets/@Prefabs/Player.prefab
+MOVED	Assets/Prefabs/finalmesh11.fbx	Assets/@Prefabs/finalmesh11.fbx
+MOVED	Assets/Prefabs/planer.fbx	Assets/@Prefabs/planer.fbx
+MOVED	Assets/@GameAssets/Prefabs/BoardRoot.prefab	Assets/@Prefabs/BoardRoot.prefab
+MOVED	Assets/@GameAssets/Prefabs/Option.prefab	Assets/@Prefabs/Option.prefab
+MOVED	Assets/@GameAssets/Prefabs/Pause.prefab	Assets/@Prefabs/Pause.prefab
+SKIP-NOSRC	Assets/wood.unity	Assets/@Scenes/wood.unity
+MOVED	Assets/iumi	Assets/@Art/Characters/Ieumi
+MOVED	Assets/legenooldman	Assets/@Art/Characters/Nojang
+MOVED	Assets/warehouseFin	Assets/@Art/Environment/Workshop
+MOVED	Assets/@GameAssets/Sungnyemun	Assets/@Art/Environment/Sungnyemun
+MOVED	Assets/tools	Assets/@Art/Props/Tools
+MOVED	Assets/@GameAssets/longPart.fbx	Assets/@Art/Props/WoodParts/longPart.fbx
+MOVED	Assets/@GameAssets/mediumPart.fbx	Assets/@Art/Props/WoodParts/mediumPart.fbx
+MOVED	Assets/@GameAssets/mediumPartWaste.fbx	Assets/@Art/Props/WoodParts/mediumPartWaste.fbx
+MOVED	Assets/@GameAssets/shortPart.fbx	Assets/@Art/Props/WoodParts/shortPart.fbx
+SKIP-NOSRC	Assets/@GameAssets/testPart.fbx	Assets/@Art/Props/WoodParts/testPart.fbx
+MOVED	Assets/options.fbx	Assets/@Art/Props/options.fbx
+MOVED	Assets/hammer.fbx	Assets/@Art/Props/hammer.fbx
+MOVED	Assets/@GameAssets/Materials	Assets/@Art/Materials/GameAssets
+MOVED	Assets/@GameAssets/Textures	Assets/@Art/Textures/GameAssets
+MOVED	Assets/Textures/CorrectMat.mat	Assets/@Art/Materials/CorrectMat.mat
+MOVED	Assets/Textures/WrongMat.mat	Assets/@Art/Materials/WrongMat.mat
+MOVED	Assets/Textures/_Generic.mat	Assets/@Art/Materials/_Generic.mat
+MOVED	Assets/Textures/_Generic#1.mat	Assets/@Art/Materials/_Generic#1.mat
+MOVED	Assets/Textures/Wood Texture 05 diffuse.mat	Assets/@Art/Materials/Wood Texture 05 diffuse.mat
+MOVED	Assets/Original Wood Textures	Assets/@Art/Textures/Wood
+SKIP-NOSRC	Assets/@AddressableAssets/Data	Assets/@Data
+MOVED	Assets/QuickOutline	Assets/ThirdParty/QuickOutline
+MOVED	Assets/SkySeries Freebie	Assets/ThirdParty/SkySeries Freebie
+MOVED	Assets/ADG_Textures	Assets/ThirdParty/ADG_Textures
+MOVED	Assets/UnityTechnologies	Assets/ThirdParty/UnityTechnologies
+MOVED	Assets/VRTemplateAssets	Assets/ThirdParty/VRTemplateAssets

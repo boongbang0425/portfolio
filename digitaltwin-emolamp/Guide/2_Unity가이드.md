@@ -96,7 +96,7 @@ Assets/
 ```json
 {
   "claudeApiKey": "<YOUR_API_KEY>",
-  "openWeatherApiKey": "b4be92e16edb175203f2b6126b008cd0",
+  "openWeatherApiKey": "<YOUR_KEY>",
   "firebaseUrl": "https://emolamp-default-rtdb.firebaseio.com/",
   "mqttServerUrl": "https://port-0-motorcontrol-miqbz64b349f00ff.sel3.cloudtype.app",
   "serialPort": "COM3",

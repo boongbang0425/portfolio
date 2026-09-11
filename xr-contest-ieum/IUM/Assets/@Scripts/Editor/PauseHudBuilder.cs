@@ -15,8 +15,8 @@ using UnityEngine;
 /// </summary>
 static class PauseHudBuilder
 {
-    const string PausePrefabPath = "Assets/@GameAssets/Prefabs/Pause.prefab";
-    const string OptionPrefabPath = "Assets/@GameAssets/Prefabs/Option.prefab";
+    const string PausePrefabPath = "Assets/@Prefabs/Pause.prefab";
+    const string OptionPrefabPath = "Assets/@Prefabs/Option.prefab";
     const string OutputDirectory = "Assets/@Developers/RYU/UI";
     const string OutputPath = OutputDirectory + "/PauseHud.prefab";
 

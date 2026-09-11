@@ -284,7 +284,7 @@ static class PlayWorkshopBuilder
     }
 
     /// <summary>이식본에 누락(null) 머티리얼 슬롯이 있으면 씬 인스턴스에서 대신 끼우는 재질.</summary>
-    const string FallbackMaterialPath = "Assets/tools/darkwood.mat";
+    const string FallbackMaterialPath = "Assets/@Art/Props/Tools/darkwood.mat";
 
     /// <summary>
     /// 이식 트리의 렌더러를 순회해 누락 슬롯에 대체 재질을 끼운다. 프리팹이 물고 있던 guid가
@@ -630,7 +630,7 @@ static class PlayWorkshopBuilder
     // ---- 먹줄 데칼 참조 정리 ----
 
     /// <summary>먹줄 데칼 템플릿. 팀원(paaalop) 소유 자산이라 읽기만 한다.</summary>
-    const string InkLineDecalPrefabPath = "Assets/Prefabs/Line.prefab";
+    const string InkLineDecalPrefabPath = "Assets/@Prefabs/Line.prefab";
 
     /// <summary>
     /// <see cref="VisualWoodModifier.inkLineDecalPrefab"/>을 전부 프리팹 '자산' 참조로 통일하고,

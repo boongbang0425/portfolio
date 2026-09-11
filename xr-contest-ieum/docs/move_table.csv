@@ -1,0 +1,73 @@
+order,source,destination,note
+1,Assets/UnityTechnologies/ParticlePack/URP.asset,Assets/Settings/URP.asset,B · GraphicsSettings가 GUID로 참조 · ThirdParty 이동보다 먼저 실행해야 함
+2,Assets/UnityTechnologies/ParticlePack/URP_Renderer.asset,Assets/Settings/URP_Renderer.asset,B · URP.asset의 의존 Renderer
+10,Assets/@Scripts/Board,,MKDIR
+11,Assets/Scripts/Board3DButton.cs,Assets/@Scripts/Board/Board3DButton.cs,1차 #1
+12,Assets/Scripts/Board3DSlider.cs,Assets/@Scripts/Board/Board3DSlider.cs,1차 #1
+13,Assets/Scripts/BoardSwitcher.cs,Assets/@Scripts/Board/BoardSwitcher.cs,1차 #1
+14,Assets/Scripts/MouseRayTester.cs,Assets/@Scripts/Board/MouseRayTester.cs,1차 #1
+20,Assets/Editor/MeasureBounds.cs,Assets/@Scripts/Editor/MeasureBounds.cs,1차 #2
+21,Assets/Editor/TriplanarMaterialGenerator.cs,Assets/@Scripts/Editor/TriplanarMaterialGenerator.cs,1차 #3
+30,Assets/@Scripts/Gaze,,MKDIR
+31,Assets/GazeSystem/CameraHorizontalAligner.cs,Assets/@Scripts/Gaze/CameraHorizontalAligner.cs,1차 #5
+32,Assets/GazeSystem/EeumAnimationTrigger.cs,Assets/@Scripts/Gaze/EeumAnimationTrigger.cs,1차 #5
+33,Assets/GazeSystem/ElderlyAnimationTrigger.cs,Assets/@Scripts/Gaze/ElderlyAnimationTrigger.cs,1차 #5
+34,Assets/GazeSystem/GazeTarget.cs,Assets/@Scripts/Gaze/GazeTarget.cs,1차 #5
+35,Assets/GazeSystem/GazeTracker.cs,Assets/@Scripts/Gaze/GazeTracker.cs,1차 #5
+36,Assets/GazeSystem/IGazeSelectionPolicy.cs,Assets/@Scripts/Gaze/IGazeSelectionPolicy.cs,1차 #5
+37,Assets/GazeSystem/IGazeTarget.cs,Assets/@Scripts/Gaze/IGazeTarget.cs,1차 #5
+38,Assets/GazeSystem/IntervalGazeSelectionPolicy.cs,Assets/@Scripts/Gaze/IntervalGazeSelectionPolicy.cs,1차 #5
+39,Assets/GazeSystem/NPCGazeController.cs,Assets/@Scripts/Gaze/NPCGazeController.cs,1차 #5
+40,Assets/GazeSystem/NPCGazeDirector.cs,Assets/@Scripts/Gaze/NPCGazeDirector.cs,1차 #5
+41,Assets/GazeSystem/PlayerGazeTargetAutoSetup.cs,Assets/@Scripts/Gaze/PlayerGazeTargetAutoSetup.cs,1차 #5
+42,Assets/GazeSystem/PlayerMovement.cs,Assets/@Scripts/Gaze/PlayerMovement.cs,1차 #5
+43,Assets/GazeSystem/PlayerSceneInitializer.cs,Assets/@Scripts/Gaze/PlayerSceneInitializer.cs,1차 #5
+44,Assets/GazeSystem/SequenceGazeSelectionPolicy.cs,Assets/@Scripts/Gaze/SequenceGazeSelectionPolicy.cs,1차 #5
+50,Assets/@Scripts/Dev,,MKDIR
+51,Assets/SimpleFreeCamera.cs,Assets/@Scripts/Dev/SimpleFreeCamera.cs,1차 #7
+60,Assets/@Scripts/Sungnyemun,,MKDIR
+61,Assets/@GameAssets/Sungnyemun/숭례문조립/BuildingStageDirector.cs,Assets/@Scripts/Sungnyemun/BuildingStageDirector.cs,1차 #8
+70,Assets/@Prefabs,,MKDIR
+71,Assets/Prefabs/Line.prefab,Assets/@Prefabs/Line.prefab,1차 #9 · 문자열 수정
+72,Assets/Prefabs/PlaneWood.fbx,Assets/@Prefabs/PlaneWood.fbx,1차 #9
+73,Assets/Prefabs/Player.prefab,Assets/@Prefabs/Player.prefab,1차 #9
+74,Assets/Prefabs/finalmesh11.fbx,Assets/@Prefabs/finalmesh11.fbx,1차 #9
+75,Assets/Prefabs/planer.fbx,Assets/@Prefabs/planer.fbx,1차 #9
+76,Assets/@GameAssets/Prefabs/BoardRoot.prefab,Assets/@Prefabs/BoardRoot.prefab,1차 #10 · 문자열 수정
+77,Assets/@GameAssets/Prefabs/Option.prefab,Assets/@Prefabs/Option.prefab,1차 #10 · 문자열 수정
+78,Assets/@GameAssets/Prefabs/Pause.prefab,Assets/@Prefabs/Pause.prefab,1차 #10 · 문자열 수정
+80,Assets/wood.unity,Assets/@Scenes/wood.unity,1차 #11
+90,Assets/@Art,,MKDIR
+91,Assets/@Art/Characters,,MKDIR
+92,Assets/iumi,Assets/@Art/Characters/Ieumi,1차 #12 폴더
+93,Assets/legenooldman,Assets/@Art/Characters/Nojang,1차 #13 폴더
+100,Assets/@Art/Environment,,MKDIR
+101,Assets/warehouseFin,Assets/@Art/Environment/Workshop,1차 #14 폴더 · 문자열 수정
+102,Assets/@GameAssets/Sungnyemun,Assets/@Art/Environment/Sungnyemun,1차 #17 폴더 · 문자열 수정
+110,Assets/@Art/Props,,MKDIR
+111,Assets/tools,Assets/@Art/Props/Tools,1차 #15 폴더 · 문자열 수정
+112,Assets/@Art/Props/WoodParts,,MKDIR
+113,Assets/@GameAssets/longPart.fbx,Assets/@Art/Props/WoodParts/longPart.fbx,1차 #16
+114,Assets/@GameAssets/mediumPart.fbx,Assets/@Art/Props/WoodParts/mediumPart.fbx,1차 #16
+115,Assets/@GameAssets/mediumPartWaste.fbx,Assets/@Art/Props/WoodParts/mediumPartWaste.fbx,1차 #16
+116,Assets/@GameAssets/shortPart.fbx,Assets/@Art/Props/WoodParts/shortPart.fbx,1차 #16
+117,Assets/@GameAssets/testPart.fbx,Assets/@Art/Props/WoodParts/testPart.fbx,1차 #16
+118,Assets/options.fbx,Assets/@Art/Props/options.fbx,1차 #21
+119,Assets/hammer.fbx,Assets/@Art/Props/hammer.fbx,1차 #21
+120,Assets/@Art/Materials,,MKDIR
+121,Assets/@Art/Textures,,MKDIR
+122,Assets/@GameAssets/Materials,Assets/@Art/Materials/GameAssets,1차 #18 폴더
+123,Assets/@GameAssets/Textures,Assets/@Art/Textures/GameAssets,1차 #18 폴더
+124,Assets/Textures/CorrectMat.mat,Assets/@Art/Materials/CorrectMat.mat,1차 #19
+125,Assets/Textures/WrongMat.mat,Assets/@Art/Materials/WrongMat.mat,1차 #19
+126,Assets/Textures/_Generic.mat,Assets/@Art/Materials/_Generic.mat,1차 #19
+127,Assets/Textures/_Generic#1.mat,Assets/@Art/Materials/_Generic#1.mat,1차 #19
+128,Assets/Textures/Wood Texture 05 diffuse.mat,Assets/@Art/Materials/Wood Texture 05 diffuse.mat,1차 #19
+129,Assets/Original Wood Textures,Assets/@Art/Textures/Wood,1차 #20 폴더
+141,Assets/@AddressableAssets/Data,Assets/@Data,1차 #22 폴더 · 문자열 6줄 + UnusedAssetReport 1줄 수정
+150,Assets/ThirdParty,,MKDIR
+151,Assets/QuickOutline,Assets/ThirdParty/QuickOutline,1차 #23 폴더 · 문자열 3줄 수정 · C
+152,Assets/SkySeries Freebie,Assets/ThirdParty/SkySeries Freebie,1차 #24 폴더 · C
+153,Assets/ADG_Textures,Assets/ThirdParty/ADG_Textures,1차 #24 폴더 · C
+154,Assets/UnityTechnologies,Assets/ThirdParty/UnityTechnologies,1차 #24 폴더 · C
+155,Assets/VRTemplateAssets,Assets/ThirdParty/VRTemplateAssets,1차 #24 폴더

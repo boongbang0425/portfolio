@@ -25,9 +25,9 @@ using UnityEngine.SceneManagement;
 static class SungnyemunImportBuilder
 {
     const string PlayScenePath = "Assets/@Scenes/Play.unity";
-    const string BuildingPrefabPath = "Assets/@GameAssets/Sungnyemun/texture/modedprefab 1.prefab";
-    const string DirectorPrefabPath = "Assets/@GameAssets/Sungnyemun/texture/SungnyemunDirector.prefab";
-    const string MaterialRoot = "Assets/@GameAssets/Sungnyemun";
+    const string BuildingPrefabPath = "Assets/@Art/Environment/Sungnyemun/texture/modedprefab 1.prefab";
+    const string DirectorPrefabPath = "Assets/@Art/Environment/Sungnyemun/texture/SungnyemunDirector.prefab";
+    const string MaterialRoot = "Assets/@Art/Environment/Sungnyemun";
     const string ImportRootName = "SungnyemunImport";
 
     const string CutsceneSceneDirectory = "Assets/@Developers/RYU/Scenes";

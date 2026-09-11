@@ -30,12 +30,12 @@ namespace IUM.CoreLoopVerification.Tests
     {
         const string ProfilePath =
             "Assets/@Developers/RYU/ProcessIntegration/Tests/CoreLoopVerificationProfile.json";
-        const string FlowPath = "Assets/@AddressableAssets/Data/Static/flow.json";
-        const string ProcessPath = "Assets/@AddressableAssets/Data/Static/process.json";
+        const string FlowPath = "Assets/@Data/Static/flow.json";
+        const string ProcessPath = "Assets/@Data/Static/process.json";
         // 튜토리얼 목표는 일반 공정 배열이 아니라 재사용 가능한 퀘스트 그래프 계약으로 검증한다.
-        const string QuestPath = "Assets/@AddressableAssets/Data/Static/quest.json";
-        const string DialoguePath = "Assets/@AddressableAssets/Data/Static/dialogue.json";
-        const string CutscenePath = "Assets/@AddressableAssets/Data/Static/cutscene.json";
+        const string QuestPath = "Assets/@Data/Static/quest.json";
+        const string DialoguePath = "Assets/@Data/Static/dialogue.json";
+        const string CutscenePath = "Assets/@Data/Static/cutscene.json";
         const string TutorialScenePath = "Assets/@Developers/RYU/Scenes/Dev/TutorialScene.unity";
         const string PauseUxmlPath = "Assets/@UI/Pause/PauseMenu.uxml";
         const string PauseUssPath = "Assets/@UI/Pause/PauseMenu.uss";
@@ -427,10 +427,10 @@ namespace IUM.CoreLoopVerification.Tests
             AssertSceneContainsScript(sceneText, "Assets/@Scripts/Quest/QuestManager.cs");
             AssertSceneContainsScript(sceneText, "Assets/@Scripts/Quest/UI/QuestHud.cs");
             AssertSceneContainsScript(sceneText, "Assets/@Scripts/Process/TutorialOutlineGuide.cs");
-            AssertSceneContainsScript(sceneText, "Assets/QuickOutline/Scripts/Outline.cs");
+            AssertSceneContainsScript(sceneText, "Assets/ThirdParty/QuickOutline/Scripts/Outline.cs");
 
-            Assert.That(File.Exists(Absolute("Assets/QuickOutline/Resources/Materials/OutlineMask.mat")), Is.True);
-            Assert.That(File.Exists(Absolute("Assets/QuickOutline/Resources/Materials/OutlineFill.mat")), Is.True);
+            Assert.That(File.Exists(Absolute("Assets/ThirdParty/QuickOutline/Resources/Materials/OutlineMask.mat")), Is.True);
+            Assert.That(File.Exists(Absolute("Assets/ThirdParty/QuickOutline/Resources/Materials/OutlineFill.mat")), Is.True);
             Assert.That(File.Exists(Absolute("Assets/@Developers/RYU/Quest/UI/QuestHud.uxml")), Is.True);
             const string questHudStylePath = "Assets/@Developers/RYU/Quest/UI/QuestHud.uss";
             const string questHudFontPath = "Assets/@Developers/RYU/Quest/UI/Fonts/Giants-Bold.ttf";

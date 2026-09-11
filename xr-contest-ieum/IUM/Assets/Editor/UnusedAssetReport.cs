@@ -10,7 +10,7 @@ public static class UnusedAssetReport {
         var roots = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path)
             .Concat(all.Where(p => p.Contains("/Resources/")
                                 || p.Contains("/StreamingAssets/")
-                                || p.Contains("/@AddressableAssets/")))
+                                || p.Contains("/@Data/")))
             .Distinct()
             .Where(File.Exists)
             .ToArray();

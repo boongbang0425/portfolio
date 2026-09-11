@@ -19,7 +19,7 @@ using UnityEngine.SceneManagement;
 /// </summary>
 static class BoardHudBuilder
 {
-    const string BoardRootPrefabPath = "Assets/@GameAssets/Prefabs/BoardRoot.prefab";
+    const string BoardRootPrefabPath = "Assets/@Prefabs/BoardRoot.prefab";
     const string OutputDirectory = "Assets/@Developers/RYU/UI";
     const string OutputPath = OutputDirectory + "/BoardHud.prefab";
     const string PlayScenePath = "Assets/@Scenes/Play.unity";
