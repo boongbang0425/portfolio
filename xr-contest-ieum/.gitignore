@@ -9,6 +9,8 @@
 [Mm]emoryCaptures/
 [Rr]ecordings/
 sysinfo.txt
+# Unity 가 실행 중 만드는 빈 임시 폴더 (이름이 ~ 로 끝나 임포트 대상 아님)
+**/[Ss]treamingAssets~/
 
 # ── 빌드 산출물 ─────────────────────────────────
 *.apk
@@ -63,6 +65,7 @@ sysinfo.txt
 *.csproj
 *.unityproj
 *.sln
+*.slnx
 *.suo
 *.user
 *.userprefs

@@ -1,0 +1,15 @@
+moved=13 skipped=0 failed=0 foldersCreated=0 emptyFoldersDeleted=1 buildScenesUpdated=0
+MOVED	Assets/@Art	Assets/Art
+MOVED	Assets/@Data	Assets/Data
+MOVED	Assets/@Developers	Assets/Developers
+MOVED	Assets/@Prefabs	Assets/Prefabs
+MOVED	Assets/@Scenes	Assets/Scenes
+MOVED	Assets/@Scripts	Assets/Scripts
+MOVED	Assets/@UI	Assets/UI
+MOVED	Assets/DefaultVolumeProfile.asset	Assets/Settings/Project Configuration/DefaultVolumeProfile.asset
+MOVED	Assets/InputSystem_Actions.inputactions	Assets/Settings/InputSystem_Actions.inputactions
+MOVED	Assets/iumi.fbx	Assets/Art/Characters/Ieumi/iumi_legacy.fbx
+MOVED	Assets/Editor/ProjectDiagnostics.cs	Assets/Scripts/Editor/ProjectDiagnostics.cs
+MOVED	Assets/Editor/UnusedAssetReport.cs	Assets/Scripts/Editor/UnusedAssetReport.cs
+MOVED	Assets/Editor/AssetMover.cs	Assets/Scripts/Editor/AssetMover.cs
+DELETED-EMPTY	Assets/Editor

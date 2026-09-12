@@ -1,0 +1,268 @@
+/* FixedUI 유리 디자인 토큰 (StartScene 월드 캔버스 · VRGlassButton 기준)
+ * 패널(스모키 유리): rgba(72, 70, 82, 0.66) + 흰 제목 · 카드(흰 유리): rgba(255, 255, 255, 0.92)
+ * 버튼: 흰 유리 0.9 → hover 1.0 → pressed rgb(125, 199, 255) · disabled 배경 α0.24, 전경 α0.28
+ * 전경: rgb(25, 25, 25) α0.86 · 악센트: rgb(125, 199, 255) · 인디케이터 대기색: rgb(190, 217, 255)
+ * 폰트: Giants-Bold · 모션: 배경 0.12s, hover 라벨 +6px, press scale 0.975 */
+.pause-root {
+    display: none;
+    flex-grow: 1;
+    justify-content: center;
+    align-items: center;
+    color: rgb(25, 25, 25);
+    -unity-font-definition: url("../../Developers/RYU/Quest/UI/Fonts/Giants-Bold.ttf");
+}
+
+.pause-screen-shade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(4, 8, 13, 0.78);
+}
+
+/* StartScene 월드 캔버스의 Backdrop과 같은 스모키 유리. 완전 불투명 대신 반투명을 쓰는 대신
+   뒤에는 pause-screen-shade가 깔려 있어 판독성이 유지된다. */
+.pause-panel {
+    width: 560px;
+    padding: 28px 40px 30px 40px;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.28);
+    border-radius: 14px;
+    background-color: rgba(72, 70, 82, 0.66);
+}
+
+.pause-panel--main {
+    min-height: 340px;
+}
+
+.pause-panel--options {
+    display: none;
+    min-height: 420px;
+}
+
+.pause-panel--confirm {
+    display: none;
+    width: 520px;
+    min-height: 240px;
+    justify-content: center;
+}
+
+.pause-header {
+    flex-shrink: 0;
+}
+
+.pause-eyebrow {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: rgba(125, 199, 255, 0.9);
+}
+
+.pause-title {
+    margin-top: 2px;
+    font-size: 30px;
+    color: rgb(255, 255, 255);
+}
+
+.pause-title--confirm {
+    -unity-text-align: middle-center;
+}
+
+.pause-subtitle {
+    margin-top: 4px;
+    font-size: 15px;
+    white-space: normal;
+    color: rgba(255, 255, 255, 0.56);
+}
+
+.pause-divider {
+    height: 1px;
+    margin-top: 17px;
+    margin-bottom: 12px;
+    background-color: rgba(255, 255, 255, 0.16);
+}
+
+.pause-button-group {
+    flex-grow: 1;
+}
+
+.pause-button {
+    height: 40px;
+    margin-top: 10px;
+    padding: 0;
+    flex-direction: row;
+    align-items: center;
+    border-width: 0;
+    border-radius: 7px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: rgba(25, 25, 25, 0.86);
+    -unity-text-align: middle-left;
+    transition-property: background-color, scale;
+    transition-duration: 0.12s;
+}
+
+.pause-button--first {
+    margin-top: 0;
+}
+
+.pause-button:hover,
+.pause-button:focus {
+    background-color: rgb(255, 255, 255);
+    color: rgb(25, 25, 25);
+}
+
+.pause-button:active {
+    background-color: rgb(125, 199, 255);
+    color: rgb(25, 25, 25);
+    scale: 0.975;
+}
+
+.pause-button:disabled {
+    background-color: rgba(255, 255, 255, 0.24);
+    color: rgba(25, 25, 25, 0.28);
+}
+
+/* 대기 상태에도 옅게 보이는 것이 원본 월드 캔버스의 인디케이터다 (190, 217, 255). */
+.pause-button-indicator {
+    width: 4px;
+    min-width: 4px;
+    height: 22px;
+    margin-left: 8px;
+    margin-right: 10px;
+    border-radius: 2px;
+    background-color: rgba(190, 217, 255, 0.65);
+    transition-property: background-color;
+    transition-duration: 0.12s;
+}
+
+.pause-button:hover .pause-button-indicator,
+.pause-button:focus .pause-button-indicator,
+.pause-button:active .pause-button-indicator {
+    background-color: rgb(125, 199, 255);
+}
+
+.pause-button-icon {
+    width: 22px;
+    min-width: 22px;
+    height: 22px;
+    margin-right: 12px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.pause-icon--resume {
+    background-image: url("FixedUI/Icons/play_arrow_48dp_000000_FILL0_wght400_GRAD0_opsz48.png");
+}
+
+.pause-icon--options {
+    background-image: url("FixedUI/Icons/settings_48dp_000000_FILL0_wght400_GRAD0_opsz48.png");
+}
+
+.pause-icon--restart {
+    background-image: url("FixedUI/Icons/replay_48dp_000000_FILL0_wght400_GRAD0_opsz48.png");
+}
+
+.pause-icon--home {
+    background-image: url("FixedUI/Icons/home_48dp_000000_FILL0_wght400_GRAD0_opsz48.png");
+}
+
+.pause-button-label {
+    flex-grow: 1;
+    font-size: 17px;
+    color: rgba(25, 25, 25, 0.86);
+    transition-property: translate;
+    transition-duration: 0.12s;
+}
+
+/* VRGlassButton의 hover 텍스트 오프셋(+6px) 재현. */
+.pause-button:hover .pause-button-label,
+.pause-button:focus .pause-button-label {
+    translate: 6px 0;
+}
+
+.pause-button:hover .pause-button-label,
+.pause-button:focus .pause-button-label,
+.pause-button:active .pause-button-label {
+    color: rgb(25, 25, 25);
+}
+
+.pause-button-label--center {
+    -unity-text-align: middle-center;
+}
+
+/* 가운데 정렬 라벨(확인 창)은 hover 오프셋을 받지 않는다 — 축이 밀리면 어긋나 보인다. */
+.pause-button:hover .pause-button-label--center,
+.pause-button:focus .pause-button-label--center {
+    translate: 0 0;
+}
+
+.pause-button-key {
+    margin-right: 16px;
+    padding: 3px 7px;
+    border-width: 1px;
+    border-color: rgba(25, 25, 25, 0.22);
+    border-radius: 5px;
+    font-size: 10px;
+    color: rgba(25, 25, 25, 0.55);
+}
+
+.pause-slider {
+    height: 46px;
+    margin-top: 7px;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.84);
+}
+
+.pause-slider .unity-base-field__label {
+    min-width: 100px;
+    color: rgba(255, 255, 255, 0.76);
+}
+
+.pause-slider .unity-base-slider__tracker {
+    height: 5px;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.pause-slider .unity-base-slider__dragger {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+    border-color: rgb(255, 255, 255);
+    background-color: rgb(125, 199, 255);
+}
+
+.pause-button--footer {
+    margin-top: 18px;
+}
+
+.pause-message {
+    margin-top: 18px;
+    margin-bottom: 26px;
+    font-size: 17px;
+    color: rgba(255, 255, 255, 0.74);
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+
+.pause-confirm-row {
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.pause-button--inline {
+    flex-grow: 1;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.pause-button--danger {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.pause-button--danger:hover,
+.pause-button--danger:focus {
+    background-color: rgb(255, 255, 255);
+}
+
+.pause-button--danger:active {
+    background-color: rgb(255, 145, 145);
+}

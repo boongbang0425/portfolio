@@ -12,11 +12,11 @@ IR 센서로 약통 슬롯 개폐를 감지해 복약 여부를 기록하고, �
 
 ```mermaid
 flowchart LR
-  ARD[Arduino R4 WiFi<br/>IR 센서 4개, LCD, 버저] -->|HTTPS POST /value| SRV[Node.js / Express 서버]
-  SRV -->|JSON 응답| ARD
-  SRV --> DB[(MariaDB)]
-  SRV -->|Nodemailer| MAIL[보호자 이메일 알림]
-  WEB[웹 대시보드<br/>index / dashboard / profile / admin] -->|JWT 인증 API| SRV
+  ARD["Arduino R4 WiFi<br/>IR 센서 4개, LCD, 버저"] -->|"HTTPS POST /value"| SRV["Node.js / Express 서버"]
+  SRV -->|"JSON 응답"| ARD
+  SRV --> DB[("MariaDB")]
+  SRV -->|"Nodemailer"| MAIL["보호자 이메일 알림"]
+  WEB["웹 대시보드<br/>index / dashboard / profile / admin"] -->|"JWT 인증 API"| SRV
 ```
 
 데이터 흐름

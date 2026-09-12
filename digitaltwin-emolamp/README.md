@@ -12,13 +12,13 @@
 
 ```mermaid
 flowchart LR
-  ARD[Arduino<br/>EmoLamp.ino<br/>LED 램프] <-->|시리얼| UNITY[Unity 클라이언트<br/>SerialController]
-  UNITY -->|REST| SRV[Node.js / Express 서버<br/>Long Polling Pub/Sub]
-  SRV -->|/api/poll| UNITY
-  UNITY --> CLAUDE[Claude API<br/>감정 해석]
-  UNITY --> WEATHER[OpenWeatherMap]
-  UNITY --> FB[(Firebase Realtime DB)]
-  SRV --> DASH[웹 대시보드<br/>public/index.html]
+  ARD["Arduino<br/>EmoLamp.ino<br/>LED 램프"] <-->|"시리얼"| UNITY["Unity 클라이언트<br/>SerialController"]
+  UNITY -->|"REST"| SRV["Node.js / Express 서버<br/>Long Polling Pub/Sub"]
+  SRV -->|"/api/poll"| UNITY
+  UNITY --> CLAUDE["Claude API<br/>감정 해석"]
+  UNITY --> WEATHER["OpenWeatherMap"]
+  UNITY --> FB[("Firebase Realtime DB")]
+  SRV --> DASH["웹 대시보드<br/>public/index.html"]
 ```
 
 서버 API (이전 README 기준)
@@ -59,7 +59,7 @@ digitaltwin-emolamp/
 ├─ unity/              Unity 프로젝트 (Assets, Packages, ProjectSettings)
 ├─ server/             Node.js 서버 (server.js, package.json, public/, .env.example)
 ├─ arduino/EmoLamp/    Arduino 스케치
-└─ docs/               설치·회로·테스트 가이드, 이전 README
+└─ docs/               설치·회로·Cloudtype·테스트 가이드, 이전 README
 ```
 
 ## 실행 방법
@@ -77,14 +77,9 @@ npm start                # 또는 npm run dev
 
 필요 버전: **Unity 2022.3.62f3**
 
-1. `unity/` 폴더를 Unity Hub에서 엽니다.
-2. 설정 파일을 만듭니다.
-
-```bash
-cd unity/Assets/StreamingAssets
-cp config.sample.json config.json
-# config.json 에 발급받은 키를 넣습니다. 이 파일은 .gitignore 대상입니다.
-```
+1. `unity/` 폴더를 Unity Hub에서 엽니다. (`Library/`는 저장소에 없으므로 첫 실행 때 임포트가 오래 걸립니다.)
+2. `Assets/Scenes/Main.unity`를 열고, API를 쓰는 컴포넌트(`ClaudeManager`, `WeatherManager`)의 인스펙터 `apiKey` 필드에 발급받은 키를 넣습니다. 저장소에는 `<YOUR_API_KEY>`로 들어 있습니다.
+3. 키를 넣은 씬은 **커밋하지 않도록** 주의합니다.
 
 **Arduino**
 
@@ -100,20 +95,12 @@ cp config.sample.json config.json
 
 ## 알려진 제한
 
-- **정리 작업이 중단된 상태입니다.** `unity/Assets/Scenes/Main.unity`에 API 키가 직렬화되어 있어 git 초기화를 진행하지 않았습니다. 아래 "보안" 항목을 먼저 처리해야 합니다.
-- `unity/Assets/config.json`과 `unity/Assets/StreamingAssets/config.json`이 따로 있습니다. 전자는 5개 키, 후자는 8개 키로 **내용이 다릅니다.** 어느 쪽 코드도 이 파일을 읽지 않습니다.
-- C# 코드에 `config.json`을 읽는 경로가 없습니다. API 키는 `[SerializeField]` 필드로 인스펙터에서 설정하는 구조라 씬 파일에 값이 저장됩니다.
-- `unity/Assets/Arduino.meta`, `unity/Assets/Prefabs.meta`가 짝 없는 `.meta`로 남아 있습니다.
+- **C# 코드는 `config.json`을 읽지 않습니다.** API 키는 `[SerializeField]` 필드로 인스펙터에서 설정하는 구조라 씬 파일에 값이 저장됩니다. `unity/Assets/config.json`, `unity/Assets/StreamingAssets/config.json`은 `.gitignore` 대상이며 코드에서 쓰이지 않습니다.
+- 두 `config.json`은 내용이 다릅니다(5개 키 / 8개 키).
 - 테스트 코드가 없습니다.
 
-### 보안 (선행 처리 필요)
+### 보안
 
-| 위치 | 내용 |
-|---|---|
-| `unity/Assets/Scenes/Main.unity:2054` | `apiKey` 필드에 32자 hex 키가 직렬화됨 |
-| `unity/Assets/Scenes/Main.unity:2271` | `databaseUrl` 필드에 Firebase 엔드포인트 |
-| `unity/Assets/config.json` | 실키 5종 |
-| `unity/Assets/StreamingAssets/config.json` | 실키 8종 |
-
-`.gitignore`가 `config.json`을 제외하므로 JSON 두 개는 커밋되지 않지만, **씬 파일은 제외할 수 없습니다.**
-키를 폐기·재발급한 뒤 Unity 인스펙터에서 해당 필드를 비우고, 런타임에 설정 파일로 주입하도록 코드를 고쳐야 합니다.
+- 저장소 파일의 API 키는 모두 `<YOUR_API_KEY>`로 바꿨습니다(`Main.unity`의 `apiKey`, 두 `config.json`, `docs/` 가이드).
+- **이전에 커밋·push된 이력에는 원래 키가 남아 있습니다.** Claude, OpenWeatherMap, Papago 키는 발급처에서 폐기·재발급해야 합니다.
+- `Main.unity`의 `databaseUrl`에는 Firebase Realtime Database 주소가 들어 있습니다. 키는 아니지만, 해당 DB의 보안 규칙이 공개 쓰기를 허용하지 않는지 확인이 필요합니다.

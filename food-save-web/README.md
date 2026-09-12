@@ -14,10 +14,10 @@
 
 ```mermaid
 flowchart LR
-  BROWSER[브라우저<br/>정적 페이지] -->|REST API| SRV[Node.js / Express 서버]
-  BROWSER -->|multipart 업로드| SRV
-  SRV --> DB[(MySQL)]
-  SRV -->|JWT 발급·검증| AUTH[인증]
+  BROWSER["브라우저<br/>정적 페이지"] -->|"REST API"| SRV["Node.js / Express 서버"]
+  BROWSER -->|"multipart 업로드"| SRV
+  SRV --> DB[("MySQL")]
+  SRV -->|"JWT 발급·검증"| AUTH["인증"]
 ```
 
 주요 화면

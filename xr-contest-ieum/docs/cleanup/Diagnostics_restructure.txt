@@ -1,0 +1,33 @@
+# ProjectDiagnostics
+generatedAt	2026-09-11 18:03:43
+unityVersion	6000.3.9f1
+buildScenesTotal	9
+buildScenesEnabled	9
+
+## TOTALS
+scenesOpened	9
+missingScripts	1
+missingPrefabs	0
+sceneErrors	0
+prefabAssetMissingScripts	0
+
+## PER SCENE
+path	opened	gameObjects	missingScripts	missingPrefabs	errors
+Assets/Scenes/StartScene.unity	True	83	0	0	0
+Assets/Developers/RYU/Scenes/Cutscene/Cutscene_Prologue.unity	True	14	0	0	0
+Assets/Developers/RYU/Scenes/Cutscene/Cutscene_Ending.unity	True	11	0	0	0
+Assets/Developers/RYU/Scenes/Dev/FlowTest.unity	True	11	0	0	0
+Assets/Developers/RYU/Scenes/Dev/FreePlayTest.unity	True	19	0	0	0
+Assets/Developers/RYU/Scenes/Dev/TutorialScene.unity	True	25	0	0	0
+Assets/Developers/RYU/Scenes/Main/MainPlayScene.unity	True	224	1	0	0
+Assets/Scenes/Play.unity	True	1281	0	0	0
+Assets/Developers/RYU/Scenes/Cutscene_SungnyemunBuild.unity	True	2	0	0	0
+
+## DETAIL missingScripts (scene	objectPath)
+Assets/Developers/RYU/Scenes/Main/MainPlayScene.unity	planer
+
+## DETAIL missingPrefabs (scene	objectPath)
+
+## DETAIL prefabAssetMissingScripts (count	path)
+
+## DETAIL sceneErrors

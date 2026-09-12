@@ -30,10 +30,13 @@
 | **딥러닝 모델** | O | | | | | |
 | **외부 AI API** | | O | | O | | |
 | **정적 프런트엔드** | O | O | O | | O | O |
-| **Git LFS** | | | | O | | |
 
 ## 저장소 구성
 
-각 프로젝트 폴더가 독립된 git 저장소입니다. 이 상위 폴더는 저장소가 아닙니다.
+하나의 저장소(모노레포)에 6개 프로젝트를 폴더 단위로 담았습니다. 각 프로젝트의 실행 방법과 제한 사항은 폴더 안의 README를 참고하십시오.
 
-정리 작업 기록은 [cleanup_report.md](cleanup_report.md), 이전 상위 README는 [docs/README_old.md](docs/README_old.md)에 있습니다.
+- 프로젝트별 `.gitignore`가 하위 폴더에 따로 있습니다.
+- Unity 프로젝트(`xr-contest-ieum/IUM`, `digitaltwin-emolamp/unity`)의 `Library/`, `Temp/`, `UserSettings/` 같은 자동 생성 폴더는 저장소에 없습니다. 처음 열 때 Unity가 다시 만듭니다.
+- `xr-contest-ieum`의 외부 에셋(Asset Store)은 재배포 문제로 제외했습니다. 목록은 해당 README의 "외부 에셋" 표에 있습니다.
+
+정리 작업 기록은 [xr-contest-ieum/docs/cleanup/](xr-contest-ieum/docs/cleanup/), 이전 상위 README는 [docs/README_old.md](docs/README_old.md)에 있습니다.

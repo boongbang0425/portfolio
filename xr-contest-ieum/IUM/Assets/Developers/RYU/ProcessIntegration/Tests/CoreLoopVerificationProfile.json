@@ -1,0 +1,75 @@
+{
+  "name": "PROJECT 이음 전체 코어 루프",
+  "_comment": "공정 단위가 도구에서 부재로 재편되면서 한 공정이 신호 키 여러 개를 쓴다. 그래서 signal(단수) 대신 signals(배열)로 적고, 배열 순서는 그 공정의 목표 진행 순서와 같다.",
+  "mainPlayScene": "Play",
+  "mainPlaySceneAsset": "Assets/Scenes/Play.unity",
+  "route": [
+    {
+      "process": "prologue",
+      "destinationKind": "cutscene",
+      "destination": "prologue"
+    },
+    {
+      "process": "tutorial",
+      "destinationKind": "scene",
+      "destination": "Play",
+      "requiresQuestDefinition": true
+    },
+    {
+      "process": "shortPart",
+      "destinationKind": "scene",
+      "destination": "Play",
+      "requiresQuestDefinition": true,
+      "signals": [
+        "main.short.ink",
+        "main.short.saw",
+        "main.short.plane",
+        "main.short.chisel"
+      ]
+    },
+    {
+      "process": "mediumPart",
+      "destinationKind": "scene",
+      "destination": "Play",
+      "requiresQuestDefinition": true,
+      "signals": [
+        "main.medium.ink",
+        "main.medium.saw",
+        "main.medium.adze",
+        "main.medium.plane",
+        "main.medium.curved",
+        "main.medium.chisel"
+      ]
+    },
+    {
+      "process": "longPart",
+      "destinationKind": "scene",
+      "destination": "Play",
+      "requiresQuestDefinition": true,
+      "signals": [
+        "main.long.ink",
+        "main.long.saw",
+        "main.long.adze",
+        "main.long.plane",
+        "main.long.chisel"
+      ]
+    },
+    {
+      "process": "gongpoPuzzle",
+      "destinationKind": "scene",
+      "destination": "Play",
+      "requiresQuestDefinition": true,
+      "signals": [
+        "main.purlin.install",
+        "main.gongpo.assembled"
+      ],
+      "purlinSignal": "main.purlin.install",
+      "gongpoSignal": "main.gongpo.assembled"
+    },
+    {
+      "process": "ending",
+      "destinationKind": "cutscene",
+      "destination": "ending"
+    }
+  ]
+}

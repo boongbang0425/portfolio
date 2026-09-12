@@ -1,0 +1,15 @@
+order,source,destination,note
+10,Assets/@Art,Assets/Art,@ 접두사 제거
+11,Assets/@Data,Assets/Data,@ 접두사 제거 · Addressables 는 GUID 기준이라 주소 영향 없음
+12,Assets/@Developers,Assets/Developers,@ 접두사 제거 · 빌드 씬 7개 경로 자동 갱신
+13,Assets/@Prefabs,Assets/Prefabs,@ 접두사 제거
+14,Assets/@Scenes,Assets/Scenes,@ 접두사 제거 · 빌드 씬 2개 경로 자동 갱신
+15,Assets/@Scripts,Assets/Scripts,@ 접두사 제거
+16,Assets/@UI,Assets/UI,@ 접두사 제거
+30,Assets/DefaultVolumeProfile.asset,Assets/Settings/Project Configuration/DefaultVolumeProfile.asset,루트 파일 정리 · 참조처(Project Configuration/UniversalRenderPipelineGlobalSettings.asset) 옆으로
+31,Assets/InputSystem_Actions.inputactions,Assets/Settings/InputSystem_Actions.inputactions,루트 파일 정리
+32,Assets/iumi.fbx,Assets/Art/Characters/Ieumi/iumi_legacy.fbx,루트 파일 정리 · iumi프리펩.prefab 이 참조하는 중복 사본(동일 경로명 충돌 회피 위해 이름 변경)
+90,Assets/Editor/ProjectDiagnostics.cs,Assets/Scripts/Editor/ProjectDiagnostics.cs,도구 스크립트
+91,Assets/Editor/UnusedAssetReport.cs,Assets/Scripts/Editor/UnusedAssetReport.cs,도구 스크립트
+98,Assets/Editor/AssetMover.cs,Assets/Scripts/Editor/AssetMover.cs,도구 스크립트 (실행 중인 자기 자신이므로 마지막)
+99,Assets/Editor,DELETE-IF-EMPTY,빈 폴더면 삭제

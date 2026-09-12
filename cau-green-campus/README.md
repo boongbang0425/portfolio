@@ -12,10 +12,10 @@
 
 ```mermaid
 flowchart LR
-  USER[브라우저] --> SRV[Node.js / Express<br/>정적 파일 서빙 + gzip]
-  SRV --> IDX[index.html<br/>랜딩]
-  SRV --> CALC[calculator.html<br/>탄소발자국 계산기]
-  SRV --> ACT[action.html<br/>실천 가이드]
+  USER["브라우저"] --> SRV["Node.js / Express<br/>정적 파일 서빙 + gzip"]
+  SRV --> IDX["index.html<br/>랜딩"]
+  SRV --> CALC["calculator.html<br/>탄소발자국 계산기"]
+  SRV --> ACT["action.html<br/>실천 가이드"]
 ```
 
 서버는 정적 파일 제공과 압축만 담당하고, 계산 로직은 브라우저에서 동작합니다.

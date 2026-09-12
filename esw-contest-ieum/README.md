@@ -18,14 +18,14 @@
 
 ```mermaid
 flowchart LR
-  MIC[4채널 마이크] --> DOA[doa_separation_node<br/>방향 추정 + 음원 분리]
-  CAM[카메라] --> FACE[camera_node<br/>얼굴 검출]
-  DOA -->|SeparatedAudio| STT[stt_bridge_node<br/>스트리밍 STT]
-  DOA -->|SoundSourceTracks| UI[ui_bridge_node]
-  FACE -->|Faces| UI
-  STT -->|Caption| UI
-  UI --> WEB[웹 UI<br/>localhost:8765 / 8770]
-  DOA -.디버그.-> DBG[doa_debug_node]
+  MIC["4채널 마이크"] --> DOA["doa_separation_node<br/>방향 추정 + 음원 분리"]
+  CAM["카메라"] --> FACE["camera_node<br/>얼굴 검출"]
+  DOA -->|"SeparatedAudio"| STT["stt_bridge_node<br/>스트리밍 STT"]
+  DOA -->|"SoundSourceTracks"| UIB["ui_bridge_node"]
+  FACE -->|"Faces"| UIB
+  STT -->|"Caption"| UIB
+  UIB --> WEB["웹 UI<br/>localhost:8765 / 8770"]
+  DOA -.->|"디버그"| DBG["doa_debug_node"]
 ```
 
 ROS 2 토픽 메시지는 `captioning_msgs` 패키지에 정의되어 있습니다.

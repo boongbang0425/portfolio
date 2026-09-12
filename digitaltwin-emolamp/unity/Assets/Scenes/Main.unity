@@ -2051,7 +2051,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86cdb1e01e90e044f8431485223b29c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  apiKey: b4be92e16edb175203f2b6126b008cd0
+  apiKey: <YOUR_API_KEY>
   cityName: Seoul
   updateInterval: 600
   showDebugLogs: 1
