@@ -42,4 +42,4 @@
 - Unity 프로젝트(`xr-contest-ieum/IUM`, `digitaltwin-emolamp/unity`)의 `Library/`, `Temp/`, `UserSettings/` 같은 자동 생성 폴더는 저장소에 없습니다. 처음 열 때 Unity가 다시 만듭니다.
 - `xr-contest-ieum`의 외부 에셋(Asset Store)은 재배포 문제로 제외했습니다. 목록은 해당 README의 "외부 에셋" 표에 있습니다.
 
-정리 작업 기록은 [xr-contest-ieum/docs/cleanup/](xr-contest-ieum/docs/cleanup/), 이전 상위 README는 [docs/README_old.md](docs/README_old.md)에 있습니다.
+정리 작업 기록은 [xr-contest-ieum/docs/cleanup/](xr-contest-ieum/docs/cleanup/), 이전 상위 README는 [docs/README_old.md](0docs/README_old.md)에 있습니다.
