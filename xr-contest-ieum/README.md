@@ -89,11 +89,11 @@ cp ai_secrets.sample.json ai_secrets.json
 
 ## 외부 에셋
 
-재배포 문제와 용량 때문에 저장소에서 제외했습니다. **`ImportFile` 묶음을 받아 넣어야 프로젝트가 열립니다.**
+재배포 문제와 용량 때문에 저장소에서 제외했습니다. Release에 배포한 **`ImportFile` zip을 받아 넣어야 프로젝트가 열립니다.**
 
 ### 받는 곳
 
-- Google Drive: (작성 예정)
+- Release
 
 ### 넣는 방법
 
