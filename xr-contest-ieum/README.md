@@ -75,7 +75,7 @@ xr-contest-ieum/
 
 필요 버전: **Unity 6000.3.9f1** (`IUM/ProjectSettings/ProjectVersion.txt`와 일치해야 함)
 
-1. **외부 에셋을 먼저 받아 넣어야 합니다.** `Assets/ThirdParty/`와 `Assets/Plugins/Demigiant/`는 저장소에 없습니다. 아래 표를 참고하십시오.
+1. **외부 에셋을 먼저 넣어야 합니다.** `Assets/ThirdParty/`, `Assets/Plugins/Demigiant/`, `Assets/Resources/DOTweenSettings.asset`이 저장소에 없습니다. 이 중 DOTween Pro와 QuickOutline은 **없으면 컴파일 자체가 실패합니다.** 아래 "외부 에셋" 절을 먼저 보십시오.
 2. `IUM/` 폴더를 Unity Hub에서 엽니다. `Library/`가 없으므로 첫 실행 때 전체 임포트가 오래 걸립니다.
 3. AI 대화 기능을 쓰려면 설정 파일을 만듭니다.
 
@@ -89,16 +89,41 @@ cp ai_secrets.sample.json ai_secrets.json
 
 ## 외부 에셋
 
-저장소에서 제외했습니다. 아래를 받아 같은 경로에 놓아야 빌드됩니다.
+재배포 문제와 용량 때문에 저장소에서 제외했습니다. **`ImportFile` 묶음을 받아 넣어야 프로젝트가 열립니다.**
 
-| 이름 | 경로 | 출처 | 사용 씬 |
+### 받는 곳
+
+- Google Drive: (작성 예정)
+
+### 넣는 방법
+
+받은 `ImportFile/Assets` 를 **`IUM/` 안에 그대로 덮어씁니다.** 폴더 구조가 같아 병합만 하면 되고, `.meta` 가 함께 들어 있어 GUID와 씬 참조가 그대로 유지됩니다. **Unity 를 닫은 상태에서 넣으십시오.**
+
+```
+ImportFile/Assets/Plugins/Demigiant/                 →  IUM/Assets/Plugins/Demigiant/
+ImportFile/Assets/Resources/DOTweenSettings.asset    →  IUM/Assets/Resources/DOTweenSettings.asset
+ImportFile/Assets/ThirdParty/                        →  IUM/Assets/ThirdParty/
+```
+
+Asset Store에서 직접 받아도 되지만, 그때는 아래 경로에 맞춰 넣어야 합니다(원본 그대로 임포트하면 경로가 달라집니다).
+
+### 목록
+
+**필수 — 없으면 컴파일이 실패해 에디터가 Play를 막습니다.**
+
+| 이름 | 넣을 경로 | 출처 | 없으면 |
+|---|---|---|---|
+| DOTween Pro | `Assets/Plugins/Demigiant/`, `Assets/Resources/DOTweenSettings.asset` | Unity Asset Store (**유료**) | `using DG.Tweening` 을 쓰는 `ScreenFader`, `PauseService`, `SceneController`, `CutsceneStage` 컴파일 실패 |
+| QuickOutline | `Assets/ThirdParty/QuickOutline/` | Unity Asset Store (무료) | `Outline` 타입을 쓰는 `TutorialOutlineGuide`, `ProcessGuideService`, `TutorialRealSwapTool` 컴파일 실패 |
+
+**선택 — 없어도 컴파일은 되지만 해당 씬의 비주얼이 빠집니다.**
+
+| 이름 | 넣을 경로 | 출처 | 사용 씬 |
 |---|---|---|---|
 | SkySeries Freebie | `Assets/ThirdParty/SkySeries Freebie/` | Unity Asset Store (무료) | `GongpoScene.unity` — `6SidedMegaSun.mat` |
 | ADG Ground Textures vol.1 | `Assets/ThirdParty/ADG_Textures/` | Unity Asset Store | `Play.unity` — `ground_vol1/ground1/ground1.mat` |
 | Unity Particle Pack | `Assets/ThirdParty/UnityTechnologies/ParticlePack/` | Unity Asset Store (무료, Unity Technologies) | `Play.unity`, `GongpoScene.unity` — `WoodImpacts.prefab` |
-| QuickOutline | `Assets/ThirdParty/QuickOutline/` | Unity Asset Store (무료) | `Play.unity` 등 — `Outline.cs`, `Resources/Materials/Outline*.mat` |
 | VR Template Assets | `Assets/ThirdParty/VRTemplateAssets/` | Unity VR 프로젝트 템플릿 | `Play.unity`, `GongpoScene.unity`, `MainPlayScene.unity` — `Pointer Outline.mat` |
-| DOTween Pro | `Assets/Plugins/Demigiant/`, `Assets/Resources/DOTweenSettings.asset` | Unity Asset Store (**유료**) | 전역 트윈 |
 
 `ParticlePack`에 들어 있던 `URP.asset`, `URP_Renderer.asset`은 `ProjectSettings/GraphicsSettings.asset`이 GUID로 참조하므로 `Assets/Settings/`로 옮겨 저장소에 포함했습니다.
 
